@@ -1,11 +1,16 @@
 package tavebalak.OTTify.community.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.exception.NotFoundException;
 
@@ -31,5 +36,11 @@ public class CommunityController {
     public ApiResponse deleteSubject(@PathVariable Long subjectId) throws NotFoundException {
         communityService.deleteSubject(subjectId);
         return ApiResponse.success("성공적으로 토론주제를 삭제하였습니다.");
+    }
+
+    @GetMapping("/subject")
+    public ApiResponse getSubjects(@PageableDefault(size =  10) Pageable pageable){
+        CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
+        return ApiResponse.success(page);
     }
 }
