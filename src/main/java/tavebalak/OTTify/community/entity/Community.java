@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.CommunitySubjectEditorDTO;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.user.entity.User;
 
@@ -36,5 +38,18 @@ public class Community {
         this.title = title;
         this.content = content;
         this.program = program;
+    }
+
+    public CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder toEditor(){
+        return CommunitySubjectEditorDTO.builder()
+                .title(title)
+                .content(content)
+                .program(program);
+    }
+
+    public void edit(CommunitySubjectEditorDTO communitySubjectEditorDTO){
+        this.title = communitySubjectEditorDTO.getTitle();
+        this.content = communitySubjectEditorDTO.getContent();
+        this.program = communitySubjectEditorDTO.getProgram();
     }
 }
