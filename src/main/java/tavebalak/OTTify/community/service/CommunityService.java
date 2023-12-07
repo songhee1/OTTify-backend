@@ -7,4 +7,5 @@ import tavebalak.OTTify.exception.NotFoundException;
 public interface CommunityService {
     public void saveSubject(CommunitySubjectCreateDTO c);
     public void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException;
+    public void deleteSubject(Long subjectId) throws NotFoundException;
 }
