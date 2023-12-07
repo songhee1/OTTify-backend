@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.common.BaseEntity;
 import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.CommunitySubjectEditorDTO;
 import tavebalak.OTTify.program.entity.Program;
@@ -16,7 +17,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Community {
+public class Community extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "community_id")
     private Long id;
