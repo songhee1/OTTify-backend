@@ -1,17 +1,20 @@
 package tavebalak.OTTify.community.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectEditorDTO;
+import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.exception.ErrorCode;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -62,5 +65,16 @@ public class CommunityServiceImpl implements CommunityService{
     public void deleteSubject(Long subjectId) throws NotFoundException {
         Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
         communityRepository.delete(community);
+    }
+
+    @Override
+    public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
+        Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
+
+        CommunitySubjectsDTO.builder()
+                .subjectAmount(communities.getTotalElements())
+                .list(communities.stream().)
+
+        return null;
     }
 }
