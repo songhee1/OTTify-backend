@@ -26,4 +26,10 @@ public class CommunityController {
         communityService.modifySubject(c);
         return ApiResponse.success("성공적으로 토론주제를 수정하였습니다.");
     }
+
+    @DeleteMapping("/subject/{subjectId}")
+    public ApiResponse deleteSubject(@PathVariable Long subjectId) throws NotFoundException {
+        communityService.deleteSubject(subjectId);
+        return ApiResponse.success("성공적으로 토론주제를 삭제하였습니다.");
+    }
 }

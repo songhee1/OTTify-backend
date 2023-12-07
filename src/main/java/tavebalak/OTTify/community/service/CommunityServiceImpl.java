@@ -19,13 +19,13 @@ import tavebalak.OTTify.program.repository.ProgramRepository;
 public class CommunityServiceImpl implements CommunityService{
     private final CommunityRepository communityRepository;
     private final ProgramRepository programRepository;
-
+    @Override
     public void saveSubject(CommunitySubjectCreateDTO c){
 
         boolean present = programRepository.findById(c.getProgramId()).isPresent();
         Program program = null;
         if(!present) {
-            program = programRepository.save(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
         }else{
             program = programRepository.findById(c.getProgramId()).get();
         }
@@ -39,7 +39,7 @@ public class CommunityServiceImpl implements CommunityService{
         communityRepository.save(community);
 
     }
-
+    @Override
     public void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException {
         Community community = communityRepository.findById(c.getSubjectId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
@@ -56,5 +56,11 @@ public class CommunityServiceImpl implements CommunityService{
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.title(c.getSubjectName()).content(c.getContent()).program(program).build();
 
         community.edit(communitySubjectEditorDTO);
+    }
+
+    @Override
+    public void deleteSubject(Long subjectId) throws NotFoundException {
+        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+        communityRepository.delete(community);
     }
 }

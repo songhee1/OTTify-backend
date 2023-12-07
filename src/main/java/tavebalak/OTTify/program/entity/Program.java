@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Program {
-    @Id @GeneratedValue
+    @Id
     @Column(name = "program_id")
     private Long id;
     private String title;
@@ -22,7 +22,8 @@ public class Program {
     private int reviewCount; //메인페이지에서 보기위함
 
     @Builder
-    Program(String title, String posterPath){
+    Program(Long id, String title, String posterPath){
+        this.id = id;
         this.title = title;
         this.posterPath = posterPath;
     }
