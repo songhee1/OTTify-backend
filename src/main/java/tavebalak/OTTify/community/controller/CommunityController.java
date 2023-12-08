@@ -52,4 +52,10 @@ public class CommunityController {
         replyService.saveRecomment(c);
         return ApiResponse.success("성공적으로 토론대댓글을 생성하였습니다.");
     }
+
+    @PutMapping("/comment")
+    public ApiResponse modifyComment(@RequestBody ReplyCommentEditDTO c){
+        replyService.modifyComment(c);
+        return ApiResponse.success("성공적으로 토론댓글을 수정하였습니다.");
+    }
 }
