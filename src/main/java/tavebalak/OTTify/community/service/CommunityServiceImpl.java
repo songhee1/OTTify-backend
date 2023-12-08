@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
+import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
+import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.exception.ErrorCode;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
@@ -87,4 +89,5 @@ public class CommunityServiceImpl implements CommunityService{
 
         return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
     }
+
 }
