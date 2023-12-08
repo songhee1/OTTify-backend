@@ -70,11 +70,21 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
         Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
+        List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
+                community -> CommunitySubjectsListDTO
+                        .builder()
+                        .createdDate(community.getCreatedDate())
+                        .modifiedDate(community.getModifiedDate())
+                        .title(community.getTitle())
+                        .content(community.getContent())
+                        .nickName(community.getUser().getNickName())
+                        .programId(community.getProgram().getId())
+                        .build()
+        ).collect(Collectors.toList());
 
-        CommunitySubjectsDTO.builder()
-                .subjectAmount(communities.getTotalElements())
-                .list(communities.stream().)
+        //communities 하나하나에 접근 -> DTO 명세서 대로 설정 -> DTO 설
 
-        return null;
+
+        return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
     }
 }
