@@ -5,10 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.ApiResponse;
-import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
@@ -52,7 +49,7 @@ public class CommunityController {
 
     @PostMapping("/recomment")
     public ApiResponse registerRecomment(@RequestBody ReplyRecommentCreateDTO c){
-        replyService.saveComment(c);
+        replyService.saveRecomment(c);
         return ApiResponse.success("성공적으로 토론대댓글을 생성하였습니다.");
     }
 }
