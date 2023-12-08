@@ -1,17 +1,16 @@
 package tavebalak.OTTify.community.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.ApiResponse;
+import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
 import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.CommunitySubjectsDTO;
-import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.service.CommunityService;
+import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
 
 @RestController
@@ -19,6 +18,7 @@ import tavebalak.OTTify.exception.NotFoundException;
 @RequestMapping("/api/v1/discussion")
 public class CommunityController {
     private final CommunityService communityService;
+    private final ReplyService replyService;
 
     @PostMapping("/subject")
     public ApiResponse registerSubject(@RequestBody CommunitySubjectCreateDTO c){
@@ -42,5 +42,17 @@ public class CommunityController {
     public ApiResponse getSubjects(@PageableDefault(size =  10) Pageable pageable){
         CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
         return ApiResponse.success(page);
+    }
+
+    @PostMapping("/comment")
+    public ApiResponse registerComment(@RequestBody ReplyCommentCreateDTO c){
+        replyService.saveComment(c);
+        return ApiResponse.success("성공적으로 토론댓글을 생성하였습니다.");
+    }
+
+    @PostMapping("/recomment")
+    public ApiResponse registerRecomment(@RequestBody ReplyRecommentCreateDTO c){
+        replyService.saveComment(c);
+        return ApiResponse.success("성공적으로 토론대댓글을 생성하였습니다.");
     }
 }
