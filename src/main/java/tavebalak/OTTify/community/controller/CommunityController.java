@@ -10,6 +10,8 @@ import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
 
+import javax.websocket.server.PathParam;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/discussion")
@@ -63,5 +65,11 @@ public class CommunityController {
     public ApiResponse modifyRecomment(@RequestBody ReplyRecommentModifyDTO c) throws NotFoundException {
         replyService.modifyRecomment(c);
         return ApiResponse.success("성공적으로 토론대댓글을 수정하였습니다.");
+    }
+
+    @DeleteMapping("/comment/{subjectId}/{commentId}")
+    public ApiResponse deleteComment(@PathVariable Long subjectId, @PathVariable Long commentId){
+        replyService.deleteComment(subjectId, commentId);
+        return ApiResponse.success("성공적으로 토론댓글을 삭제하였습니다.");
     }
 }

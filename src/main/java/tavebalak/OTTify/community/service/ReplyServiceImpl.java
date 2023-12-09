@@ -66,4 +66,9 @@ public class ReplyServiceImpl implements ReplyService{
 
         reReply.edit(build);
     }
+
+    @Override
+    public void deleteComment(Long subjectId, Long commentId) {
+        
+    }
 }
