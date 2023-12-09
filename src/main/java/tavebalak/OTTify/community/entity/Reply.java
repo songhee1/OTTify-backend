@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.community.dto.ReplyCommentEditorDTO;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -42,5 +43,14 @@ public class Reply {
     public Reply(String content, Community community) {
         this.content = content;
         this.community = community;
+    }
+
+    public ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder toEditor(){
+        return ReplyCommentEditorDTO.builder()
+                .comment(content);
+    }
+
+    public void edit(ReplyCommentEditorDTO c){
+        this.content = c.getComment();
     }
 }

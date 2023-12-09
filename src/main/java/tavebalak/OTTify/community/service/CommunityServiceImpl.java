@@ -58,7 +58,11 @@ public class CommunityServiceImpl implements CommunityService{
         }
 
         CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder communitySubjectEditorDTOBuilder = community.toEditor();
-        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.title(c.getSubjectName()).content(c.getContent()).program(program).build();
+        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder
+                                                                .title(c.getSubjectName())
+                                                                .content(c.getContent())
+                                                                .program(program)
+                                                                .build();
 
         community.edit(communitySubjectEditorDTO);
     }
