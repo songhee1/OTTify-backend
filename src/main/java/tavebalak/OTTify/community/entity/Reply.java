@@ -39,10 +39,15 @@ public class Reply {
         this.parent = reply;
     }
 
+    public void addCommunity(Community community){
+        this.community = community;
+        community.getReplyList().add(this);
+    }
+
     @Builder
     public Reply(String content, Community community) {
         this.content = content;
-        this.community = community;
+        addCommunity(community);
     }
 
     public ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder toEditor(){

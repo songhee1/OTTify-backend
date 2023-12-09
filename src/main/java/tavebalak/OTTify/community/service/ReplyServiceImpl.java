@@ -21,14 +21,19 @@ public class ReplyServiceImpl implements ReplyService{
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
     @Override
-    public void saveComment(ReplyCommentCreateDTO c) {
+    public void saveComment(ReplyCommentCreateDTO c) throws NotFoundException {
+        Community community = communityRepository.findById(c.getSubjectId()).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+
         replyRepository.save(Reply.builder()
-                .community(communityRepository.findById(c.getSubjectId()).get())
+                .community(community)
                 .content(c.getComment())
                 .build());
     }
     @Override
     public void saveRecomment(ReplyRecommentCreateDTO c) {
+
         Reply reply = replyRepository.save(Reply.builder()
                 .community(communityRepository.findById(c.getSubjectId()).get())
                 .content(c.getContent())
@@ -40,6 +45,7 @@ public class ReplyServiceImpl implements ReplyService{
 
     @Override
     public void modifyComment(ReplyCommentModifyDTO c) throws NotFoundException {
+
         Reply reply = replyRepository.findById(c.getCommentId()).orElseThrow(
                 () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
@@ -48,5 +54,16 @@ public class ReplyServiceImpl implements ReplyService{
 
         reply.edit(edit);
 
+    }
+
+    @Override
+    public void modifyRecomment(ReplyRecommentModifyDTO c) throws NotFoundException {
+        Reply reReply = replyRepository.findById(c.getRecommentId()).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+        ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder reReplyCommentEditorDTOBuilder = reReply.toEditor();
+        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.comment(c.getContent()).build();
+
+        reReply.edit(build);
     }
 }
