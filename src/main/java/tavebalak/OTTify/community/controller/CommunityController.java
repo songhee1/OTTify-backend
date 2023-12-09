@@ -42,7 +42,7 @@ public class CommunityController {
     }
 
     @PostMapping("/comment")
-    public ApiResponse registerComment(@RequestBody ReplyCommentCreateDTO c){
+    public ApiResponse registerComment(@RequestBody ReplyCommentCreateDTO c) throws NotFoundException {
         replyService.saveComment(c);
         return ApiResponse.success("성공적으로 토론댓글을 생성하였습니다.");
     }
@@ -57,5 +57,11 @@ public class CommunityController {
     public ApiResponse modifyComment(@RequestBody ReplyCommentModifyDTO c) throws NotFoundException {
         replyService.modifyComment(c);
         return ApiResponse.success("성공적으로 토론댓글을 수정하였습니다.");
+    }
+
+    @PutMapping("/recomment")
+    public ApiResponse modifyRecomment(@RequestBody ReplyRecommentModifyDTO c) throws NotFoundException {
+        replyService.modifyRecomment(c);
+        return ApiResponse.success("성공적으로 토론대댓글을 수정하였습니다.");
     }
 }
