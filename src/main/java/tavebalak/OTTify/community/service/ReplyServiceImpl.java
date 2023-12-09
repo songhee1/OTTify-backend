@@ -68,7 +68,16 @@ public class ReplyServiceImpl implements ReplyService{
     }
 
     @Override
-    public void deleteComment(Long subjectId, Long commentId) {
-        
+    public void deleteComment(Long subjectId, Long commentId) throws NotFoundException {
+        Community community = communityRepository.findById(subjectId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+
+        Reply reply = replyRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+
+        replyRepository.delete(reply);
+
     }
 }

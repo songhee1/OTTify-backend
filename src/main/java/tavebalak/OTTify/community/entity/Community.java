@@ -31,7 +31,7 @@ public class Community extends BaseEntity {
     @JoinColumn(name = "program_id")
     private Program program;
 
-    @OneToMany(mappedBy = "community")
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replyList = new ArrayList<>();
 
     @Builder
