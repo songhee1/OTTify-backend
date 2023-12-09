@@ -3,11 +3,15 @@ package tavebalak.OTTify.community.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
-import tavebalak.OTTify.community.dto.ReplyRecommentCreateDTO;
+import tavebalak.OTTify.community.dto.*;
+import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
+import tavebalak.OTTify.exception.ErrorCode;
+import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.program.entity.Program;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -23,7 +27,6 @@ public class ReplyServiceImpl implements ReplyService{
                 .content(c.getComment())
                 .build());
     }
-
     @Override
     public void saveRecomment(ReplyRecommentCreateDTO c) {
         Reply reply = replyRepository.save(Reply.builder()
@@ -33,5 +36,17 @@ public class ReplyServiceImpl implements ReplyService{
 
         Reply parentReply = replyRepository.findById(c.getCommentId()).get();
         parentReply.addReply(reply);
+    }
+
+    @Override
+    public void modifyComment(ReplyCommentModifyDTO c) throws NotFoundException {
+        Reply reply = replyRepository.findById(c.getCommentId()).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+        ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder replyCommentEditorDTOBuilder = reply.toEditor();
+        ReplyCommentEditorDTO edit = replyCommentEditorDTOBuilder.comment(c.getComment()).build();
+
+        reply.edit(edit);
+
     }
 }
