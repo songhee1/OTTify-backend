@@ -15,6 +15,7 @@ import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class CommunityServiceImpl implements CommunityService{
     private final CommunityRepository communityRepository;
     private final ProgramRepository programRepository;
+    private final ReplyRepository replyRepository;
     @Override
     public void saveSubject(CommunitySubjectCreateDTO c){
 
@@ -92,6 +94,49 @@ public class CommunityServiceImpl implements CommunityService{
 
 
         return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
+    }
+
+    @Override
+    public CommunityAriclesDTO getArticles(Long subjectId) throws NotFoundException {
+        Community community = communityRepository.findById(subjectId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+
+        List<Reply> replyList = replyRepository.findByCommunityIdAndParentId(community.getId(), null);
+        List<CommentListsDTO> commentListsDTOList = new ArrayList<>();
+        for (Reply comment : replyList) {
+            List<Reply> byCommunityIdAndParentId = replyRepository.findByCommunityIdAndParentId(community.getId(), comment.getId());
+            List<ReplyListsDTO> collect = byCommunityIdAndParentId.stream().map(listone ->
+                    ReplyListsDTO.builder()
+                            .recommentId(listone.getId())
+                            .content(listone.getContent())
+                            .nickName(listone.getUser().getNickName())
+                            .userId(listone.getUser().getId())
+                            .createdDate(listone.getCreatedDate())
+                            .build()
+            ).collect(Collectors.toList());
+
+            CommentListsDTO build = CommentListsDTO.builder()
+                    .content(comment.getContent())
+                    .nickName(comment.getUser().getNickName())
+                    .createdDate(comment.getCreatedDate())
+                    .userId(comment.getUser().getId())
+                    .replyListsDTOList(collect)
+                    .build();
+            commentListsDTOList.add(build);
+        }
+        CommunityAriclesDTO communityAriclesDTOList =  CommunityAriclesDTO.builder()
+                .title(community.getTitle())
+                .writer(community.getUser().getNickName())
+                .content(community.getContent())
+                .createdDate(community.getCreatedDate())
+                .modifiedDate(community.getModifiedDate())
+                .commentAmount(replyList.size())
+                .commentListsDTOList(commentListsDTOList)
+                .build();
+
+
+        return communityAriclesDTOList;
     }
 
 }

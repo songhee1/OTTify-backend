@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.BaseEntity;
 import tavebalak.OTTify.community.dto.ReplyCommentEditorDTO;
+import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ public class Reply extends BaseEntity {
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> child = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public void addReply(Reply reply){
         this.child.add(reply);
