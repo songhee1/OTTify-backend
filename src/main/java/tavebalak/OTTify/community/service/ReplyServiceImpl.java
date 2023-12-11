@@ -1,6 +1,7 @@
 package tavebalak.OTTify.community.service;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.*;
@@ -80,4 +81,20 @@ public class ReplyServiceImpl implements ReplyService{
         replyRepository.delete(reply);
 
     }
+
+    @Override
+    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) throws NotFoundException {
+        communityRepository.findById(subjectId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+        replyRepository.findById(commentId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+        Reply reply = replyRepository.findById(recommentId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+        );
+
+        replyRepository.delete(reply);
+    }
+
 }

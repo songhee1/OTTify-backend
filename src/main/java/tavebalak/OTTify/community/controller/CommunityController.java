@@ -72,4 +72,10 @@ public class CommunityController {
         replyService.deleteComment(subjectId, commentId);
         return ApiResponse.success("성공적으로 토론댓글을 삭제하였습니다.");
     }
+
+    @DeleteMapping("/comment/{subjectId}/{commentId}/{recommentId}")
+    public ApiResponse deleteRecomment(@PathVariable Long subjectId, @PathVariable Long commentId, @PathVariable Long recommentId) throws NotFoundException {
+        replyService.deleteRecomment(subjectId, commentId, recommentId);
+        return ApiResponse.success("성공적으로 토론대댓글을 삭제하였습니다.");
+    }
 }
