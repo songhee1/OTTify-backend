@@ -17,10 +17,11 @@ import java.time.LocalDateTime;
 @Getter
 public class BaseEntity {
     @CreatedDate
-    @Column(updatable = false)
+    @Column(updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdDate;
 
     @LastModifiedDate
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private Timestamp modifiedDate;
 
 }
