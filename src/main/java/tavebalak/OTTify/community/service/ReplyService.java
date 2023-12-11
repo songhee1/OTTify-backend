@@ -12,4 +12,6 @@ public interface ReplyService {
     public void modifyComment(ReplyCommentModifyDTO c) throws NotFoundException;
     public void modifyRecomment(ReplyRecommentModifyDTO c) throws NotFoundException;
     public void deleteComment(Long subjectId, Long commentId) throws NotFoundException;
+
+    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) throws NotFoundException;
 }
