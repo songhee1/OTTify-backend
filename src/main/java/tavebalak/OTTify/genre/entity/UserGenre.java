@@ -1,10 +1,15 @@
 package tavebalak.OTTify.genre.entity;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class UserGenre {
     @Id @GeneratedValue
     private Long id;
@@ -16,4 +21,10 @@ public class UserGenre {
     private Genre genre;
     private boolean isFirst;
 
+    @Builder
+    public UserGenre(User user, Genre genre, boolean isFirst) {
+        this.user = user;
+        this.genre = genre;
+        this.isFirst = isFirst;
+    }
 }
