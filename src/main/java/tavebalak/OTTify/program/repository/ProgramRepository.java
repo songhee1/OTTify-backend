@@ -10,4 +10,6 @@ import java.util.List;
 
 public interface ProgramRepository extends JpaRepository<Program, Long> {
 
+    public List<Program> findTop10ByOrderByAverageRatingDesc();
+
 }
