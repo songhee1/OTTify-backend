@@ -6,5 +6,6 @@ import tavebalak.OTTify.genre.entity.UserGenre;
 import java.util.List;
 
 public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
-    public List<UserGenre> findByGenreIdAndIsFirst(Long genreId, boolean isFirst);
+    public UserGenre findByUserIdAndIsFirst(Long userId, boolean isFirst);
+    public List<UserGenre> findByGenreId(Long genreId);
 }
