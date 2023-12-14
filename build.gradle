@@ -44,6 +44,10 @@ dependencies {
 	//querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa'
 	implementation 'com.querydsl:querydsl-apt'
+
+	//oauth
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+
 }
 
 tasks.named('bootBuildImage') {
