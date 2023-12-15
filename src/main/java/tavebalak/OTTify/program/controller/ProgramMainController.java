@@ -2,6 +2,7 @@ package tavebalak.OTTify.program.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.ApiResponse;
@@ -14,9 +15,9 @@ import tavebalak.OTTify.program.service.ProgramService;
 public class ProgramMainController {
     private final ProgramService programService;
 
-    @GetMapping("/recommendProgram")
-    public ApiResponse getRecommendProgram(){
-        RecommendProgramsDTO recommendProgramsDTO = programService.getRecommendProgram();
+    @GetMapping("/recommendProgram/{count}")
+    public ApiResponse getRecommendProgram(@PathVariable int count){
+        RecommendProgramsDTO recommendProgramsDTO = programService.getRecommendProgram(count);
         return ApiResponse.success(recommendProgramsDTO);
     }
 }

@@ -13,7 +13,6 @@ public class RecommendProgramsDTO {
     private List<ServiceListsDTO> serviceListsDTOList;
 
     @Builder
-
     public RecommendProgramsDTO(int recommentAmount, List<ServiceListsDTO> serviceListsDTOList) {
         this.recommentAmount = recommentAmount;
         this.serviceListsDTOList = serviceListsDTOList;
