@@ -10,12 +10,12 @@ public class ServiceListsDTO {
     private Long programId;
     private String title;
     private String posterPath;
-    private String overview;
+    private double averageRating;
     @Builder
-    public ServiceListsDTO(Long programId, String title, String posterPath, String overview) {
+    public ServiceListsDTO(Long programId, String title, String posterPath, double averageRating) {
         this.programId = programId;
         this.title = title;
         this.posterPath = posterPath;
-        this.overview = overview;
+        this.averageRating = averageRating;
     }
 }
