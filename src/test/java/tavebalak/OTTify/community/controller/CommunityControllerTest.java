@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
+import tavebalak.OTTify.community.dto.ReplyRecommentCreateDTO;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.CommunityServiceImpl;
@@ -111,12 +112,21 @@ class CommunityControllerTest {
     }
 
     @Test
-    void registerRecomment() {
+    void registerRecomment() throws Exception {
         //given
-        
+        ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
+                .subjectId(19L)
+                .commentId(57L)
+                .content("test content")
+                .build();
 
         //when
+        replyService.saveRecomment(testContent);
 
         //then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/recomment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(testContent)))
+                .andExpect(status().isOk());
     }
 }
