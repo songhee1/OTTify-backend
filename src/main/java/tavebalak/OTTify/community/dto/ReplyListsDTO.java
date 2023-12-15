@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -13,10 +14,10 @@ public class ReplyListsDTO {
     private String content;
     private String nickName;
     private Long userId;
-    private Timestamp createdDate;
+    private LocalDateTime createdDate;
 
     @Builder
-    public ReplyListsDTO(Long recommentId, String content, String nickName, Long userId, Timestamp createdDate) {
+    public ReplyListsDTO(Long recommentId, String content, String nickName, Long userId, LocalDateTime createdDate) {
         this.recommentId = recommentId;
         this.content = content;
         this.nickName = nickName;

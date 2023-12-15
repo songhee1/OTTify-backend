@@ -22,10 +22,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.CommunityServiceImpl;
 import tavebalak.OTTify.community.service.ReplyService;
+import tavebalak.OTTify.exception.NotFoundException;
 
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,6 +47,8 @@ class CommunityControllerTest {
     private CommunityController communityController;
     @Autowired //가짜 객체 생성
     private CommunityService communityService;
+    @Autowired
+    private ReplyService replyService;
 
     @Autowired
     private MockMvc mockMvc; //HTTP호출
@@ -64,12 +68,6 @@ class CommunityControllerTest {
         String content = gson.toJson(request);
         ApiResponse apiResponse = subjectResponse();
 
-        //when
-//        ResultActions resultActions = mockMvc.perform(
-//                MockMvcRequestBuilders.post("/api/v1/discussion/subject")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(new Gson().toJson(request))
-//        );
 
         //then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/subject")
@@ -94,16 +92,31 @@ class CommunityControllerTest {
     }
 
     @Test
-    @DisplayName("POST 댓글 등록 컨트롤러 로직 확인")
-    void registerComment() throws Exception{
+    @DisplayName("POST 댓글 등록 컨트롤러 로직 성공")
+    void registerComment() throws Exception, NotFoundException {
         //given
+        ReplyCommentCreateDTO testContent = ReplyCommentCreateDTO.builder()
+                .subjectId(19L)
+                .comment("test content")
+                .build();
 
         //when
+        replyService.saveComment(testContent);
 
         //then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/comment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(testContent)))
+                         .andExpect(status().isOk());
     }
 
     @Test
     void registerRecomment() {
+        //given
+        
+
+        //when
+
+        //then
     }
 }
