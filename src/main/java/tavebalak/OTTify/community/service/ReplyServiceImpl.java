@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
@@ -16,6 +17,7 @@ import tavebalak.OTTify.program.entity.Program;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Validated
 public class ReplyServiceImpl implements ReplyService{
 
 
