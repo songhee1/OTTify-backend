@@ -3,6 +3,7 @@ package tavebalak.OTTify.community.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.community.dto.*;
@@ -10,6 +11,7 @@ import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 import java.util.List;
 
@@ -45,13 +47,13 @@ public class CommunityController {
     }
 
     @PostMapping("/comment")
-    public ApiResponse registerComment(@RequestBody ReplyCommentCreateDTO c) throws NotFoundException {
+    public ApiResponse registerComment(@Valid @RequestBody final ReplyCommentCreateDTO c) throws NotFoundException {
         replyService.saveComment(c);
         return ApiResponse.success("성공적으로 토론댓글을 생성하였습니다.");
     }
 
     @PostMapping("/recomment")
-    public ApiResponse registerRecomment(@RequestBody ReplyRecommentCreateDTO c){
+    public ApiResponse registerRecomment(@Valid @RequestBody final ReplyRecommentCreateDTO c){
         replyService.saveRecomment(c);
         return ApiResponse.success("성공적으로 토론대댓글을 생성하였습니다.");
     }
