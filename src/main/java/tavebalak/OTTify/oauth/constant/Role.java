@@ -1,5 +1,10 @@
 package tavebalak.OTTify.oauth.constant;
 
+
 public enum Role {
-    USER, GUEST
+    USER, GUEST;
+
+    public String getKey() {
+        return name();
+    }
 }
