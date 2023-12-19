@@ -14,6 +14,8 @@ import tavebalak.OTTify.exception.ErrorCode;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 
+import java.util.NoSuchElementException;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public class ReplyServiceImpl implements ReplyService{
     public void saveRecomment(ReplyRecommentCreateDTO c) {
 
         Reply reply = replyRepository.save(Reply.builder()
-                .community(communityRepository.findById(c.getSubjectId()).get())
+                .community(communityRepository.findById(c.getSubjectId()).orElseThrow(NoSuchElementException::new))
                 .content(c.getContent())
                 .build());
 
