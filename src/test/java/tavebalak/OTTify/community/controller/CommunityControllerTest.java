@@ -17,9 +17,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
@@ -30,6 +32,8 @@ import tavebalak.OTTify.community.service.CommunityServiceImpl;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
 
+
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @MockBean(JpaMetamodelMappingContext.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Rollback(value = true)
 class CommunityControllerTest {
 
     @MockBean
@@ -101,10 +106,7 @@ class CommunityControllerTest {
                 .comment("test content")
                 .build();
 
-        //when
-        replyService.saveComment(testContent);
-
-        //then
+        //when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(testContent)))
@@ -112,6 +114,7 @@ class CommunityControllerTest {
     }
 
     @Test
+    @DisplayName("POST 대댓글 등록 컨트롤러 로직 성공")
     void registerRecomment() throws Exception {
         //given
         ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
@@ -120,13 +123,41 @@ class CommunityControllerTest {
                 .content("test content")
                 .build();
 
-        //when
-        replyService.saveRecomment(testContent);
-
-        //then
+        //when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/recomment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(testContent)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("POST 대댓글 등록 컨트롤러 로직 실패 - 없는 ID")
+    public void getFailBadIdTestRecommentID() throws Exception{
+        //given
+        ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
+                .subjectId(19L)
+                .commentId(1L)
+                .content("test content")
+                .build();
+
+        //when
+        assertThrows(NoSuchElementException.class, ()-> replyService.saveRecomment(testContent));
+    }
+
+    @Test
+    @DisplayName("POST 대댓글 등록 컨트롤러 로직 실패 - 빈 내용")
+    public void getFailBadIdTestRecommentContent() throws Exception{
+        //given
+        ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
+                .subjectId(19L)
+                .commentId(57L)
+                .content(" ")
+                .build();
+
+        //when, then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/recomment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(testContent)))
+                .andExpect(status().isBadRequest());
     }
 }
