@@ -1,5 +1,6 @@
 package tavebalak.OTTify.community.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +15,11 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tavebalak.OTTify.common.ApiResponse;
-import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.ReplyCommentCreateDTO;
-import tavebalak.OTTify.community.dto.ReplyRecommentCreateDTO;
+import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
@@ -27,6 +27,10 @@ import tavebalak.OTTify.exception.NotFoundException;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +50,8 @@ class CommunityControllerTest {
     @Autowired
     private MockMvc mockMvc; //HTTP호출
 
+    ObjectMapper objectMapper = new ObjectMapper();
+
 
     @BeforeEach
     public void init(){
@@ -59,8 +65,6 @@ class CommunityControllerTest {
         CommunitySubjectCreateDTO request = registerSubjectRequest();
         Gson gson = new Gson();
         String content = gson.toJson(request);
-        ApiResponse apiResponse = subjectResponse();
-
 
         //then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/subject")
@@ -70,9 +74,6 @@ class CommunityControllerTest {
 
     }
 
-    private ApiResponse<String> subjectResponse() {
-        return ApiResponse.success("성공적으로 토론주제를 생성하였습니다.");
-    }
 
     private CommunitySubjectCreateDTO registerSubjectRequest(){
         return  CommunitySubjectCreateDTO.builder()
@@ -147,4 +148,41 @@ class CommunityControllerTest {
                         .content(new Gson().toJson(testContent)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("PUT 주제 수정 컨트롤러 로직 성공")
+    public void 토론_주제_수정_성공() throws Exception, NotFoundException {
+        //given
+        Long targetSubjectId = 19L;
+        String tochangeComment = "testData modify";
+        CommunitySubjectDTO article = communityService.getArticle(targetSubjectId);
+
+        CommunitySubjectEditDTO editDTO = CommunitySubjectEditDTO.builder()
+                .subjectId(targetSubjectId)
+                .content(tochangeComment)
+                .subjectName(article.getSubjectName())
+                .programId(article.getProgramId())
+                .posterPath(article.getPosterPath())
+                .programTitle(article.getProgramTitle())
+                .build();
+
+        when(communityController.modifySubject(any(CommunitySubjectEditDTO.class))).thenReturn(ApiResponse.success("성공적으로 토론주제를 수정하였습니다."));
+
+        //when
+        ResultActions perform = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/discussion/subject")
+                .content(objectMapper.writeValueAsString(editDTO))
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8"));
+
+        System.out.println(perform.andDo(print()));
+
+        //then
+        perform
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data").value("성공적으로 토론주제를 수정하였습니다."))
+                .andExpect(status().isOk())
+                .andDo(print());
+
+    }
+
 }

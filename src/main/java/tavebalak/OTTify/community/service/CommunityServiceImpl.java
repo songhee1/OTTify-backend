@@ -17,6 +17,7 @@ import tavebalak.OTTify.program.repository.ProgramRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,6 +138,19 @@ public class CommunityServiceImpl implements CommunityService{
 
 
         return communityAriclesDTOList;
+    }
+
+    @Override
+    public CommunitySubjectDTO getArticle(Long subjectId) {
+        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND.getMessage()));
+
+        return CommunitySubjectDTO.builder()
+                .subjectId(subjectId)
+                .content(community.getContent())
+                .programId(community.getProgram().getId())
+                .programTitle(community.getProgram().getTitle())
+                .posterPath(community.getProgram().getPosterPath())
+                .build();
     }
 
 }
