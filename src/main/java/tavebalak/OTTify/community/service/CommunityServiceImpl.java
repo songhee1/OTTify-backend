@@ -146,6 +146,7 @@ public class CommunityServiceImpl implements CommunityService{
 
         return CommunitySubjectDTO.builder()
                 .subjectId(subjectId)
+                .title(community.getTitle())
                 .content(community.getContent())
                 .programId(community.getProgram().getId())
                 .programTitle(community.getProgram().getTitle())

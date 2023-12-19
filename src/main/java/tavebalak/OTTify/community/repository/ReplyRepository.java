@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
     public List<Reply> findByCommunityIdAndParentId(Long communityId, Long parentId);
+    public List<Reply> findByIdAndParentId(Long id, Long parentId);
     public boolean existsByIdAndParentId(Long id, Long parentId);
 }

@@ -3,6 +3,8 @@ package tavebalak.OTTify.community.service;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.exception.NotFoundException;
 
+import java.util.List;
+
 public interface ReplyService {
     public void saveComment(ReplyCommentCreateDTO c) throws NotFoundException;
     public void saveRecomment(ReplyRecommentCreateDTO c);
@@ -11,4 +13,6 @@ public interface ReplyService {
     public void deleteComment(Long subjectId, Long commentId) throws NotFoundException;
 
     public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) throws NotFoundException;
+
+    List<CommentDTO> getComment(Long commentId);
 }
