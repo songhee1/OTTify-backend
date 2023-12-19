@@ -26,12 +26,12 @@ public class ReplyServiceImpl implements ReplyService{
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
     @Override
-    public void saveComment(ReplyCommentCreateDTO c) throws NotFoundException {
+    public Reply saveComment(ReplyCommentCreateDTO c) throws NotFoundException {
         Community community = communityRepository.findById(c.getSubjectId()).orElseThrow(
                 () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
 
-        replyRepository.save(Reply.builder()
+        return replyRepository.save(Reply.builder()
                 .community(community)
                 .content(c.getComment())
                 .build());

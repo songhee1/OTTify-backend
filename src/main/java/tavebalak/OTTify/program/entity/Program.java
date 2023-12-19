@@ -15,6 +15,7 @@ import javax.persistence.Id;
 public class Program {
     @Id
     @Column(name = "program_id")
+    @GeneratedValue
     private Long id;
     private String title;
     private String posterPath;

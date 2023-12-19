@@ -28,7 +28,7 @@ public class CommunityServiceImpl implements CommunityService{
     private final ProgramRepository programRepository;
     private final ReplyRepository replyRepository;
     @Override
-    public void saveSubject(CommunitySubjectCreateDTO c){
+    public Community saveSubject(CommunitySubjectCreateDTO c){
 
         boolean present = programRepository.findById(c.getProgramId()).isPresent();
         Program program = null;
@@ -44,7 +44,7 @@ public class CommunityServiceImpl implements CommunityService{
                 .program(program)
                 .build();
 
-        communityRepository.save(community);
+        return communityRepository.save(community);
 
     }
     @Override
