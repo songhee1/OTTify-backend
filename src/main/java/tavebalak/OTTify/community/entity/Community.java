@@ -53,4 +53,8 @@ public class Community extends BaseEntity {
         this.content = communitySubjectEditorDTO.getContent();
         this.program = communitySubjectEditorDTO.getProgram();
     }
+
+    public void setUser(User user){
+        this.user = user;
+    }
 }
