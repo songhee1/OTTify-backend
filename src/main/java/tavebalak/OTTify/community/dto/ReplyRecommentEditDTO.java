@@ -6,15 +6,17 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ReplyCommentModifyDTO {
+public class ReplyRecommentEditDTO {
     private Long subjectId;
     private Long commentId;
-    private String comment;
+    private Long recommentId;
+    private String content;
 
     @Builder
-    public ReplyCommentModifyDTO(Long subjectId, Long commentId, String comment) {
+    public ReplyRecommentEditDTO(Long subjectId, Long commentId, Long recommentId, String content) {
         this.subjectId = subjectId;
         this.commentId = commentId;
-        this.comment = comment;
+        this.recommentId = recommentId;
+        this.content = content;
     }
 }
