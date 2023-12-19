@@ -7,4 +7,5 @@ import tavebalak.OTTify.community.entity.Community;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
     Page<Community> findCommunitiesBy(Pageable pageable);
+    Page<Community> findCommunitiesByProgramId(Pageable pageable, Long programId);
 }
