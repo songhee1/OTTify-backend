@@ -59,13 +59,13 @@ public class CommunityController {
     }
 
     @PutMapping("/comment")
-    public ApiResponse modifyComment(@RequestBody ReplyCommentModifyDTO c) throws NotFoundException {
+    public ApiResponse modifyComment(@Valid @RequestBody final ReplyCommentEditDTO c) throws NotFoundException {
         replyService.modifyComment(c);
         return ApiResponse.success("성공적으로 토론댓글을 수정하였습니다.");
     }
 
     @PutMapping("/recomment")
-    public ApiResponse modifyRecomment(@RequestBody ReplyRecommentModifyDTO c) throws NotFoundException {
+    public ApiResponse modifyRecomment(@Valid @RequestBody ReplyRecommentEditDTO c) throws NotFoundException {
         replyService.modifyRecomment(c);
         return ApiResponse.success("성공적으로 토론대댓글을 수정하였습니다.");
     }

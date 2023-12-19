@@ -39,6 +39,11 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public void saveRecomment(ReplyRecommentCreateDTO c) {
 
+        boolean hasParent = replyRepository.existsByIdAndParentId(c.getCommentId(), null);
+        if(!hasParent){
+            throw new NoSuchElementException(ErrorCode.BAD_REQUEST.getMessage());
+        }
+
         Reply reply = replyRepository.save(Reply.builder()
                 .community(communityRepository.findById(c.getSubjectId()).orElseThrow(NoSuchElementException::new))
                 .content(c.getContent())
@@ -49,7 +54,13 @@ public class ReplyServiceImpl implements ReplyService{
     }
 
     @Override
-    public void modifyComment(ReplyCommentModifyDTO c) throws NotFoundException {
+    public void modifyComment(ReplyCommentEditDTO c) throws NotFoundException {
+        //subjectId, commentId, comment
+
+        boolean present = communityRepository.findById(c.getSubjectId()).isPresent();
+        if(!present){
+            throw new NoSuchElementException(ErrorCode.BAD_REQUEST.getMessage());
+        }
 
         Reply reply = replyRepository.findById(c.getCommentId()).orElseThrow(
                 () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
@@ -62,7 +73,15 @@ public class ReplyServiceImpl implements ReplyService{
     }
 
     @Override
-    public void modifyRecomment(ReplyRecommentModifyDTO c) throws NotFoundException {
+    public void modifyRecomment(ReplyRecommentEditDTO c) throws NotFoundException {
+
+        if(!communityRepository.findById(c.getSubjectId()).isPresent()){
+            throw new NoSuchElementException(ErrorCode.BAD_REQUEST.getMessage());
+        }
+        if(!replyRepository.findById(c.getCommentId()).isPresent()){
+            throw new NoSuchElementException(ErrorCode.BAD_REQUEST.getMessage());
+        }
+
         Reply reReply = replyRepository.findById(c.getRecommentId()).orElseThrow(
                 () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
