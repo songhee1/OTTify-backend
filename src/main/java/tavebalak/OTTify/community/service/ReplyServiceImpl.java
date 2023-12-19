@@ -1,7 +1,6 @@
 package tavebalak.OTTify.community.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.NotFound;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -12,9 +11,10 @@ import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.exception.ErrorCode;
 import tavebalak.OTTify.exception.NotFoundException;
-import tavebalak.OTTify.program.entity.Program;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -118,6 +118,16 @@ public class ReplyServiceImpl implements ReplyService{
         );
 
         replyRepository.delete(reply);
+    }
+
+    @Override
+    public List<CommentDTO> getComment(Long commentId){
+        List<Reply> listComment = replyRepository.findByIdAndParentId(commentId, null);
+        return listComment.stream().map(comment->
+                CommentDTO.builder().commentId(comment.getId())
+                .content(comment.getContent())
+                .subjectId(comment.getCommunity().getId())
+                .build()).collect(Collectors.toList());
     }
 
 }

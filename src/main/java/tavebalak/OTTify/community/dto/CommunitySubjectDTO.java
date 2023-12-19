@@ -12,15 +12,17 @@ import javax.validation.constraints.NotBlank;
 public class CommunitySubjectDTO {
     private Long subjectId;
     private String subjectName;
+    private String title;
     private String content;
     private Long programId;
     private String programTitle;
     private String posterPath;
 
     @Builder
-    public CommunitySubjectDTO(Long subjectId, String subjectName, String content, Long programId, String programTitle, String posterPath) {
+    public CommunitySubjectDTO(Long subjectId, String subjectName, String title, String content, Long programId, String programTitle, String posterPath) {
         this.subjectId = subjectId;
         this.subjectName = subjectName;
+        this.title = title;
         this.content = content;
         this.programId = programId;
         this.programTitle = programTitle;

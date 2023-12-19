@@ -24,6 +24,8 @@ import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -151,7 +153,7 @@ class CommunityControllerTest {
 
     @Test
     @DisplayName("PUT 주제 수정 컨트롤러 로직 성공")
-    public void 토론_주제_수정_성공() throws Exception, NotFoundException {
+    public void 토론_주제_내용_수정_성공() throws Exception, NotFoundException {
         //given
         Long targetSubjectId = 19L;
         String tochangeComment = "testData modify";
@@ -160,7 +162,7 @@ class CommunityControllerTest {
         CommunitySubjectEditDTO editDTO = CommunitySubjectEditDTO.builder()
                 .subjectId(targetSubjectId)
                 .content(tochangeComment)
-                .subjectName(article.getSubjectName())
+                .subjectName(article.getTitle())
                 .programId(article.getProgramId())
                 .posterPath(article.getPosterPath())
                 .programTitle(article.getProgramTitle())
@@ -184,5 +186,39 @@ class CommunityControllerTest {
                 .andDo(print());
 
     }
+    
+    @Test
+    @DisplayName("PUT 댓글 수정 컨트롤러 로직 성공")
+    public void 댓글_수정_성공() throws Exception, NotFoundException {
+        //given
+        Long targetCommentId = 57L;
+        String tochangeComment = "test Comment";
+        List<CommentDTO> commentList = replyService.getComment(targetCommentId);
+        List<ReplyCommentEditDTO> replyCommentEditDTOs = new ArrayList<>();
+
+        for (CommentDTO commentDTO : commentList) {
+            replyCommentEditDTOs.add(ReplyCommentEditDTO.builder()
+                    .subjectId(commentDTO.getSubjectId())
+                    .commentId(commentDTO.getCommentId())
+                    .comment(tochangeComment)
+                    .build());
+        }
+
+        when(communityController.modifyComment(any(ReplyCommentEditDTO.class))).thenReturn(ApiResponse.success("성공적으로 토론댓글을 수정하였습니다."));
+
+        //when, then
+        for (ReplyCommentEditDTO replyCommentEditDTO : replyCommentEditDTOs) {
+            mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/discussion/comment")
+                    .content(objectMapper.writeValueAsString(replyCommentEditDTO))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("utf-8"))
+                    .andExpect(jsonPath("$.data").exists())
+                    .andExpect(jsonPath("$.data").value("성공적으로 토론댓글을 수정하였습니다."))
+                    .andExpect(status().isOk())
+                    .andDo(print());
+        }
+
+    }
+
 
 }
