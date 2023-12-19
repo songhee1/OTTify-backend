@@ -98,6 +98,24 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
+    public CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId) {
+        Page<Community> communities = communityRepository.findCommunitiesByProgramId(pageable, programId);
+        List<CommunitySubjectsListDTO> list = communities.stream().map(
+                community -> CommunitySubjectsListDTO
+                        .builder()
+                        .createdDate(community.getCreatedDate())
+                        .modifiedDate(community.getModifiedDate())
+                        .title(community.getTitle())
+                        .content(community.getContent())
+                        .nickName(community.getUser().getNickName())
+                        .programId(programId)
+                        .build()
+        ).collect(Collectors.toList());
+
+        return CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(list).build();
+    }
+
+    @Override
     public CommunityAriclesDTO getArticles(Long subjectId) throws NotFoundException {
         Community community = communityRepository.findById(subjectId).orElseThrow(
                 () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)

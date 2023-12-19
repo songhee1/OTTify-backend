@@ -14,4 +14,5 @@ public interface CommunityService {
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable);
     public CommunityAriclesDTO getArticles(Long subjectId) throws NotFoundException;
     public CommunitySubjectDTO getArticle(Long subjectId);
+    public CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId);
 }

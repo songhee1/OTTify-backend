@@ -40,9 +40,16 @@ public class CommunityController {
         return ApiResponse.success("성공적으로 토론주제를 삭제하였습니다.");
     }
 
-    @GetMapping("/subject")
-    public ApiResponse getSubjects(@PageableDefault(size =  10) Pageable pageable){
+    @GetMapping("/total")
+    public ApiResponse getTotalProgramsSubjects(@PageableDefault(size =  10) Pageable pageable){
         CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
+        return ApiResponse.success(page);
+    }
+
+    @GetMapping("/program")
+    public ApiResponse getTotalProgramSubjects(@PageableDefault(size = 10) Pageable pageable,
+                                               @PathParam("programId") Long programId){
+        CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
         return ApiResponse.success(page);
     }
 
