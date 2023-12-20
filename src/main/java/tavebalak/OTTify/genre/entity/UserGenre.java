@@ -1,10 +1,15 @@
 package tavebalak.OTTify.genre.entity;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserGenre {
     @Id @GeneratedValue
     private Long id;
