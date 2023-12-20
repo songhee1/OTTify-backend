@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "user_table")
+@Table(name = "\"User\"")
 public class User {
 
     @Id @GeneratedValue
@@ -23,9 +23,7 @@ public class User {
     private String profilePhoto;
     private double averageRating;
     private int level;
-    
-//    수정한 부분
-    // socialType
+
     @Enumerated
     private SocialType socialType;
 
