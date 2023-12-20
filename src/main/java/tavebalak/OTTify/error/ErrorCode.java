@@ -1,4 +1,4 @@
-package tavebalak.OTTify.exception;
+package tavebalak.OTTify.error;
 
 import lombok.AccessLevel;
 import lombok.Getter;
