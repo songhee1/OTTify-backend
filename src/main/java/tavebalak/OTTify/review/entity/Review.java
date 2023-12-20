@@ -1,12 +1,13 @@
 package tavebalak.OTTify.review.entity;
 
+import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.*;
 
 @Entity
-public class Review {
+public class Review extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "review_id")
     private Long id;

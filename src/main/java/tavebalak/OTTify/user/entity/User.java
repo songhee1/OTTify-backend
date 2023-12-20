@@ -5,7 +5,7 @@ import tavebalak.OTTify.common.entity.BaseEntity;
 import javax.persistence.*;
 
 @Entity
-public class User {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "user_id")
