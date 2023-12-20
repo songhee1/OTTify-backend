@@ -1,4 +1,10 @@
 package tavebalak.OTTify.exception;
 
-public class NotFoundException extends Throwable {
+import lombok.Getter;
+
+@Getter
+public class NotFoundException extends RuntimeException {
+    public NotFoundException(ErrorCode code) {
+        super(code.getMessage());
+    }
 }
