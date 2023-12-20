@@ -1,6 +1,7 @@
-package tavebalak.OTTify.exception;
+package tavebalak.OTTify.error.exception;
 
 import lombok.Getter;
+import tavebalak.OTTify.error.ErrorCode;
 
 @Getter
 public class ForbiddenException extends RuntimeException {
