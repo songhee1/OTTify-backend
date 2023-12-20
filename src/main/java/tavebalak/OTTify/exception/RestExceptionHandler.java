@@ -66,7 +66,7 @@ public class RestExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public ApiResponse<String> handleNotFoundException(ChangeSetPersister.NotFoundException exception, HttpServletRequest request) {
+    public ApiResponse<String> handleNotFoundException(NotFoundException exception, HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ApiResponse.error(exception.getMessage());
     }
@@ -86,7 +86,7 @@ public class RestExceptionHandler {
     }
 
     private void logInfo(HttpServletRequest request, String message) {
-        log.info("{} {} : {} - {} (traceId: {})",
+        log.info("{} {} : {} (traceId: {})",
                 request.getMethod(), request.getRequestURI(), message, getTraceId());
     }
 
