@@ -1,20 +1,34 @@
 package tavebalak.OTTify.user.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import tavebalak.OTTify.common.entity.BaseEntity;
+
+import javax.persistence.*;
 
 @Entity
-public class User {
+@Getter
+@Table(name = "\"User\"")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+
+    private String email;
     private String nickName;
     private String profilePhoto;
     private double averageRating;
-    private int level;
-    private int socialType;
+
+    @Enumerated(EnumType.STRING)
+    private GradeType grade;
+
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
 }
