@@ -1,5 +1,7 @@
 package tavebalak.OTTify.user.entity;
 
+import tavebalak.OTTify.common.entity.BaseEntity;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,9 +17,9 @@ public class User {
     private String profilePhoto;
     private double averageRating;
     @Enumerated(EnumType.STRING)
-    private UserGradeType grade;
+    private GradeType grade;
     @Enumerated(EnumType.STRING)
-    private UserRoleType role;
+    private RoleType role;
 
 
 }
