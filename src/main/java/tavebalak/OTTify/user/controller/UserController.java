@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import tavebalak.OTTify.common.ApiResponse;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.common.BaseResponse;
+import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.user.dto.UserOttResponseDTO;
 import tavebalak.OTTify.user.dto.UserProfileResponseDTO;
 import tavebalak.OTTify.user.service.UserService;
@@ -22,16 +22,16 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<UserProfileResponseDTO> getUserProfile(@PathVariable("id") Long userId) throws NotFoundException {
+    public BaseResponse<UserProfileResponseDTO> getUserProfile(@PathVariable("id") Long userId) throws NotFoundException {
         UserProfileResponseDTO userProfileResponseDTO = userService.getUserProfile(userId);
-        return ApiResponse.success(userProfileResponseDTO);
+        return BaseResponse.success(userProfileResponseDTO);
     }
 
     @GetMapping("/{id}/otts")
     @ResponseStatus(HttpStatus.OK)
-    public ApiResponse<List<UserOttResponseDTO>> getUserOTT(@PathVariable("id") Long userId) {
+    public BaseResponse<List<UserOttResponseDTO>> getUserOTT(@PathVariable("id") Long userId) throws NotFoundException{
         List<UserOttResponseDTO> userOttResponseDTO = userService.getUserOTT(userId);
-        return ApiResponse.success(userOttResponseDTO);
+        return BaseResponse.success(userOttResponseDTO);
     }
 
 }

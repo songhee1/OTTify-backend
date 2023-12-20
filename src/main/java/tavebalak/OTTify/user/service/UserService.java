@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tavebalak.OTTify.exception.ErrorCode;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.ErrorCode;
+import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.repository.ReviewRepository;
@@ -91,7 +91,6 @@ public class UserService {
     }
 
     public List<UserOttResponseDTO> getUserOTT(Long userId) {
-        List<UserOttResponseDTO> userSubscribingOTT = userSubscribingOttRepository.findUserSubscribingOTT(userId);
-        return userSubscribingOTT;
+        return userSubscribingOttRepository.findUserSubscribingOTT(userId);
     }
 }
