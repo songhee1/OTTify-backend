@@ -6,8 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.user.dto.UserOttResponseDTO;
 import tavebalak.OTTify.user.dto.UserProfileResponseDTO;
 import tavebalak.OTTify.user.service.UserService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,4 +26,12 @@ public class UserController {
         UserProfileResponseDTO userProfileResponseDTO = userService.getUserProfile(userId);
         return ApiResponse.success(userProfileResponseDTO);
     }
+
+    @GetMapping("/{id}/otts")
+    @ResponseStatus(HttpStatus.OK)
+    public ApiResponse<List<UserOttResponseDTO>> getUserOTT(@PathVariable("id") Long userId) {
+        List<UserOttResponseDTO> userOttResponseDTO = userService.getUserOTT(userId);
+        return ApiResponse.success(userOttResponseDTO);
+    }
+
 }

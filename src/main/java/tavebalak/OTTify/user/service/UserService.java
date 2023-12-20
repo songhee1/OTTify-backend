@@ -11,11 +11,13 @@ import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.user.dto.LikedProgramDTO;
 import tavebalak.OTTify.user.dto.UninterestedProgramDTO;
+import tavebalak.OTTify.user.dto.UserOttResponseDTO;
 import tavebalak.OTTify.user.dto.UserProfileResponseDTO;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
 import tavebalak.OTTify.user.repository.UninterestedProgramRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
+import tavebalak.OTTify.user.repository.UserSubscribingOttRepository;
 
 import java.util.*;
 
@@ -27,6 +29,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserGenreRepository userGenreRepository;
+    private final UserSubscribingOttRepository userSubscribingOttRepository;
     private final ReviewRepository reviewRepository;
     private final LikedProgramRepository likedProgramRepository;
     private final UninterestedProgramRepository uninterestedProgramRepository;
@@ -76,7 +79,7 @@ public class UserService {
         return UserProfileResponseDTO.builder()
                 .profilePhoto(user.getProfilePhoto())
                 .nickName(user.getNickName())
-                .userType(user.getUserType())
+                .grade(user.getGrade())
                 .email(user.getEmail())
                 .averageRating(user.getAverageRating())
                 .firstGenre(firstGenre)
@@ -85,5 +88,10 @@ public class UserService {
                 .likedProgram(likedProgramListDTOList)
                 .uninterestedProgram(uninterestedProgramDTOList)
                 .build();
+    }
+
+    public List<UserOttResponseDTO> getUserOTT(Long userId) {
+        List<UserOttResponseDTO> userSubscribingOTT = userSubscribingOttRepository.findUserSubscribingOTT(userId);
+        return userSubscribingOTT;
     }
 }

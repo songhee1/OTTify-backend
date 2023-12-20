@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
-import tavebalak.OTTify.user.entity.UserType;
+import tavebalak.OTTify.user.entity.GradeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class UserProfileResponseDTO {
     private String profilePhoto;
     private String nickName;
-    private UserType userType;
+    private GradeType grade;
     private String email;
 
     private double averageRating;
@@ -27,10 +27,10 @@ public class UserProfileResponseDTO {
     private List<UninterestedProgramDTO> uninterestedProgram = new ArrayList<>();
 
     @Builder
-    public UserProfileResponseDTO(String profilePhoto, String nickName, UserType userType, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
+    public UserProfileResponseDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
         this.profilePhoto = profilePhoto;
         this.nickName = nickName;
-        this.userType = userType;
+        this.grade = grade;
         this.email = email;
         this.averageRating = averageRating;
         this.ratingList = ratingList;
