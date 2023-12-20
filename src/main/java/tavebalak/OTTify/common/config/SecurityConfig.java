@@ -23,7 +23,6 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 //    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
-//    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,7 +45,6 @@ public class SecurityConfig {
                         configure.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
                                 .successHandler(oAuth2AuthenticationSuccessHandler)
 //                                .failureHandler(oAuth2AuthenticationFailureHandler)
-//                                .authorizationEndpoint(config -> config.authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
                 )
                 .build();
     }
