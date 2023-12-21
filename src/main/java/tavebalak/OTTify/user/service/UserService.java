@@ -114,7 +114,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         if (userRepository.existsByNickName(updateRequestDTO.getNickName()) && !Objects.equals(user.getNickName(), updateRequestDTO.getNickName())) {
-            throw new DuplicateException(ErrorCode.NICKNAME_DUPLICATED);
+            throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 }
