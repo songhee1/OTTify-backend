@@ -16,12 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import tavebalak.OTTify.common.ApiResponse;
+import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
+import tavebalak.OTTify.error.ErrorResponse;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
@@ -199,7 +200,7 @@ class CommunityControllerTest {
                 .content(" ")
                 .build();
 
-        when(communityController.registerRecomment(any(ReplyRecommentCreateDTO.class))).thenReturn(ApiResponse.error("대댓글 내용이 비워져 있어서는 안됩니다."));
+        when(communityController.registerRecomment(any(ReplyRecommentCreateDTO.class))).thenReturn(ErrorResponse.error("대댓글 내용이 비워져 있어서는 안됩니다."));
 
         //when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/recomment")
@@ -228,7 +229,7 @@ class CommunityControllerTest {
                 .programTitle(article.getProgramTitle())
                 .build();
 
-        when(communityController.modifySubject(any(CommunitySubjectEditDTO.class))).thenReturn(ApiResponse.success("성공적으로 토론주제를 수정하였습니다."));
+        when(communityController.modifySubject(any(CommunitySubjectEditDTO.class))).thenReturn(BaseResponse.success("성공적으로 토론주제를 수정하였습니다."));
 
         //when
         ResultActions perform = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/discussion/subject")
@@ -264,7 +265,7 @@ class CommunityControllerTest {
                     .build());
         }
 
-        when(communityController.modifyComment(any(ReplyCommentEditDTO.class))).thenReturn(ApiResponse.success("성공적으로 토론댓글을 수정하였습니다."));
+        when(communityController.modifyComment(any(ReplyCommentEditDTO.class))).thenReturn(BaseResponse.success("성공적으로 토론댓글을 수정하였습니다."));
 
         //when, then
         for (ReplyCommentEditDTO replyCommentEditDTO : replyCommentEditDTOs) {
