@@ -63,7 +63,6 @@ public class OAuthAttributes {
     public User toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo) {
         return User.builder()
                 .socialType(socialType)
-                .socialId(oauth2UserInfo.getId())
                 .email(oauth2UserInfo.getEmail())
                 .nickName(oauth2UserInfo.getNickname())
                 .profilePhoto(oauth2UserInfo.getImageUrl())
