@@ -1,10 +1,15 @@
 package tavebalak.OTTify.user.entity;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import tavebalak.OTTify.review.entity.Review;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LikedReview {
     @Id
     @GeneratedValue

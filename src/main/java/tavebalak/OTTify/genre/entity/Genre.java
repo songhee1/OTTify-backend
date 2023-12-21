@@ -1,5 +1,6 @@
 package tavebalak.OTTify.genre.entity;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,11 +11,11 @@ import javax.persistence.Id;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Genre {
     @Id @GeneratedValue
     @Column(name = "genre_id")
     private Long id;
     private String name;
-
+    private Long tmdb_genre_id;
 }
