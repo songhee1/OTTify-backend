@@ -97,16 +97,10 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
-        if (!Objects.equals(user.getNickName(), updateRequestDTO.getNickName())
-                && !Objects.equals(user.getProfilePhoto(), updateRequestDTO.getProfilePhoto())) {
-            user.changeProfileInfo(updateRequestDTO.getNickName(), updateRequestDTO.getProfilePhoto());
-        } else if (!Objects.equals(user.getNickName(), updateRequestDTO.getNickName())) {
-            user.changeNickName(updateRequestDTO.getNickName());
-        } else if (!Objects.equals(user.getProfilePhoto(), updateRequestDTO.getProfilePhoto())) {
-            user.changeProfilePhoto(updateRequestDTO.getProfilePhoto());
-        }
+        user.changeNickName(updateRequestDTO.getNickName());
+        user.changeProfilePhoto(updateRequestDTO.getProfilePhoto());
 
-        return user.getId();
+        return userRepository.save(user).getId();
     }
 
     public void checkNicknameDuplication(Long userId, UserProfileUpdateRequestDTO updateRequestDTO) {
