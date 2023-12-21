@@ -61,6 +61,7 @@ public class Reply extends BaseEntity {
                 .comment(content);
     }
 
+
     public void edit(ReplyCommentEditorDTO c){
         this.content = c.getComment();
     }

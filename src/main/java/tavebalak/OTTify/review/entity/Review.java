@@ -12,7 +12,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Review extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "review_id")
@@ -23,20 +23,13 @@ public class Review extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program__id")
+    @JoinColumn(name = "program_id")
     private Program program;
 
     private String content;
     private double rating;
     private String genre;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program_id")
-    private Program program;
 
     @Builder
     public Review(String content, double rating, String genre, User user, Program program) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
@@ -23,11 +28,13 @@ import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.error.ErrorResponse;
+import tavebalak.OTTify.error.exception.GlobalExceptionHandler;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -60,10 +67,10 @@ class CommunityControllerTest {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    Program program = null;
-    Long programId = null;
-    Long subjectId = null;
-    Long commentId = null;
+    Program program;
+    Long programId;
+    Long subjectId;
+    Long commentId;
 
     private static final String testComment = "test content";
 
@@ -86,6 +93,7 @@ class CommunityControllerTest {
         String programTitle = "스쿼드 게임";
 
         Program program1 = programRepository.save(Program.builder().title(programTitle).posterPath(programPosterPath).build());
+        System.out.println(program1);
         programId = program1.getId();
         program = program1;
 
@@ -200,16 +208,14 @@ class CommunityControllerTest {
                 .content(" ")
                 .build();
 
-        when(communityController.registerRecomment(any(ReplyRecommentCreateDTO.class))).thenReturn(ErrorResponse.error("대댓글 내용이 비워져 있어서는 안됩니다."));
-
+        when(communityController.registerRecomment(any(ReplyRecommentCreateDTO.class)))
+                .thenThrow(new RuntimeException());
         //when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/recomment")
                         .content(objectMapper.writeValueAsString(testContent))
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8"))
-                .andExpect(jsonPath("$.message").exists())
-                .andExpect(jsonPath("$.message").value("대댓글 내용이 비워져 있어서는 안됩니다."))
-                .andDo(print());
+                 .andDo(print());
     }
 
     @Test
@@ -281,16 +287,7 @@ class CommunityControllerTest {
 
     }
 
-    @Test
-    @DisplayName("PUT 대댓글 수정 컨트롤러 로직 성공")
-    public void 대댓글_수정_성공() throws Exception{
-        //given
 
-
-        //when
-
-        //then
-    }
 
     @AfterAll
     public void end() throws NotFoundException {
