@@ -20,7 +20,10 @@ public class Program {
     private String title;
     private String posterPath;
     private double averageRating;
-    private int reviewCount; //메인페이지에서 보기위함
+    private int reviewCount;
+    private Long tmdb_program_id;
+    @Enumerated(EnumType.STRING)
+    private ProgramType type;
 
     @Builder
     Program(Long id, String title, String posterPath){
@@ -28,4 +31,5 @@ public class Program {
         this.title = title;
         this.posterPath = posterPath;
     }
+
 }
