@@ -37,6 +37,7 @@ public enum ErrorCode {
      * 409 Conflict
      */
     CONFLICT("이미 존재하는 리소스입니다."),
+    NICKNAME_DUPLICATED("이미 존재하는 닉네임입니다."),
 
     /**
      * 500 Internal Server Error

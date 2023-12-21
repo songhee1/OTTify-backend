@@ -31,4 +31,15 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
+    public void changeProfileInfo(String nickName, String profilePhoto) {
+        this.nickName = nickName;
+        this.profilePhoto = profilePhoto;
+    }
+    public void changeNickName(String nickName) {
+        this.nickName = nickName;
+    }
+    public void changeProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
+    }
+
 }

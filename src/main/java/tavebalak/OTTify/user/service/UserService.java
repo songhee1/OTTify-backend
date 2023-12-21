@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.error.ErrorCode;
+import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.repository.ReviewRepository;
-import tavebalak.OTTify.user.dto.LikedProgramDTO;
-import tavebalak.OTTify.user.dto.UninterestedProgramDTO;
-import tavebalak.OTTify.user.dto.UserOttResponseDTO;
-import tavebalak.OTTify.user.dto.UserProfileResponseDTO;
+import tavebalak.OTTify.user.dto.*;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
 import tavebalak.OTTify.user.repository.UninterestedProgramRepository;
@@ -92,5 +90,31 @@ public class UserService {
 
     public List<UserOttResponseDTO> getUserOTT(Long userId) {
         return userSubscribingOttRepository.findUserSubscribingOTT(userId);
+    }
+
+    @Transactional
+    public Long updateUserProfile(Long userId, UserProfileUpdateRequestDTO updateRequestDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        if (!Objects.equals(user.getNickName(), updateRequestDTO.getNickName())
+                && !Objects.equals(user.getProfilePhoto(), updateRequestDTO.getProfilePhoto())) {
+            user.changeProfileInfo(updateRequestDTO.getNickName(), updateRequestDTO.getProfilePhoto());
+        } else if (!Objects.equals(user.getNickName(), updateRequestDTO.getNickName())) {
+            user.changeNickName(updateRequestDTO.getNickName());
+        } else if (!Objects.equals(user.getProfilePhoto(), updateRequestDTO.getProfilePhoto())) {
+            user.changeProfilePhoto(updateRequestDTO.getProfilePhoto());
+        }
+
+        return user.getId();
+    }
+
+    public void checkNicknameDuplication(Long userId, UserProfileUpdateRequestDTO updateRequestDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        if (userRepository.existsByNickName(updateRequestDTO.getNickName()) && !Objects.equals(user.getNickName(), updateRequestDTO.getNickName())) {
+            throw new DuplicateException(ErrorCode.NICKNAME_DUPLICATED);
+        }
     }
 }
