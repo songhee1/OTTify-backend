@@ -5,42 +5,43 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.oauth.constant.Role;
 import tavebalak.OTTify.oauth.constant.SocialType;
+import lombok.AccessLevel;
+import tavebalak.OTTify.common.entity.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
 @Table(name = "\"User\"")
-public class User {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+
     private String email;
     private String nickName;
     private String profilePhoto;
     private double averageRating;
-    private int level;
 
-    @Enumerated
-    private SocialType socialType;
-
-    private String socialId;
+    @Enumerated(EnumType.STRING)
+    private GradeType grade;
 
     @Enumerated
     private Role role;
 
     @Builder
-    public User(String email, String nickName, String profilePhoto, SocialType socialType, String socialId, Role role) {
+    public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role) {
         this.email = email;
         this.nickName = nickName;
         this.profilePhoto = profilePhoto;
         this.averageRating = 0;
-        this.level = 1;
+        this.grade = GradeType.GENERAL;
         this.socialType = socialType;
-        this.socialId = socialId;
         this.role = role;
     }
 }
