@@ -20,11 +20,12 @@ public class ReviewServiceImpl  implements  ReviewService{
     private final ReviewRepository reviewRepository;
 
     public List<LatestReviewsDTO> getLatestReviews() {
-        System.out.println("in");
-        List<Review> reviewList = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"));
+        List<Review> reviewList = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
         System.out.println(reviewList.size());
         List<Review> top4ReviewList = new ArrayList<>(Arrays.asList(reviewList.get(0), reviewList.get(1), reviewList.get(2), reviewList.get(3)));
-
+        for (Review review : top4ReviewList) {
+            System.out.println(review);
+        }
         return top4ReviewList.stream().map(
                 listOne -> LatestReviewsDTO.builder()
                         .reviewId(listOne.getId())
@@ -32,6 +33,7 @@ public class ReviewServiceImpl  implements  ReviewService{
                         .content(listOne.getContent())
                         .programTitle(listOne.getProgram().getTitle())
                         .userAverageRating(listOne.getUser().getAverageRating())
+                        .profilePhoto(listOne.getUser().getProfilePhoto())
                         .build()
         ).collect(Collectors.toList());
 

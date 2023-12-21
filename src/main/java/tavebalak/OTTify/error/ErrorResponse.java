@@ -1,7 +1,6 @@
 package tavebalak.OTTify.error;
 
 import lombok.Getter;
-import tavebalak.OTTify.common.BaseResponse;
 
 @Getter
 public class ErrorResponse<T> {
@@ -11,7 +10,7 @@ public class ErrorResponse<T> {
         this.message = message;
     }
 
-    public static BaseResponse error(String message) {
+    public static ErrorResponse error(String message) {
         return new ErrorResponse(message);
     }
 }

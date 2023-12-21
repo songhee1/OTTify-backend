@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tavebalak.OTTify.common.ApiResponse;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.program.dto.RecommendProgramsDTO;
 import tavebalak.OTTify.program.service.ProgramService;

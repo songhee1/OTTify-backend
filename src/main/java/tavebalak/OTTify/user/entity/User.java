@@ -1,6 +1,7 @@
 package tavebalak.OTTify.user.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.entity.BaseEntity;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "\"User\"")
+@Table(name = "\"user\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
@@ -34,5 +35,13 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private RoleType role;
+
+    @Builder
+    public User(Long id, String nickName, double averageRating, String profilePhoto){
+        this.id = id;
+        this.nickName = nickName;
+        this.averageRating = averageRating;
+        this.profilePhoto = profilePhoto;
+    }
 
 }
