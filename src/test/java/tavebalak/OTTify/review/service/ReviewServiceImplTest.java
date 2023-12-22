@@ -121,7 +121,7 @@ class ReviewServiceImplTest {
         assertThat(latestReviews)
                 .contains(collect.get(3), collect.get(2), collect.get(1), collect.get(0))
                 .doesNotContain(review1DTO);
-        assertThat(latestReviews).startsWith(collect.get(3)).endsWith(collect.get(0));
+        assertThat(latestReviews).startsWith(collect.get(0)).endsWith(collect.get(3));
     }
 
     @DisplayName("최신 리뷰 목록 조회 실패 - 최신순이 아닌 경우")
@@ -190,14 +190,6 @@ class ReviewServiceImplTest {
 
         //when
         List<LatestReviewsDTO> latestReviews = reviewService.getLatestReviews();
-        List<LatestReviewsDTO> collect = list.stream().map(review -> LatestReviewsDTO.builder()
-                .reviewId(review.getId())
-                .programTitle(review.getProgram().getTitle())
-                .content(review.getContent())
-                .userRating(review.getRating())
-                .profilePhoto(review.getUser().getProfilePhoto())
-                .nickName(review.getUser().getNickName())
-                .build()).collect(Collectors.toList());
 
         List<LatestReviewsDTO> allCollect = allList.stream().map(review -> LatestReviewsDTO.builder()
                 .reviewId(review.getId())
@@ -216,6 +208,7 @@ class ReviewServiceImplTest {
                 throw new NoSuchElementException();
             }
         }).isInstanceOf(NoSuchElementException.class);
+        assertThat(latestReviews).doesNotContainSequence(allCollect);
 
     }
 
