@@ -32,10 +32,14 @@ public class ReviewServiceImpl  implements  ReviewService{
                         .nickName(listOne.getUser().getNickName())
                         .content(listOne.getContent())
                         .programTitle(listOne.getProgram().getTitle())
-                        .userAverageRating(listOne.getUser().getAverageRating())
+                        .userRating(listOne.getRating())
                         .profilePhoto(listOne.getUser().getProfilePhoto())
                         .build()
         ).collect(Collectors.toList());
 
+    }
+
+    public void save(Review review){
+        reviewRepository.save(review);
     }
 }
