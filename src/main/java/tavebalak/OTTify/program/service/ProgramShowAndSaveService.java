@@ -8,6 +8,7 @@ import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.genre.repository.ProgramGenreRepository;
 import tavebalak.OTTify.program.dto.ProgramSearchInfo;
 import tavebalak.OTTify.program.dto.OpenApiProgram;
 import tavebalak.OTTify.program.dto.OpenApiSearchTrendingDto;
@@ -26,36 +27,55 @@ public class ProgramShowAndSaveService {
     private final ProgramRepository programRepository;
     private final WebClient webClient;
     private final GenreRepository genreRepository;
+    private final ProgramGenreRepository programGenreRepository;
 
 
     // 검색을 통해 TV와 영화를 검색합니다.
     @Transactional
     public SearchResponseDto searchByName(String name){
-        OpenApiSearchTrendingDto movieSearchList=getProgram("movie",name);
+
         SearchResponseDto searchResponseDto=new SearchResponseDto();
-        movieSearchList.getResults().stream().map(ap->{
-            Program program= apiProgramToProgram(ap,ProgramType.Movie);
-            makeProgramResult(program,searchResponseDto,ap,ProgramType.Movie);
-           return program;
-        }).forEach(p->{
-            if(!programRepository.existsByTmDbProgramId(p.getTmDbProgramId())){
-                programRepository.save(p);
-            }
-        });
+
+        OpenApiSearchTrendingDto movieSearchList=getProgram("movie",name);
+        SearchAndSaveAndShow(movieSearchList,searchResponseDto,ProgramType.Movie);
 
         OpenApiSearchTrendingDto tvSearchList=getProgram("tv",name);
-        tvSearchList.getResults().stream().map(ap->{
-            Program program= apiProgramToProgram(ap,ProgramType.TV);
-            makeProgramResult(program,searchResponseDto,ap,ProgramType.TV);
+        SearchAndSaveAndShow(tvSearchList,searchResponseDto,ProgramType.TV);
+
+
+        return searchResponseDto;
+    }
+     // 프로그램을 생성 후 저장되어 있지 않다면 저장, 및 사용자에게 반환할 SearchResponseDto 를 생성합니다.
+    private void SearchAndSaveAndShow(OpenApiSearchTrendingDto openApiSearchTrendingDto,SearchResponseDto searchResponseDto,ProgramType programType){
+        openApiSearchTrendingDto.getResults().stream().map(ap->{
+            Program program;
+            if(programRepository.existsByTmDbProgramIdAndAndType(ap.getId(),programType)){
+                program=programRepository.findByTmDbProgramIdAndType(ap.getId(),programType);
+            }
+            else{
+                program=apiProgramToProgram(ap,programType);
+                ap.getGenre_ids().stream().forEach(l->{
+                    Genre genre=genreRepository.findByTmDbGenreId(l).orElseThrow(()->new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+                    program.addGenre(genre);
+                });
+            }
             return program;
         }).forEach(p->{
-            if(!programRepository.existsByTmDbProgramId(p.getTmDbProgramId())){
+            if(!programRepository.existsByTmDbProgramIdAndAndType(p.getTmDbProgramId(),programType)){
+                System.out.println("안녕하세요");
                 programRepository.save(p);
             }
+            if(programType==ProgramType.Movie) {
+                if(searchResponseDto.getMovieSearchInfos().size() < 5) {
+                   makeSearchResponse(searchResponseDto,p,programType);
+                }
+            }
+            if(programType==ProgramType.TV){
+                if(searchResponseDto.getTvSearchInfos().size() < 5) {
+                   makeSearchResponse(searchResponseDto,p,programType);
+                }
+            }
         });
-
-
-     return searchResponseDto;
     }
 
 
@@ -84,29 +104,19 @@ public class ProgramShowAndSaveService {
         return programBuilder.build();
     }
 
-    //프로그램의 검색 결과를 보여주기 위해서 DTO를 만들고 ,연관관계 편의 메서드를 통해 프로그램에 장르를 넣어둡니다.
-    private void makeProgramResult(Program program,SearchResponseDto searchResponseDto,OpenApiProgram openApiProgram,ProgramType programType){
+    //프론트에 반환할 SearchResponseDto 를 작성합니다.
 
-        List<String> genreName=new ArrayList<>();
-        openApiProgram.getGenre_ids().stream().forEach(gi->{
-            Genre genre=genreRepository.findByTmDbGenreId(gi).orElseThrow(()->new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
-            if(!programRepository.existsByTmDbProgramId(program.getTmDbProgramId())){
-                program.addGenre(genre);
-            }
-            program.addGenre(genre);
-            if(searchResponseDto.getMovieSearchInfos().size()<5 || searchResponseDto.getTvSearchInfos().size()<5){
-                genreName.add(genre.getName());
-            }
-
+    private void makeSearchResponse(SearchResponseDto searchResponseDto,Program p,ProgramType programType){
+        List<String> genreName = new ArrayList<>();
+        programGenreRepository.findByProgram(p.getId()).stream().forEach(programGenre -> {
+            genreName.add(programGenre.getGenre().getName());
         });
-
-        if(searchResponseDto.getMovieSearchInfos().size()<5 && programType==ProgramType.Movie){
-            searchResponseDto.getMovieSearchInfos().add(new ProgramSearchInfo(openApiProgram.getTitle(),openApiProgram.getPoster_path(),genreName));
+        if(programType==ProgramType.Movie) {
+            searchResponseDto.getMovieSearchInfos().add(new ProgramSearchInfo(p.getId(), p.getTitle(), p.getPosterPath(), genreName));
         }
-        if(searchResponseDto.getTvSearchInfos().size()<5 && programType==ProgramType.TV){
-            searchResponseDto.getTvSearchInfos().add(new ProgramSearchInfo(openApiProgram.getName(),openApiProgram.getPoster_path(),genreName));
+        if(programType==ProgramType.TV){
+            searchResponseDto.getTvSearchInfos().add(new ProgramSearchInfo(p.getId(),p.getTitle(),p.getPosterPath(),genreName));
         }
     }
-
 
 }
