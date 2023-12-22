@@ -8,5 +8,5 @@ import java.util.List;
 public interface ReviewService {
     public List<LatestReviewsDTO> getLatestReviews();
 
-    void save(Review review1);
+    void save(Review review);
 }
