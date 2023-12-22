@@ -22,4 +22,13 @@ public class ProgramGenre {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
+
+    public ProgramGenre(Genre genre){
+        this.genre=genre;
+    }
+    public void init(Program program){
+        if(program!=null){
+            this.program=program;
+        }
+    }
 }
