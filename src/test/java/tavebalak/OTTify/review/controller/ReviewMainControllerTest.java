@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,8 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ReviewMainControllerTest {
     @Mock
     private ReviewService reviewService;
-    @Mock
-    private ReviewRepository reviewRepository;
 
     @InjectMocks
     private ReviewMainController reviewMainController;
@@ -93,17 +92,13 @@ public class ReviewMainControllerTest {
                 .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
                 .build();
 
-        when(reviewRepository.save(any())).thenReturn(review1);
-        when(reviewRepository.save(any())).thenReturn(review2);
-        when(reviewRepository.save(any())).thenReturn(review3);
-        when(reviewRepository.save(any())).thenReturn(review4);
-        when(reviewRepository.save(any())).thenReturn(review5);
-
         review1.setCreatedAt(LocalDateTime.now().minusDays(5));
         review2.setCreatedAt(LocalDateTime.now().minusDays(2));
         review3.setCreatedAt(LocalDateTime.now());
         review4.setCreatedAt(LocalDateTime.now().plusHours(1));
         review5.setCreatedAt(LocalDateTime.now().plusHours(2));
+
+        doNothing().when(reviewService).save(any(Review.class));
 
         reviewService.save(review1);
         reviewService.save(review2);
