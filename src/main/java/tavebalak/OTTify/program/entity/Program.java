@@ -1,10 +1,14 @@
 package tavebalak.OTTify.program.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Program {
     @Id @GeneratedValue
     @Column(name = "program_id")
@@ -12,5 +16,9 @@ public class Program {
     private String title;
     private String posterPath;
     private double averageRating;
-    private int reviewCount; //메인페이지에서 보기위함
+    private int reviewCount;
+    private Long tmdb_program_id;
+    @Enumerated(EnumType.STRING)
+    private ProgramType type;
+
 }

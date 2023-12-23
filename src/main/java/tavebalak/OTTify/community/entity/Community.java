@@ -1,5 +1,8 @@
 package tavebalak.OTTify.community.entity;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.user.entity.User;
 
@@ -8,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community {
     @Id @GeneratedValue
     @Column(name = "community_id")
