@@ -62,7 +62,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User getUser(OAuthAttributes attributes, SocialType socialType) {
-        User findUser = userRepository.findBySocialTypeAndSocialId(socialType, attributes.getOauth2UserInfo().getId()).orElse(null);
+        User findUser = userRepository.findByEmailAndSocialType(attributes.getOauth2UserInfo().getEmail(), socialType).orElse(null);
 
         if(findUser == null) {
             return saveUser(attributes, socialType);
