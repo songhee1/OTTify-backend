@@ -24,6 +24,7 @@ public enum ErrorCode {
     FORBIDDEN("리소스 접근 권한이 없습니다."),
     REFRESHTOKEN_NOT_FOUND("refreshToken 만료 - 다시 로그인"),
 
+
     /**
      * 404 Not Found
      */
