@@ -7,14 +7,11 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -94,17 +91,11 @@ public class ReviewRepositoryTest {
                 .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
                 .build();
 
-        Review saved1 = reviewRepository.save(savedReview1);
-        Review saved2 = reviewRepository.save(savedReview2);
-        Review saved3 = reviewRepository.save(savedReview3);
-        Review saved4 = reviewRepository.save(savedReview4);
-        Review saved5 = reviewRepository.save(savedReview5);
-
-        saved1.setCreatedAt(LocalDateTime.now().minusDays(2));
-        saved2.setCreatedAt(LocalDateTime.now().minusDays(1));
-        saved3.setCreatedAt(LocalDateTime.now());
-        saved4.setCreatedAt(LocalDateTime.now().plusDays(1));
-        saved5.setCreatedAt(LocalDateTime.now().plusDays(2));
+        reviewRepository.save(savedReview1);
+        reviewRepository.save(savedReview2);
+        reviewRepository.save(savedReview3);
+        reviewRepository.save(savedReview4);
+        reviewRepository.save(savedReview5);
 
         //when
         List<Review> allReviews = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -113,9 +104,9 @@ public class ReviewRepositoryTest {
         }
 
         //then
-      /*  assertThat(allReviews.get(0).getContent()).isEqualTo("test-content5");
-        assertThat(allReviews.get(1).getContent()).isEqualTo("test-content4");
+        assertThat(allReviews.get(0).getContent()).isEqualTo("test-content1");
+        assertThat(allReviews.get(1).getContent()).isEqualTo("test-content2");
         assertThat(allReviews.get(2).getContent()).isEqualTo("test-content3");
-        assertThat(allReviews.get(3).getContent()).isEqualTo("test-content2");*/
+        assertThat(allReviews.get(3).getContent()).isEqualTo("test-content4");
     }
 }
