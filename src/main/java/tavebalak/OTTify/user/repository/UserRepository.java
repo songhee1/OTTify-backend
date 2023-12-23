@@ -9,5 +9,11 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+<<<<<<< HEAD
     Optional<User> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
+=======
+    Optional<User> findByEmailAndSocialType(String email, SocialType socialType);
+
+    Optional<User> findByEmail(String email);
+>>>>>>> 6424b81 (Feat : jwtToken 발급 및 redis 저장 (#6))
 }
