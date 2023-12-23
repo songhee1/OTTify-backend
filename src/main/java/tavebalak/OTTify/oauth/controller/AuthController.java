@@ -3,6 +3,7 @@ package tavebalak.OTTify.oauth.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +11,7 @@ import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.JwtService;
+import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.oauth.jwt.TokenDto;
 import tavebalak.OTTify.oauth.redis.RefreshToken;
 import tavebalak.OTTify.oauth.redis.RefreshTokenRepository;
@@ -52,5 +54,13 @@ public class AuthController {
 
     }
 
+    /*
+    밑 코드는
+    테스트 용 지워도 됨
+     */
+    @GetMapping("/hello")
+    public BaseResponse<String> dd(){
+        return BaseResponse.success(SecurityUtil.getCurrentEmail().get());
+    }
 
 }
