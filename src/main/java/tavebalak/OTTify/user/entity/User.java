@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Getter
 @Table(name = "\"User\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity {
+public class User {//extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "user_id")

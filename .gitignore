@@ -1,3 +1,6 @@
+### generated 디럭터리 ###
+src/main/generated
+
 ### resources 디렉터리의 파일 모두 ignore ###
 src/main/resources
 
