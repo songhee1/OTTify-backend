@@ -136,6 +136,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
      * setAuthentication()을 이용하여 위에서 만든 Authentication 객체에 대한 인증 허가 처리
      */
     public void saveAuthentication(User myUser) {
+        log.info(myUser.getEmail());
         SecurityUserDto userDto = SecurityUserDto.builder()
                 .userId(myUser.getId())
                 .email(myUser.getEmail())
