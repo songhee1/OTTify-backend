@@ -27,6 +27,7 @@ public enum ErrorCode {
      * 404 Not Found
      */
     ENTITY_NOT_FOUND("엔티티를 찾을 수 없습니다."),
+    OTT_NOT_FOUND("OTT를 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed

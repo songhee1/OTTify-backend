@@ -8,16 +8,20 @@ import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.user.dto.*;
 import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
 import tavebalak.OTTify.user.repository.UninterestedProgramRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
 import tavebalak.OTTify.user.repository.UserSubscribingOttRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserGenreRepository userGenreRepository;
     private final UserSubscribingOttRepository userSubscribingOttRepository;
+    private final OttRepository ottRepository;
     private final ReviewRepository reviewRepository;
     private final LikedProgramRepository likedProgramRepository;
     private final UninterestedProgramRepository uninterestedProgramRepository;
@@ -69,10 +74,10 @@ public class UserService {
                 .build();
 
         // 보고싶은 프로그램 가져오기
-        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findLikedProgram(userId);
+        List<LikedProgramResponseDTO> likedProgramListDTOList = likedProgramRepository.findLikedProgram(userId);
 
         // 관심없는 프로그램 가져오기
-        List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findUninterestedProgram(userId);
+        List<UninterestedProgramResponseDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findUninterestedProgram(userId);
 
         return UserProfileResponseDTO.builder()
                 .profilePhoto(user.getProfilePhoto())
@@ -110,5 +115,59 @@ public class UserService {
         if (userRepository.existsByNickName(updateRequestDTO.getNickName()) && !Objects.equals(user.getNickName(), updateRequestDTO.getNickName())) {
             throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME);
         }
+    }
+
+    @Transactional
+    public Long updateUserOTT(Long userId, List<UserOttUpdateRequestDTO> updateRequestDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        // 이전에 구독 중이던 ott 리스트
+        List<Long> preSubscribingOttList = userSubscribingOttRepository.findSubscribingOTTByUser(userId);
+
+        // 현재 구독 중인 ott 리스트
+        List<Long> nowSubscribingOttList = updateRequestDTO
+                .stream()
+                .map(UserOttUpdateRequestDTO::getId)
+                .collect(Collectors.toList());
+
+        if (!preSubscribingOttList.isEmpty()) {
+            // 삭제 Otts - 이전 리스트에는 있는데 현재 리스트에는 없는 경우
+            List<Long> deleteOtts = preSubscribingOttList
+                    .stream()
+                    .filter(ott -> !nowSubscribingOttList.contains(ott))
+                    .collect(Collectors.toList());
+            userSubscribingOttRepository.deleteAllByIdInQuery(deleteOtts, userId);
+
+            // 추가 otts - 이전 리스트에는 없는데 현재 리스트에는 있는 경우
+            List<Long> insertOtts = nowSubscribingOttList
+                    .stream()
+                    .filter(ott -> !preSubscribingOttList.contains(ott))
+                    .collect(Collectors.toList());
+
+            insertOtts
+                    .stream()
+                    .forEach(ott -> {
+                        UserSubscribingOTT subscribingOTT = UserSubscribingOTT.create(
+                                user,
+                                ottRepository.findById(ott)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.OTT_NOT_FOUND))
+                        );
+                        userSubscribingOttRepository.save(subscribingOTT);
+                    });
+        } else {
+            nowSubscribingOttList
+                    .stream()
+                    .forEach(ott -> {
+                        UserSubscribingOTT subscribingOTT = UserSubscribingOTT.create(
+                                user,
+                                ottRepository.findById(ott)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.OTT_NOT_FOUND))
+                        );
+                        userSubscribingOttRepository.save(subscribingOTT);
+                    });
+        }
+
+        return userId;
     }
 }

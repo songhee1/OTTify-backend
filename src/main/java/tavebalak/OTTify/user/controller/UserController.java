@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.user.dto.UserOttResponseDTO;
+import tavebalak.OTTify.user.dto.UserOttUpdateRequestDTO;
 import tavebalak.OTTify.user.dto.UserProfileResponseDTO;
 import tavebalak.OTTify.user.dto.UserProfileUpdateRequestDTO;
 import tavebalak.OTTify.user.service.UserService;
@@ -44,5 +45,11 @@ public class UserController {
         userService.checkNicknameDuplication(userId, updateRequestDTO);
 
         return BaseResponse.success(userService.updateUserProfile(userId, updateRequestDTO));
+    }
+
+    @PatchMapping("/{id}/otts")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<Long> updateUserOTT(@PathVariable("id") Long userId, @RequestBody List<UserOttUpdateRequestDTO> updateRequestDTO) {
+        return BaseResponse.success(userService.updateUserOTT(userId, updateRequestDTO));
     }
 }
