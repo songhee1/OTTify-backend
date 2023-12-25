@@ -2,7 +2,6 @@ package tavebalak.OTTify.oauth.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,6 +17,9 @@ import tavebalak.OTTify.oauth.redis.RefreshTokenRepository;
 import tavebalak.OTTify.oauth.redis.RefreshTokenService;
 
 import java.util.Optional;
+
+import static tavebalak.OTTify.common.BaseResponse.success;
+
 
 @Slf4j
 @RestController
@@ -44,13 +46,11 @@ public class AuthController {
         if(token.isEmpty())
             throw new UnauthorizedException(ErrorCode.REFRESHTOKEN_NOT_FOUND);
         String email = token.get().getEmail();
-//        tokenService.removeRefreshToken(refreshToken);
         String newAccessToken = jwtService.createAccessToken(email);
         String newRefreshToken = jwtService.createRefreshToken();
         jwtService.updateRefreshToken(email, newRefreshToken);
-//        tokenService.saveTokenInfo(email, refreshToken);
         log.info(tokenRepository.findByRefreshToken(newRefreshToken).get().getEmail());
-        return BaseResponse.success(TokenDto.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build());
+        return success(TokenDto.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build());
 
     }
 
@@ -60,7 +60,7 @@ public class AuthController {
      */
     @GetMapping("/hello")
     public BaseResponse<String> dd(){
-        return BaseResponse.success(SecurityUtil.getCurrentEmail().get());
+        return success(SecurityUtil.getCurrentEmail().get());
     }
 
 }
