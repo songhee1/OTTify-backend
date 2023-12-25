@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
+import tavebalak.OTTify.program.dto.SearchResponseDtoV1;
 import tavebalak.OTTify.program.dto.TrendingResponseDto;
 import tavebalak.OTTify.program.service.ProgramShowAndSaveService;
 
@@ -19,6 +20,12 @@ public class ProgramController {
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<TrendingResponseDto> getTrendingProgram(){
         return BaseResponse.success(programShowAndSaveService.showTrending());
+    }
+
+    @GetMapping("/api/v1/program/search")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<SearchResponseDtoV1> getSearchProgram(@RequestParam("name") String name){
+        return BaseResponse.success(programShowAndSaveService.searchByName(name));
     }
 
 

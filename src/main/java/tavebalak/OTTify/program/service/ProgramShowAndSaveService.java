@@ -146,4 +146,65 @@ public class ProgramShowAndSaveService {
 
 
 
+    //검색 관련 임시 코드
+
+    @Transactional
+    public SearchResponseDtoV1 searchByName(String name){
+
+        SearchResponseDtoV1 searchResponseDto=new SearchResponseDtoV1();
+
+        OpenApiSearchTrendingDto movieSearchList=getSearchProgram("movie",name);
+        movieSearchList.getResults().stream().forEach(openApiProgram -> {
+            Program program=saveProgramAndGetProgram(openApiProgram,ProgramType.Movie);
+            if(searchResponseDto.getMovieSearchInfos().size()<8){
+                makeSearchResponse(searchResponseDto,program,ProgramType.Movie,openApiProgram);
+            }
+        });
+        searchResponseDto.setMovieCount(movieSearchList.getTotal_results());
+
+        OpenApiSearchTrendingDto tvSearchList=getSearchProgram("tv",name);
+        tvSearchList.getResults().stream().forEach(openApiProgram->{
+            Program program=saveProgramAndGetProgram(openApiProgram,ProgramType.TV);
+            if(searchResponseDto.getTvSearchInfos().size()<8){
+                makeSearchResponse(searchResponseDto,program,ProgramType.TV,openApiProgram);
+            }
+        });
+        searchResponseDto.setTvCount(tvSearchList.getTotal_results());
+
+
+        return searchResponseDto;
+    }
+
+
+
+
+    private OpenApiSearchTrendingDto getSearchProgram(String type,String name){
+        OpenApiSearchTrendingDto openApiSearchTrendingDto=webClient.get()
+                .uri("/search/"+type+"?query="+name+"&include_adult=false&language=ko&page="+1)
+                .retrieve()
+                .bodyToMono(OpenApiSearchTrendingDto.class)
+                .block();
+        return openApiSearchTrendingDto;
+    }
+
+    private void makeSearchResponse(SearchResponseDtoV1 searchResponseDto,Program p,ProgramType programType,SearchTrendingOpenApiProgramInfo searchTrendingOpenApiProgramInfo){
+        List<Long> genreIdList=searchTrendingOpenApiProgramInfo.getGenre_ids();
+        String firstGenreName;
+        if(!genreIdList.isEmpty()){
+            ProgramGenre programGenre=programGenreRepository.findByGenreIdAndProgramIdWithFetch(genreIdList.get(0),p.getId());
+            firstGenreName=programGenre.getGenre().getName();
+        }
+        else{
+            firstGenreName=null;
+        }
+
+        if(programType==ProgramType.Movie) {
+            searchResponseDto.getMovieSearchInfos().add(new ProgramTrendingWeekInfo(p.getId(), p.getTitle(),p.getCreatedYear(),firstGenreName , p.getPosterPath()));
+        }
+        if(programType==ProgramType.TV){
+            searchResponseDto.getTvSearchInfos().add(new ProgramTrendingWeekInfo(p.getId(),p.getTitle(),p.getCreatedYear(),firstGenreName,p.getPosterPath()));
+        }
+    }
+
+
 }
