@@ -48,7 +48,18 @@ public enum ErrorCode {
     /**
      * 500 Internal Server Error
      */
-    INTERNAL_SERVER_ERROR("서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR("서버 내부 오류입니다."),
+
+
+
+
+
+
+
+
+    GENRE_NOT_FOUND("프로그램과 관련된 장르를 찾을 수 없습니다.");
+
+
 
     private final String message;
 }
