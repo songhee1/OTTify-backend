@@ -12,8 +12,5 @@ import tavebalak.OTTify.program.service.ProgramShowAndSaveService;
 public class ProgramController {
     private final ProgramShowAndSaveService programShowAndSaveService;
 
-    @GetMapping("/api/search")
-    public BaseResponse search(@RequestParam("name") String name){
-        return BaseResponse.success(programShowAndSaveService.searchByName(name));
-    }
+
 }
