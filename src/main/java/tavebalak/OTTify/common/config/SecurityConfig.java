@@ -12,9 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tavebalak.OTTify.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import tavebalak.OTTify.oauth.jwt.JwtAuthFilter;
 import tavebalak.OTTify.oauth.service.CustomOAuth2UserService;
-import tavebalak.OTTify.oauth.handler.OAuth2AuthenticationSuccessHandler;
 
 
 @RequiredArgsConstructor
