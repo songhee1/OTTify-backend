@@ -23,11 +23,11 @@ public class UserProfileResponseDTO {
     private String firstGenre;
     private List<String> secondGenre = new ArrayList<String>();
 
-    private List<LikedProgramDTO> likedProgram = new ArrayList<>();
-    private List<UninterestedProgramDTO> uninterestedProgram = new ArrayList<>();
+    private List<LikedProgramResponseDTO> likedProgram = new ArrayList<>();
+    private List<UninterestedProgramResponseDTO> uninterestedProgram = new ArrayList<>();
 
     @Builder
-    public UserProfileResponseDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
+    public UserProfileResponseDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramResponseDTO> likedProgram, List<UninterestedProgramResponseDTO> uninterestedProgram) {
         this.profilePhoto = profilePhoto;
         this.nickName = nickName;
         this.grade = grade;
