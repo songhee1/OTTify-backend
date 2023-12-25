@@ -94,7 +94,9 @@ public class UserService {
     }
 
     public List<UserOttResponseDTO> getUserOTT(Long userId) {
-        return userSubscribingOttRepository.findUserSubscribingOTT(userId);
+        return userSubscribingOttRepository.findUserSubscribingOTTByUserId(userId).stream()
+                .map((UserSubscribingOTT uso) -> new UserOttResponseDTO(uso))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -123,30 +125,28 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 이전에 구독 중이던 ott 리스트
-        List<Long> preSubscribingOttList = userSubscribingOttRepository.findSubscribingOTTByUser(userId);
+        List<Long> preSubscribingOttList = userSubscribingOttRepository.findUserSubscribingOTTByUserId(userId).stream()
+                .map((UserSubscribingOTT t) -> t.getOtt().getId())
+                .collect(Collectors.toList());
 
         // 현재 구독 중인 ott 리스트
-        List<Long> nowSubscribingOttList = updateRequestDTO
-                .stream()
+        List<Long> nowSubscribingOttList = updateRequestDTO.stream()
                 .map(UserOttUpdateRequestDTO::getId)
                 .collect(Collectors.toList());
 
-        if (!preSubscribingOttList.isEmpty()) {
+        if (!preSubscribingOttList.isEmpty()) { // 이전 구독 중인 OTT가 있는 경우
             // 삭제 Otts - 이전 리스트에는 있는데 현재 리스트에는 없는 경우
-            List<Long> deleteOtts = preSubscribingOttList
-                    .stream()
+            List<Long> deleteOtts = preSubscribingOttList.stream()
                     .filter(ott -> !nowSubscribingOttList.contains(ott))
                     .collect(Collectors.toList());
             userSubscribingOttRepository.deleteAllByIdInQuery(deleteOtts, userId);
 
             // 추가 otts - 이전 리스트에는 없는데 현재 리스트에는 있는 경우
-            List<Long> insertOtts = nowSubscribingOttList
-                    .stream()
+            List<Long> insertOtts = nowSubscribingOttList.stream()
                     .filter(ott -> !preSubscribingOttList.contains(ott))
                     .collect(Collectors.toList());
 
-            insertOtts
-                    .stream()
+            insertOtts.stream()
                     .forEach(ott -> {
                         UserSubscribingOTT subscribingOTT = UserSubscribingOTT.create(
                                 user,
@@ -155,7 +155,7 @@ public class UserService {
                         );
                         userSubscribingOttRepository.save(subscribingOTT);
                     });
-        } else {
+        } else { // 이전 구독 중인 OTT가 없는 경우
             nowSubscribingOttList
                     .stream()
                     .forEach(ott -> {
