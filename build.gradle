@@ -41,9 +41,21 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	//oauth
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+
+	//jwt
+	implementation 'com.auth0:java-jwt:4.2.1'
+
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
 	//querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa'
 	implementation 'com.querydsl:querydsl-apt'
+
+
 }
 
 tasks.named('bootBuildImage') {
