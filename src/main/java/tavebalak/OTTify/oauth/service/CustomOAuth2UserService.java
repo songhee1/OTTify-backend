@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import tavebalak.OTTify.oauth.CustomOAuth2User;
 import tavebalak.OTTify.oauth.OAuthAttributes;
-import tavebalak.OTTify.oauth.constant.SocialType;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
 

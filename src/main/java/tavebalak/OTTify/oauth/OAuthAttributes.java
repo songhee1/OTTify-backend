@@ -2,8 +2,8 @@ package tavebalak.OTTify.oauth;
 
 import lombok.Builder;
 import lombok.Getter;
-import tavebalak.OTTify.oauth.constant.Role;
-import tavebalak.OTTify.oauth.constant.SocialType;
+import tavebalak.OTTify.common.constant.Role;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.oauth.userinfo.GoogleOAuth2UserInfo;
 import tavebalak.OTTify.oauth.userinfo.NaverOAuth2UserInfo;
 import tavebalak.OTTify.oauth.userinfo.OAuth2UserInfo;
