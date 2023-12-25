@@ -1,6 +1,7 @@
 package tavebalak.OTTify.genre.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.user.entity.User;
@@ -23,6 +24,21 @@ public class UserGenre {
     private Genre genre;
 
     private boolean isFirst;
+
+    @Builder
+    public UserGenre(User user, Genre genre, boolean isFirst) {
+        this.user = user;
+        this.genre = genre;
+        this.isFirst = isFirst;
+    }
+
+    public static UserGenre create(User user, Genre genre, boolean isFirst) {
+        return UserGenre.builder()
+                .user(user)
+                .genre(genre)
+                .isFirst(isFirst)
+                .build();
+    }
 
     public void change1stGenre(Genre genre) {
         this.genre = genre;
