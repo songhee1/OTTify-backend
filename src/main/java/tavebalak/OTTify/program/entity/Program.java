@@ -28,6 +28,8 @@ public class Program {
     @Enumerated(EnumType.STRING)
     private ProgramType type;
 
+    private String createdYear;
+
 
     @Builder
     Program(Long id, String title, String posterPath) {
@@ -49,11 +51,12 @@ public class Program {
     private List<ProgramGenre> programGenreList=new ArrayList<>();
 
     @Builder
-    Program(String title,String posterPath,Long tmDbProgramId,ProgramType type){
+    Program(String title,String posterPath,Long tmDbProgramId,ProgramType type,String createdYear){
         this.title=title;
         this.posterPath=posterPath;
         this.tmDbProgramId=tmDbProgramId;
         this.type=type;
+        this.createdYear=createdYear;
     }
 
     public void addGenre(Genre genre){
