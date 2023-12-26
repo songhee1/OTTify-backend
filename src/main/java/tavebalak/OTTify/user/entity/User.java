@@ -1,8 +1,11 @@
 package tavebalak.OTTify.user.entity;
 
-import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.oauth.constant.Role;
+import tavebalak.OTTify.oauth.constant.SocialType;
+import lombok.AccessLevel;
 import tavebalak.OTTify.common.entity.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +35,17 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GradeType grade;
 
-    @Enumerated(EnumType.STRING)
-    private RoleType role;
+    @Enumerated
+    private Role role;
 
+    @Builder
+    public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role) {
+        this.email = email;
+        this.nickName = nickName;
+        this.profilePhoto = profilePhoto;
+        this.averageRating = 0;
+        this.grade = GradeType.GENERAL;
+        this.socialType = socialType;
+        this.role = role;
+    }
 }
