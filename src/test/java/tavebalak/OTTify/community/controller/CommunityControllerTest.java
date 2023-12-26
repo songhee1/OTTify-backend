@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,26 +47,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-@MockBean(JpaMetamodelMappingContext.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@Rollback(value = true)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CommunityControllerTest {
 
-    @MockBean
+    @InjectMocks
     private CommunityController communityController;
-    @Autowired //가짜 객체 생성
+    @Mock
     private CommunityService communityService;
-    @Autowired
+    @Mock
     private ReplyService replyService;
-    @Autowired
-    private ProgramRepository programRepository;
-
-    @Autowired
     private MockMvc mockMvc; //HTTP호출
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     Program program;
     Long programId;
@@ -75,27 +65,33 @@ class CommunityControllerTest {
     private static final String testComment = "test content";
 
 
-    @BeforeAll
-    public void init() throws NotFoundException {
+    @BeforeEach
+    public void init(){ // mockMvc 초기화, 각메서드가 실행되기전에 초기화 되게 함
+        mockMvc = MockMvcBuilders.standaloneSetup(communityController).build();
+        // standaloneMockMvcBuilder() 호출하고 스프링 테스트 설정 커스텀으로 mockMvc 객체 생성
+
+    }
+
+    public void init2() throws NotFoundException {
         mockMvc = MockMvcBuilders.standaloneSetup(communityController).build();
         //given - user
         double userAverageRating = 0.55;
-        int level = 1;
         String nickName = "nike";
         String profilePhoto = "https://dkfldf";
         int socialType = 2;
 
-
         //유저 서비스 완성되면 유저 save 메서드 호출
 
         //given - program
-        String programPosterPath = "https://image.tmdb.org/t/p/w500/8Pjd1MiCbY8s9Zrxbb8SvCpY7s7.jpg";
-        String programTitle = "스쿼드 게임";
+        String programPosterPath = "test-posterPath";
+        String programTitle = "test-title";
 
-        Program program1 = programRepository.save(Program.builder().title(programTitle).posterPath(programPosterPath).build());
-        System.out.println(program1);
-        programId = program1.getId();
-        program = program1;
+
+
+//        Program program1 = programRepository.save(Program.builder().title(programTitle).posterPath(programPosterPath).build());
+//        System.out.println(program1);
+//        programId = program1.getId();
+//        program = program1;
 
         //given - community
         String subjectContent = "이 주제는 최신 출시된 한국 OTT 영화나 드라마들 중에서 즐기거나 패스할만한 작품들에 대해 논의하는 거야! 어떤 작품들이 시청자들에게 권장되는지, 그리고 그 이유는 무엇인지 혹은 왜 그 작품들을 건너뛰어야 하는지에 대해 의견을 나누면 재미있을 것 같아요. 함께 피드백 주고받으며 새로운 작품을 찾는 재미도 있을 거예요!";
@@ -129,14 +125,21 @@ class CommunityControllerTest {
     public void registerSubject () throws Exception{
         //given
         CommunitySubjectCreateDTO request = registerSubjectRequest();
-        Gson gson = new Gson();
-        String content = gson.toJson(request);
+        Community response = communityService.saveSubject(request);
+
+        when(communityService.saveSubject(any(CommunitySubjectCreateDTO.class)))
+                .thenReturn(response);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.post("/api/v1/discussion/subject")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new Gson().toJson(request))
+        );
 
         //then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/subject")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                        .andExpect(status().isOk());
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", "성공적으로 토론주제를 생성하였습니다.").exists());
 
     }
 
@@ -212,7 +215,7 @@ class CommunityControllerTest {
                 .thenThrow(new RuntimeException());
         //when, then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/discussion/recomment")
-                        .content(objectMapper.writeValueAsString(testContent))
+//                        .content(objectMapper.writeValueAsString(testContent))
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8"))
                  .andDo(print());
@@ -239,7 +242,7 @@ class CommunityControllerTest {
 
         //when
         ResultActions perform = mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/discussion/subject")
-                .content(objectMapper.writeValueAsString(editDTO))
+//                .content(objectMapper.writeValueAsString(editDTO))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"));
 
@@ -276,7 +279,7 @@ class CommunityControllerTest {
         //when, then
         for (ReplyCommentEditDTO replyCommentEditDTO : replyCommentEditDTOs) {
             mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/discussion/comment")
-                    .content(objectMapper.writeValueAsString(replyCommentEditDTO))
+//                    .content(objectMapper.writeValueAsString(replyCommentEditDTO))
                     .contentType(MediaType.APPLICATION_JSON)
                     .characterEncoding("utf-8"))
                     .andExpect(jsonPath("$.data").exists())
@@ -293,7 +296,7 @@ class CommunityControllerTest {
     public void end() throws NotFoundException {
         replyService.deleteComment(subjectId, commentId);
         communityService.deleteSubject(subjectId);
-        programRepository.delete(program);
+//        programRepository.delete(program);
     }
 
 

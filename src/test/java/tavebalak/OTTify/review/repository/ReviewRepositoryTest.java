@@ -7,9 +7,12 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
+import tavebalak.OTTify.oauth.constant.Role;
+import tavebalak.OTTify.oauth.constant.SocialType;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.UserRepository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -23,7 +26,10 @@ public class ReviewRepositoryTest {
     @Autowired
     private ReviewRepository reviewRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private EntityManager em;
+    User.TestUserBuilder testUserBuilder = User.testUserBuilder();
 
 
     @Test
@@ -35,7 +41,7 @@ public class ReviewRepositoryTest {
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
 
         //when
@@ -55,40 +61,50 @@ public class ReviewRepositoryTest {
     @DisplayName("저장된 리뷰 중 최신 리뷰 조회 확인")
     public void findLatestReview() throws Exception{
         //given
+        User savedUser = userRepository.save(
+                User.builder()
+                        .email("test-email")
+                        .nickName("test-nickName")
+                        .profilePhoto("test-url")
+                        .socialType(SocialType.GOOGLE) // 적절한 값으로 변경
+                        .role(Role.USER) // 적절한 값으로 변경
+                        .build()
+        );
+
         Review savedReview1 = Review.builder()
                 .content("test-content1")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(savedUser)
                 .build();
         Review savedReview2 = Review.builder()
                 .content("test-content2")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(savedUser)
                 .build();
         Review savedReview3 = Review.builder()
                 .content("test-content3")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(savedUser)
                 .build();
         Review savedReview4 = Review.builder()
                 .content("test-content4")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(savedUser)
                 .build();
         Review savedReview5 = Review.builder()
                 .content("test-content5")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(savedUser)
                 .build();
 
         reviewRepository.save(savedReview1);

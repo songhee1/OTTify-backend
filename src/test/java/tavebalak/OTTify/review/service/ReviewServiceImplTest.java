@@ -31,18 +31,21 @@ class ReviewServiceImplTest {
 
     @InjectMocks
     private ReviewServiceImpl reviewService;
+    User.TestUserBuilder testUserBuilder = User.testUserBuilder();
 
 
     @DisplayName("최신 리뷰 목록 조회 성공")
     @Test
     void getReviesList() throws  Exception{
         //given 입력값과 리턴값을 작성
+        User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
+
         Review review1 = Review.builder()
                 .content("test-content1")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(user)
                 .build();
 
         Review review2 = Review.builder()
@@ -50,28 +53,28 @@ class ReviewServiceImplTest {
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(user)
                 .build();
         Review review3 = Review.builder()
                 .content("test-content3")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(user)
                 .build();
         Review review4 = Review.builder()
                 .content("test-content4")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(user)
                 .build();
         Review review5 = Review.builder()
                 .content("test-content5")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(user)
                 .build();
 
         when(reviewRepository.save(any())).thenReturn(review1);
@@ -133,7 +136,7 @@ class ReviewServiceImplTest {
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
 
         Review review2 = Review.builder()
@@ -141,28 +144,28 @@ class ReviewServiceImplTest {
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
         Review review3 = Review.builder()
                 .content("test-content3")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
         Review review4 = Review.builder()
                 .content("test-content4")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
         Review review5 = Review.builder()
                 .content("test-content5")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
 
         when(reviewRepository.save(any())).thenReturn(review1);
