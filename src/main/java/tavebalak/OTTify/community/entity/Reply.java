@@ -51,7 +51,7 @@ public class Reply extends BaseEntity {
     }
 
     @Builder
-    public Reply(String content, Community community) {
+    public Reply(Long id, String content, Community community) {
         this.content = content;
         addCommunity(community);
     }
