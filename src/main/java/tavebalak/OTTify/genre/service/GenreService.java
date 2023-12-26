@@ -30,10 +30,37 @@ public class GenreService {
                 .block();
     }
     private void saveGenre(OpenApiGenreListResponseDto openApiGenreListResponseDto){
-        openApiGenreListResponseDto.getGenres().stream().map(gd-> Genre.builder()
-                        .tmDbGenreId(gd.getId())
-                        .name(gd.getName())
-                        .build())
+        openApiGenreListResponseDto.getGenres().stream().map(gd-> {
+            String genreName=gd.getName();
+            if(genreName.equals("Action & Adventure")){
+                genreName="액션 및 어드벤쳐";
+            }
+            if(genreName.equals("Kids")){
+                genreName="유아";
+            }
+            if(genreName.equals("News")){
+                genreName="뉴스";
+            }
+            if(genreName.equals("Reality")){
+                genreName="리얼리티";
+            }
+            if(genreName.equals("Sci-Fi & Fantasy")){
+                genreName="공상 과학 및 판타지";
+            }
+            if(genreName.equals("Soap")){
+                genreName="소프";
+            }
+            if(genreName.equals("Talk")){
+                genreName="토크";
+            }
+            if(genreName.equals("War & Politics")){
+                genreName = "전쟁과 정치";
+            }
+            return Genre.builder()
+                    .tmDbGenreId(gd.getId())
+                    .name(genreName)
+                    .build();
+        })
                 .forEach(g->{
                     if(!genreRepository.existsByTmDbGenreId(g.getTmDbGenreId())){
                         genreRepository.save(g);
