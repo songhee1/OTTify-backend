@@ -35,7 +35,8 @@ public class Community extends BaseEntity {
     private List<Reply> replyList = new ArrayList<>();
 
     @Builder
-    public Community(String title, String content, Program program){
+    public Community(Long id, String title, String content, Program program){
+        this.id = id;
         this.title = title;
         this.content = content;
         this.program = program;
