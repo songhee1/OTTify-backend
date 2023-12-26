@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.oauth.constant.Role;
 import tavebalak.OTTify.oauth.constant.SocialType;
-import lombok.AccessLevel;
 import tavebalak.OTTify.common.entity.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,14 +39,8 @@ public class User extends BaseEntity {
     @Enumerated
     private Role role;
 
-    @Builder
-    public User(Long id, String nickName, double averageRating, String profilePhoto){
-        this.id = id;
-        this.nickName = nickName;
-        this.averageRating = averageRating;
-        this.profilePhoto = profilePhoto;
-    }
 
+    @Builder
     public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role) {
         this.email = email;
         this.nickName = nickName;
@@ -56,4 +50,26 @@ public class User extends BaseEntity {
         this.socialType = socialType;
         this.role = role;
     }
+
+    public static TestUserBuilder testUserBuilder(){
+        return new TestUserBuilder();
+    }
+
+    public static class TestUserBuilder extends User {
+        private Long id;
+        private String nickName;
+        private String profilePhoto;
+        private double averageRating;
+        TestUserBuilder(){
+        }
+
+        public User create(final Long id, String nickName, String profilePhoto, double averageRating){
+            this.id = id;
+            this.nickName = nickName;
+            this.profilePhoto = profilePhoto;
+            this.averageRating = averageRating;
+            return this;
+        }
+    }
+
 }

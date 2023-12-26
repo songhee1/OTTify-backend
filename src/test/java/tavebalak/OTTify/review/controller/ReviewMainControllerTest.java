@@ -50,12 +50,14 @@ public class ReviewMainControllerTest {
         //given
         //request 입력값과 mock객체 리턴값
         //given 입력값과 리턴값을 작성
+        User.TestUserBuilder testUserBuilder = User.testUserBuilder();
+
         Review review1 = Review.builder()
                 .content("test-content1")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
 
         Review review2 = Review.builder()
@@ -63,28 +65,28 @@ public class ReviewMainControllerTest {
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
         Review review3 = Review.builder()
                 .content("test-content3")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
         Review review4 = Review.builder()
                 .content("test-content4")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
         Review review5 = Review.builder()
                 .content("test-content5")
                 .genre("test-genre")
                 .program(Program.builder().id(1L).title("test-title").build())
                 .rating(5.55)
-                .user(User.builder().id(1L).nickName("test-nickName").profilePhoto("test-url").averageRating(5.55).build())
+                .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
 
         review1.setCreatedAt(LocalDateTime.now().minusDays(5));
