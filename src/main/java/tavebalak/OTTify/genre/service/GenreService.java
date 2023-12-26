@@ -1,11 +1,17 @@
 package tavebalak.OTTify.genre.service;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import tavebalak.OTTify.genre.dto.OpenApiGenreListResponseDto;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.UserRepository;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -13,6 +19,7 @@ import tavebalak.OTTify.genre.repository.GenreRepository;
 public class GenreService {
     private final GenreRepository genreRepository;
     private final WebClient webClient;
+
 
     @Transactional
     public void saveAllGenre(){
@@ -30,41 +37,35 @@ public class GenreService {
                 .block();
     }
     private void saveGenre(OpenApiGenreListResponseDto openApiGenreListResponseDto){
+
+        Map<String,String> genreMapping=new HashMap<>();
+
+        genreMapping.put("Action & Adventure","액션 및 어드벤쳐");
+        genreMapping.put("Kids","유아");
+        genreMapping.put("News","뉴스");
+        genreMapping.put("Reality","리얼리티");
+        genreMapping.put("Sci-Fi & Fantasy","공상 과학 및 판타지");
+        genreMapping.put("Soap","소프");
+        genreMapping.put("Talk","토크");
+        genreMapping.put("War & Politics","전쟁과 정치");
+
         openApiGenreListResponseDto.getGenres().stream().map(gd-> {
+
+            Genre.GenreBuilder genreBuilder = Genre.builder()
+                                              .tmDbGenreId(gd.getId());
+
             String genreName=gd.getName();
-            if(genreName.equals("Action & Adventure")){
-                genreName="액션 및 어드벤쳐";
+            if(!genreMapping.containsKey(genreName)){
+                return  genreBuilder.name(genreName).build();
             }
-            if(genreName.equals("Kids")){
-                genreName="유아";
+            else {
+                return genreBuilder.name(genreMapping.get(genreName)).build();
             }
-            if(genreName.equals("News")){
-                genreName="뉴스";
-            }
-            if(genreName.equals("Reality")){
-                genreName="리얼리티";
-            }
-            if(genreName.equals("Sci-Fi & Fantasy")){
-                genreName="공상 과학 및 판타지";
-            }
-            if(genreName.equals("Soap")){
-                genreName="소프";
-            }
-            if(genreName.equals("Talk")){
-                genreName="토크";
-            }
-            if(genreName.equals("War & Politics")){
-                genreName = "전쟁과 정치";
-            }
-            return Genre.builder()
-                    .tmDbGenreId(gd.getId())
-                    .name(genreName)
-                    .build();
-        })
-                .forEach(g->{
+        }).forEach(g->{
                     if(!genreRepository.existsByTmDbGenreId(g.getTmDbGenreId())){
                         genreRepository.save(g);
                     }
                 });
     }
+
 }
