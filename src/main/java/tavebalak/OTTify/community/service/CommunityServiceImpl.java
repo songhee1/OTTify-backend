@@ -3,6 +3,8 @@ package tavebalak.OTTify.community.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.*;
@@ -14,6 +16,8 @@ import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
+import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +31,7 @@ public class CommunityServiceImpl implements CommunityService{
     private final CommunityRepository communityRepository;
     private final ProgramRepository programRepository;
     private final ReplyRepository replyRepository;
+    private final UserRepository userRepository;
     @Override
     public Community saveSubject(CommunitySubjectCreateDTO c){
 
@@ -170,6 +175,12 @@ public class CommunityServiceImpl implements CommunityService{
                 .programTitle(community.getProgram().getTitle())
                 .posterPath(community.getProgram().getPosterPath())
                 .build();
+    }
+
+    public User getUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String memberId = authentication.getName();
+        return userRepository.findByEmail(memberId).orElseThrow(()-> new SecurityException());
     }
 
 }

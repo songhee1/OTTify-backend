@@ -3,12 +3,16 @@ package tavebalak.OTTify.community.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.UserRepository;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
@@ -20,6 +24,7 @@ import javax.websocket.server.PathParam;
 public class CommunityController {
     private final CommunityService communityService;
     private final ReplyService replyService;
+    private final UserRepository userRepository;
 
     @PostMapping("/subject")
 
@@ -94,4 +99,5 @@ public class CommunityController {
         CommunityAriclesDTO communityAriclesDTOList = communityService.getArticles(subjectId);
         return BaseResponse.success(communityAriclesDTOList);
     }
+
 }
