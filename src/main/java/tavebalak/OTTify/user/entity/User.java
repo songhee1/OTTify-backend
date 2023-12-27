@@ -3,6 +3,7 @@ package tavebalak.OTTify.user.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.common.constant.GradeType;
 import tavebalak.OTTify.common.constant.Role;
 import tavebalak.OTTify.common.constant.SocialType;
 import lombok.AccessLevel;
