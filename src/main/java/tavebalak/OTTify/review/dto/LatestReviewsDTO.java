@@ -15,14 +15,16 @@ public class LatestReviewsDTO {
     private String programTitle;
     private double userRating;
     private String profilePhoto;
+    private int likeCount;
 
     @Builder
-    public LatestReviewsDTO(Long reviewId, String nickName, String content, String programTitle, double userRating, String profilePhoto) {
+    public LatestReviewsDTO(Long reviewId, String nickName, String content, String programTitle, double userRating, String profilePhoto, int likeCount) {
         this.reviewId = reviewId;
         this.nickName = nickName;
         this.content = content;
         this.programTitle = programTitle;
         this.userRating = userRating;
         this.profilePhoto = profilePhoto;
+        this.likeCount = likeCount;
     }
 }
