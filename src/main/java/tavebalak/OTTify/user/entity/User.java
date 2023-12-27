@@ -31,7 +31,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GradeType grade;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Builder
