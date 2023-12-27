@@ -45,4 +45,8 @@ public class User extends BaseEntity {
         this.socialType = socialType;
         this.role = role;
     }
+
+    public void changeUserRole(){
+        role = Role.USER;
+    }
 }
