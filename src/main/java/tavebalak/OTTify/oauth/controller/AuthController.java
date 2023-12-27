@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
+import tavebalak.OTTify.oauth.dto.SignUpInfoDto;
 import tavebalak.OTTify.oauth.jwt.JwtService;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.oauth.jwt.TokenDto;
@@ -52,6 +53,12 @@ public class AuthController {
         log.info(tokenRepository.findByRefreshToken(newRefreshToken).get().getEmail());
         return success(TokenDto.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build());
 
+    }
+
+    @PostMapping("/api/v1/oauth/info")
+    public BaseResponse<String> saveSignUpInformation(SignUpInfoDto signUpInfoDto){
+
+        return success("성공적으로 저장 완료");
     }
 
     /*
