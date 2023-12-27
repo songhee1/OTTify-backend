@@ -12,6 +12,7 @@ public enum ErrorCode {
      * 400 Bad Request
      */
     BAD_REQUEST("잘못된 요청입니다."),
+    EMAIL_ISNOT_EXIST("이메일이 없습니다."),
 
     /**
      * 401 Unauthorized
@@ -29,7 +30,7 @@ public enum ErrorCode {
      * 404 Not Found
      */
     ENTITY_NOT_FOUND("엔티티를 찾을 수 없습니다."),
-
+    GENRE_NOT_FOUND("장르를 찾을 수 없습니다."),
     /**
      * 405 Method Not Allowed
      */
