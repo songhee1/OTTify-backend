@@ -48,8 +48,9 @@ public class AuthController {
 //    }
 
     @PostMapping("/token/refresh")
-    public BaseResponse<TokenDto> refresh(@RequestHeader("Authorization-Refresh") final String refreshToken) {
+    public BaseResponse<TokenDto> refresh(@RequestHeader("Authorization-Refresh") String refreshToken) {
 
+        log.info(refreshToken);
         // 액세스 토큰으로 Refresh 토큰 객체를 조회
         Optional<RefreshToken> token = tokenRepository.findByRefreshToken(refreshToken.replace("Bearer ", ""));
         if(token.isEmpty())
