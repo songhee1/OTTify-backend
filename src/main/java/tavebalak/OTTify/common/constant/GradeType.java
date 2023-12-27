@@ -1,4 +1,4 @@
-package tavebalak.OTTify.user.entity;
+package tavebalak.OTTify.common.constant;
 
 public enum GradeType {
     GENERAL, ADVANCED
