@@ -55,9 +55,8 @@ public class ReviewServiceImpl  implements  ReviewService{
                 .from(likedReview)
                 .where(likedReview.review.eq(review))
                 .fetchOne();
-//        if(sum == null) return 0;
-//        return sum.intValue();
-        return 0;
+        if(sum == null) return 0;
+        return sum.intValue();
     }
 
     public void save(Review review){
