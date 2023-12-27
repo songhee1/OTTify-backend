@@ -1,6 +1,7 @@
 package tavebalak.OTTify.genre.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,5 +18,11 @@ public class Genre {
     @Column(name = "genre_id")
     private Long id;
     private String name;
-    private Long tmdb_genre_id;
+    private Long tmDbGenreId;
+
+    @Builder
+    Genre(String name,Long tmDbGenreId){
+        this.name=name;
+        this.tmDbGenreId=tmDbGenreId;
+    }
 }
