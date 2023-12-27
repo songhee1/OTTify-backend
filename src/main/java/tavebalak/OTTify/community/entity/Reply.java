@@ -55,7 +55,6 @@ public class Reply extends BaseEntity {
         this.content = content;
         addCommunity(community);
     }
-
     public ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder toEditor(){
         return ReplyCommentEditorDTO.builder()
                 .comment(content);

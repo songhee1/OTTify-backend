@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface ReviewService {
     public List<LatestReviewsDTO> getLatestReviews();
-
     void save(Review review);
+    void likeReview(Long id);
+    void unlikeReview(Long id);
 }
