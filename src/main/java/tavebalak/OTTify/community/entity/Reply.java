@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import tavebalak.OTTify.common.BaseEntity;
+import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.dto.ReplyCommentEditorDTO;
 import tavebalak.OTTify.user.entity.User;
 

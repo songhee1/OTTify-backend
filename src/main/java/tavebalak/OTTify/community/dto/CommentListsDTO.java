@@ -13,15 +13,15 @@ import java.util.List;
 public class CommentListsDTO {
     private String content;
     private String nickName;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
     private Long userId;
     private List<ReplyListsDTO> replyListsDTOList;
 
     @Builder
-    public CommentListsDTO(String content, String nickName, LocalDateTime createdDate, Long userId, List<ReplyListsDTO> replyListsDTOList) {
+    public CommentListsDTO(String content, String nickName, LocalDateTime createdAt, Long userId, List<ReplyListsDTO> replyListsDTOList) {
         this.content = content;
         this.nickName = nickName;
-        this.createdDate = createdDate;
+        this.createdAt = createdAt;
         this.userId = userId;
         this.replyListsDTOList = replyListsDTOList;
     }

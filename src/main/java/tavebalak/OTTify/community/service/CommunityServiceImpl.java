@@ -13,7 +13,9 @@ import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
+import tavebalak.OTTify.error.exception.BadRequestException;
 import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.user.entity.User;
@@ -22,6 +24,7 @@ import tavebalak.OTTify.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +49,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community community = Community.builder()
                 .title(c.getSubjectName())
                 .content(c.getContent())
+                .user(getUser())
                 .program(program)
                 .build();
 
@@ -56,6 +60,10 @@ public class CommunityServiceImpl implements CommunityService{
     public void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException {
         Community community = communityRepository.findById(c.getSubjectId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        if(community.getUser().getId() != getUser().getId()){
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
 
         boolean present = programRepository.findById(c.getProgramId()).isPresent();
         Program program = null;
@@ -78,6 +86,9 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public void deleteSubject(Long subjectId) throws NotFoundException {
         Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+        if(!Objects.equals(community.getUser().getId(), getUser().getId())){
+            throw new IllegalAccessError();
+        }
         communityRepository.delete(community);
     }
 
@@ -87,18 +98,14 @@ public class CommunityServiceImpl implements CommunityService{
         List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
                 community -> CommunitySubjectsListDTO
                         .builder()
-                        .createdDate(community.getCreatedDate())
-                        .modifiedDate(community.getModifiedDate())
+                        .createdAt(community.getCreatedAt())
+                        .updatedAt(community.getUpdatedAt())
                         .title(community.getTitle())
                         .content(community.getContent())
                         .nickName(community.getUser().getNickName())
                         .programId(community.getProgram().getId())
                         .build()
         ).collect(Collectors.toList());
-
-        //communities 하나하나에 접근 -> DTO 명세서 대로 설정 -> DTO 설
-
-
         return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
     }
 
@@ -108,8 +115,8 @@ public class CommunityServiceImpl implements CommunityService{
         List<CommunitySubjectsListDTO> list = communities.stream().map(
                 community -> CommunitySubjectsListDTO
                         .builder()
-                        .createdDate(community.getCreatedDate())
-                        .modifiedDate(community.getModifiedDate())
+                        .createdAt(community.getCreatedAt())
+                        .updatedAt(community.getUpdatedAt())
                         .title(community.getTitle())
                         .content(community.getContent())
                         .nickName(community.getUser().getNickName())
@@ -136,31 +143,30 @@ public class CommunityServiceImpl implements CommunityService{
                             .content(listone.getContent())
                             .nickName(listone.getUser().getNickName())
                             .userId(listone.getUser().getId())
-                            .createdDate(listone.getCreatedDate())
+                            .createdAt(listone.getCreatedAt())
                             .build()
             ).collect(Collectors.toList());
 
             CommentListsDTO build = CommentListsDTO.builder()
                     .content(comment.getContent())
                     .nickName(comment.getUser().getNickName())
-                    .createdDate(comment.getCreatedDate())
+                    .createdAt(comment.getCreatedAt())
                     .userId(comment.getUser().getId())
                     .replyListsDTOList(collect)
                     .build();
             commentListsDTOList.add(build);
         }
-        CommunityAriclesDTO communityAriclesDTOList =  CommunityAriclesDTO.builder()
+
+
+        return CommunityAriclesDTO.builder()
                 .title(community.getTitle())
                 .writer(community.getUser().getNickName())
                 .content(community.getContent())
-                .createdDate(community.getCreatedDate())
-                .modifiedDate(community.getModifiedDate())
+                .createdAt(community.getCreatedAt())
+                .updatedAt(community.getUpdatedAt())
                 .commentAmount(replyList.size())
                 .commentListsDTOList(commentListsDTOList)
                 .build();
-
-
-        return communityAriclesDTOList;
     }
 
     @Override
@@ -178,9 +184,7 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     public User getUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String memberId = authentication.getName();
-        return userRepository.findByEmail(memberId).orElseThrow(()-> new SecurityException());
+        return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get()).orElseThrow(()-> new SecurityException());
     }
 
 }

@@ -24,7 +24,6 @@ import javax.websocket.server.PathParam;
 public class CommunityController {
     private final CommunityService communityService;
     private final ReplyService replyService;
-    private final UserRepository userRepository;
 
     @PostMapping("/subject")
 
