@@ -13,17 +13,23 @@ public class CommunitySubjectsListDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String title;
-    private String content;
     private String nickName;
     private Long programId;
+    private Long subjectId;
 
     @Builder
-    public CommunitySubjectsListDTO(LocalDateTime createdAt, LocalDateTime updatedAt, String title, String content, String nickName, Long programId) {
+    public CommunitySubjectsListDTO(LocalDateTime createdAt,
+                                    LocalDateTime updatedAt,
+                                    String title,
+                                    String nickName,
+                                    Long programId,
+                                    Long subjectId
+    ) {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.title = title;
-        this.content = content;
         this.nickName = nickName;
         this.programId = programId;
+        this.subjectId = subjectId;
     }
 }

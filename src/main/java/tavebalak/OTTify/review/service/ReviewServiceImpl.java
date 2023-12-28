@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,22 +65,24 @@ public class ReviewServiceImpl  implements  ReviewService{
     }
 
     @Override
-    public void likeReview(Long id) {
-        String userEmail = SecurityUtil.getCurrentEmail().get();
-        User savedUser = userRepository.findByEmail(userEmail).orElseThrow(NoSuchElementException::new);
-        likedReviewRepository.save(
-                LikedReview.builder()
-                        .user(savedUser)
-                        .review(reviewRepository.findById(id).orElseThrow(NoSuchElementException::new))
-                        .build()
-        );
-    }
-    @Override
-    public void unlikeReview(Long id) {
+    public boolean likeReview(Long id) {
+        AtomicBoolean flag = new AtomicBoolean(false);
         String userEmail = SecurityUtil.getCurrentEmail().get();
         User savedUser = userRepository.findByEmail(userEmail).orElseThrow(NoSuchElementException::new);
         Review review = reviewRepository.findById(id).orElseThrow(NoSuchElementException::new);
-        LikedReview likedReview = likedReviewRepository.findByUserIdAndReviewId(savedUser.getId(), review.getId()).orElseThrow(NoSuchElementException::new);
-        likedReviewRepository.delete(likedReview);
+        likedReviewRepository.findByUserIdAndReviewId(savedUser.getId(), review.getId()).ifPresentOrElse(
+                likedReviewRepository::delete,
+                () -> {
+                    likedReviewRepository.save(
+                            LikedReview.builder()
+                                    .user(savedUser)
+                                    .review(reviewRepository.findById(id).orElseThrow(NoSuchElementException::new))
+                                    .build()
+                    );
+                    flag.set(true);
+                }
+        );
+
+        return flag.get();
     }
 }
