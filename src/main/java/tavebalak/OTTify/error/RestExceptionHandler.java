@@ -14,6 +14,7 @@ import tavebalak.OTTify.error.exception.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
@@ -25,6 +26,14 @@ public class RestExceptionHandler {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NoSuchElementException.class)
+    protected ErrorResponse<String> handleNoSuchElementException(NoSuchElementException exception, HttpServletRequest request) {
+        logInfo(request, exception.getMessage());
+        return ErrorResponse.error(exception.getMessage());
+    }
+
 
     // Custom Unauthorized Error
     @ResponseStatus(HttpStatus.UNAUTHORIZED)

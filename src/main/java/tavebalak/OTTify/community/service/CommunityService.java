@@ -5,8 +5,6 @@ import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.exception.NotFoundException;
 
-import java.util.List;
-
 public interface CommunityService {
     public Community saveSubject(CommunitySubjectCreateDTO c);
     public void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException;
@@ -16,4 +14,6 @@ public interface CommunityService {
     public CommunitySubjectDTO getArticle(Long subjectId);
     public CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId);
     boolean likeSubject(Long subjectId);
+
+    boolean likeComment(Long subjectId, Long commentId, boolean reply);
 }

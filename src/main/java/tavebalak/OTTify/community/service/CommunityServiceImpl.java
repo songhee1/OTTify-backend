@@ -1,11 +1,10 @@
 package tavebalak.OTTify.community.service;
 
+import com.querydsl.core.types.EntityPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.*;
@@ -15,19 +14,19 @@ import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.BadRequestException;
+import tavebalak.OTTify.error.exception.NoSuchElementException;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
-import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.*;
 import tavebalak.OTTify.user.repository.LikedCommunityRepository;
+import tavebalak.OTTify.user.repository.LikedReplyRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -42,6 +41,7 @@ public class CommunityServiceImpl implements CommunityService{
     private final UserRepository userRepository;
     private final LikedCommunityRepository likedCommunityRepository;
     private final JPAQueryFactory jpaQueryFactory;
+    private final LikedReplyRepository likedReplyRepository;
     @Override
     public Community saveSubject(CommunitySubjectCreateDTO c){
 
@@ -124,7 +124,7 @@ public class CommunityServiceImpl implements CommunityService{
 
     private Integer getLikeSum(Long communityId) {
         QLikedCommunity likedCommunity = QLikedCommunity.likedCommunity;
-        Community community = communityRepository.findById(communityId).orElseThrow(NoSuchElementException::new);
+        Community community = communityRepository.findById(communityId).orElseThrow( () -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
         Long sum = jpaQueryFactory
                 .select(likedCommunity.count())
                 .from(likedCommunity)
@@ -155,7 +155,7 @@ public class CommunityServiceImpl implements CommunityService{
     public boolean likeSubject(Long subjectId) {
         AtomicBoolean flag = new AtomicBoolean(false);
         User savedUser = getUser();
-        Community findCommunity = communityRepository.findById(subjectId).orElseThrow(NoSuchElementException::new);
+        Community findCommunity = communityRepository.findById(subjectId).orElseThrow( () -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
         likedCommunityRepository.findByCommunityIdAndUserId(findCommunity.getId(), savedUser.getId()).ifPresentOrElse(
                 likedCommunityRepository::delete,
                 () -> {
@@ -170,6 +170,38 @@ public class CommunityServiceImpl implements CommunityService{
         );
 
         return flag.get();
+    }
+
+    @Override
+    public boolean likeComment(Long subjectId, Long commentId, boolean reply) {
+        AtomicBoolean flag = new AtomicBoolean(false);
+        User savedUser = getUser();
+        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
+        Reply findReply;
+        if(reply){
+            findReply = replyRepository.findByIdAndParentIdIsNotNull(commentId).orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
+        }else{
+            findReply = replyRepository.findByIdAndParentIdIsNull(commentId).orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
+        }
+
+       likedReplyRepository.findByUserIdAndReplyIdAndCommunityIdAndFlag(savedUser.getId(), findReply.getId(), community.getId(), reply).ifPresentOrElse(
+                likedReplyRepository::delete,
+                () -> {
+                    likedReplyRepository.save(
+                            LikedReply.builder()
+                                    .user(savedUser)
+                                    .community(community)
+                                    .reply(findReply)
+                                    .flag(reply)
+                                    .build()
+                    );
+                    flag.set(true);
+                }
+        );
+        return false;
+    }
+    private Integer getReplyLikeSum(Long communityId) {
+        return 0;
     }
 
     @Override
@@ -189,6 +221,7 @@ public class CommunityServiceImpl implements CommunityService{
                             .nickName(listone.getUser().getNickName())
                             .userId(listone.getUser().getId())
                             .createdAt(listone.getCreatedAt())
+                            .likeCount(getReplyLikeSum(listone.getId()))
                             .build()
             ).collect(Collectors.toList());
 
@@ -216,7 +249,7 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public CommunitySubjectDTO getArticle(Long subjectId) {
-        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND.getMessage()));
+        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
 
         return CommunitySubjectDTO.builder()
                 .subjectId(subjectId)

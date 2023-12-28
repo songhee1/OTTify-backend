@@ -15,13 +15,15 @@ public class ReplyListsDTO {
     private String nickName;
     private Long userId;
     private LocalDateTime createdAt;
+    private int likeCount;
 
     @Builder
-    public ReplyListsDTO(Long recommentId, String content, String nickName, Long userId, LocalDateTime createdAt) {
+    public ReplyListsDTO(Long recommentId, String content, String nickName, Long userId, LocalDateTime createdAt, int likeCount) {
         this.recommentId = recommentId;
         this.content = content;
         this.nickName = nickName;
         this.userId = userId;
         this.createdAt = createdAt;
+        this.likeCount = likeCount;
     }
 }

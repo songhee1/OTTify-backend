@@ -3,6 +3,7 @@ package tavebalak.OTTify.community.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,6 +51,15 @@ public class CommunityController {
         boolean hasLiked = communityService.likeSubject(subjectId);
         if(hasLiked) return BaseResponse.success("성공적으로 토론 게시글 공감이 적용이 되었습니다.");
         return BaseResponse.success("성공적으로 토론 게시글 공감 해제가 적용되었습니다.");
+    }
+
+    @PostMapping("/like/comment")
+    public BaseResponse likeComment(@PathParam("subjectId") Long subjectId,
+                                    @PathParam("commentId") Long commentId,
+                                    @PathParam("reply") boolean reply){
+        boolean hasLiked = communityService.likeComment(subjectId, commentId, reply);
+        if(hasLiked) return BaseResponse.success("성공적으로 토론 댓글 공감 적용이 되었습니다.");
+        return BaseResponse.success("성공적으로 토론 댓글 공감 해제가 적용되었습니다.");
     }
 
     @GetMapping("/total")
