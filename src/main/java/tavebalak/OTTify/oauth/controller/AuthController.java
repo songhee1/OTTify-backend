@@ -41,14 +41,6 @@ public class AuthController {
     private final OauthService oauthService;
     private final UserRepository userRepository;
 
-    @PostMapping("/api/v1/logout")
-    public BaseResponse<String> logout(@RequestHeader("Authorization") String accessToken) {
-
-        // 엑세스 토큰으로 현재 Redis 정보 삭제
-        tokenService.removeRefreshToken(accessToken);
-        return success("로그아웃 성공");
-    }
-
     @PostMapping("/login/callback")
     public BaseResponse<String> saveCode(@RequestParam("code") String code){
         log.info("--saveCode 진입--");
@@ -57,6 +49,22 @@ public class AuthController {
         oauthService.saveCode(user, code);
         
         return success("코드 저장 완료");
+    }
+
+    @PostMapping("/api/v1/oauth/info")
+    public BaseResponse<String> saveSignUpInformation(@Valid @RequestBody SignUpInfoDto signUpInfoDto){
+        String email = getEmail();
+        User user = getUserByEmail(email);
+        return success(oauthService.saveInformation(user, signUpInfoDto));
+    }
+
+    @PostMapping("/api/v1/logout")
+    public BaseResponse<String> logout(@RequestHeader("Authorization") String accessToken) {
+        log.info("========logout 진입=========");
+        oauthService.logout();
+        // 엑세스 토큰으로 현재 Redis 정보 삭제
+        tokenService.removeRefreshToken(accessToken);
+        return success("로그아웃 성공");
     }
 
     @PostMapping("/token/refresh")
@@ -75,14 +83,6 @@ public class AuthController {
         return success(TokenDto.builder().accessToken(newAccessToken).refreshToken(newRefreshToken).build());
 
     }
-
-    @PostMapping("/api/v1/oauth/info")
-    public BaseResponse<String> saveSignUpInformation(@Valid @RequestBody SignUpInfoDto signUpInfoDto){
-        String email = getEmail();
-        User user = getUserByEmail(email);
-        return success(oauthService.saveInformation(user, signUpInfoDto));
-    }
-
 
     /**
      * 밑의 두 함수는 service test 편하게 하기위해 빼놓은 것으로

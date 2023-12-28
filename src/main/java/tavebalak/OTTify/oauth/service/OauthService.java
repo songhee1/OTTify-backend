@@ -34,8 +34,6 @@ public class OauthService {
         user.changeCode(code);
     }
 
-
-
     @Transactional
     public String saveInformation(User user, SignUpInfoDto signUpInfoDto) {
 
@@ -75,5 +73,8 @@ public class OauthService {
 
         user.changeUserRole();
         return "추가정보 저장 완료";
+    }
+
+    public void logout() {
     }
 }
