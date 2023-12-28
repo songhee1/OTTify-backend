@@ -35,6 +35,8 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String code; //구글, 네이버의 로그아웃, 탈퇴를 위한 코드
+    
     @Builder
     public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role) {
         this.email = email;
@@ -49,4 +51,6 @@ public class User extends BaseEntity {
     public void changeUserRole(){
         role = Role.USER;
     }
+
+    public void changeCode(String code) { this.code = code; }
 }
