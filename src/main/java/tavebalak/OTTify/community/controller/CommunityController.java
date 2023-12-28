@@ -45,6 +45,13 @@ public class CommunityController {
         return BaseResponse.success("성공적으로 토론주제를 삭제하였습니다.");
     }
 
+    @PostMapping("/like")
+    public BaseResponse likeSubject(@PathParam("subjectId") Long subjectId){
+        boolean hasLiked = communityService.likeSubject(subjectId);
+        if(hasLiked) return BaseResponse.success("성공적으로 토론 게시글 공감이 적용이 되었습니다.");
+        return BaseResponse.success("성공적으로 토론 게시글 공감 해제가 적용되었습니다.");
+    }
+
     @GetMapping("/total")
     public BaseResponse getTotalProgramsSubjects(@PageableDefault(size =  10,
                                                                   sort = "createdAt",

@@ -1,5 +1,6 @@
 package tavebalak.OTTify.community.service;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +20,16 @@ import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
-import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.review.entity.Review;
+import tavebalak.OTTify.user.entity.*;
+import tavebalak.OTTify.user.repository.LikedCommunityRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +40,8 @@ public class CommunityServiceImpl implements CommunityService{
     private final ProgramRepository programRepository;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
+    private final LikedCommunityRepository likedCommunityRepository;
+    private final JPAQueryFactory jpaQueryFactory;
     @Override
     public Community saveSubject(CommunitySubjectCreateDTO c){
 
@@ -53,6 +59,11 @@ public class CommunityServiceImpl implements CommunityService{
                 .user(getUser())
                 .program(program)
                 .build();
+        likedCommunityRepository.save(
+                LikedCommunity.builder()
+                        .community(community)
+                        .user(getUser())
+                        .build());
 
         return communityRepository.save(community);
 
@@ -105,9 +116,22 @@ public class CommunityServiceImpl implements CommunityService{
                         .nickName(community.getUser().getNickName())
                         .programId(community.getProgram().getId())
                         .subjectId(community.getId())
+                        .likeCount(getLikeSum(community.getId()))
                         .build()
         ).collect(Collectors.toList());
         return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
+    }
+
+    private Integer getLikeSum(Long communityId) {
+        QLikedCommunity likedCommunity = QLikedCommunity.likedCommunity;
+        Community community = communityRepository.findById(communityId).orElseThrow(NoSuchElementException::new);
+        Long sum = jpaQueryFactory
+                .select(likedCommunity.count())
+                .from(likedCommunity)
+                .where(likedCommunity.community.eq(community))
+                .fetchOne();
+        if(sum == null) return 0;
+        return sum.intValue();
     }
 
     @Override
@@ -125,6 +149,27 @@ public class CommunityServiceImpl implements CommunityService{
         ).collect(Collectors.toList());
 
         return CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(list).build();
+    }
+
+    @Override
+    public boolean likeSubject(Long subjectId) {
+        AtomicBoolean flag = new AtomicBoolean(false);
+        User savedUser = getUser();
+        Community findCommunity = communityRepository.findById(subjectId).orElseThrow(NoSuchElementException::new);
+        likedCommunityRepository.findByCommunityIdAndUserId(findCommunity.getId(), savedUser.getId()).ifPresentOrElse(
+                likedCommunityRepository::delete,
+                () -> {
+                    likedCommunityRepository.save(
+                            LikedCommunity.builder()
+                                    .user(savedUser)
+                                    .community(findCommunity)
+                                    .build()
+                    );
+                    flag.set(true);
+                }
+        );
+
+        return flag.get();
     }
 
     @Override
