@@ -2,6 +2,7 @@ package tavebalak.OTTify.community.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,14 +46,20 @@ public class CommunityController {
     }
 
     @GetMapping("/total")
-    public BaseResponse getTotalProgramsSubjects(@PageableDefault(size =  10) Pageable pageable){
+    public BaseResponse getTotalProgramsSubjects(@PageableDefault(size =  10,
+                                                                  sort = "createdAt",
+                                                                  direction = Sort.Direction.DESC,
+                                                                  page = 0)
+                                                     Pageable pageable){
         CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
         return BaseResponse.success(page);
     }
 
     @GetMapping("/program")
-    public BaseResponse getTotalProgramSubjects(@PageableDefault(size = 10) Pageable pageable,
+    public BaseResponse getTotalProgramSubjects(@PageableDefault(size = 10, sort = "createdAt",
+            direction = Sort.Direction.DESC, page = 0) Pageable pageable,
                                                @PathParam("programId") Long programId){
+
         CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
         return BaseResponse.success(page);
     }

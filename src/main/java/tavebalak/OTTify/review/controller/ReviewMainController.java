@@ -26,14 +26,9 @@ public class ReviewMainController {
 
     @PostMapping("/latestReviews/like")
     public BaseResponse likeReview(@PathParam("id") Long id){
-        reviewService.likeReview(id);
-        return BaseResponse.success("id = "+id+"인 아이디 값을 가진 리뷰에 공감이 적용되었습니다.");
-    }
-
-    @PostMapping("/latestReviews/unlike")
-    public BaseResponse unlikeReview(@PathParam("id") Long id){
-        reviewService.unlikeReview(id);
-        return BaseResponse.success("id = "+id+"인 아이디 값을 가진 리뷰에 공감이 해제되었습니다.");
+        boolean hasSaved = reviewService.likeReview(id);
+        if(hasSaved) return BaseResponse.success("id = "+id+"인 아이디 값을 가진 리뷰에 공감이 적용되었습니다.");
+        else return BaseResponse.success("id = "+id+"인 아이디 값을 가진 리뷰에 공감이 해제되었습니다.");
     }
 
 }

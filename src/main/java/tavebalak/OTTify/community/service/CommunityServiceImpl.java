@@ -14,6 +14,7 @@ import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.BadRequestException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
@@ -61,7 +62,7 @@ public class CommunityServiceImpl implements CommunityService{
         Community community = communityRepository.findById(c.getSubjectId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
-        if(community.getUser().getId() != getUser().getId()){
+        if(!Objects.equals(community.getUser().getId(), getUser().getId())){
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
@@ -87,7 +88,7 @@ public class CommunityServiceImpl implements CommunityService{
     public void deleteSubject(Long subjectId) throws NotFoundException {
         Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
         if(!Objects.equals(community.getUser().getId(), getUser().getId())){
-            throw new IllegalAccessError();
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
         communityRepository.delete(community);
     }
@@ -101,9 +102,9 @@ public class CommunityServiceImpl implements CommunityService{
                         .createdAt(community.getCreatedAt())
                         .updatedAt(community.getUpdatedAt())
                         .title(community.getTitle())
-                        .content(community.getContent())
                         .nickName(community.getUser().getNickName())
                         .programId(community.getProgram().getId())
+                        .subjectId(community.getId())
                         .build()
         ).collect(Collectors.toList());
         return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
@@ -118,7 +119,6 @@ public class CommunityServiceImpl implements CommunityService{
                         .createdAt(community.getCreatedAt())
                         .updatedAt(community.getUpdatedAt())
                         .title(community.getTitle())
-                        .content(community.getContent())
                         .nickName(community.getUser().getNickName())
                         .programId(programId)
                         .build()
@@ -184,7 +184,9 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     public User getUser(){
-        return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get()).orElseThrow(()-> new SecurityException());
+        return userRepository.findByEmail(
+                SecurityUtil.getCurrentEmail().get()).orElseThrow(()-> new UnauthorizedException(ErrorCode.UNAUTHORIZED)
+        );
     }
 
 }
