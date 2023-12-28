@@ -16,19 +16,27 @@ public class CommunityAriclesDTO {
     private String writer;
     private Long userId;
     private String content;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private int commentAmount;
     private List<CommentListsDTO> commentListsDTOList;
 
     @Builder
-    public CommunityAriclesDTO(String title, String writer, Long userId, String content, LocalDateTime createdDate, LocalDateTime modifiedDate, int commentAmount, List<CommentListsDTO> commentListsDTOList) {
+    public CommunityAriclesDTO(String title,
+                               String writer,
+                               Long userId,
+                               String content,
+                               LocalDateTime createdAt,
+                               LocalDateTime updatedAt,
+                               int commentAmount,
+                               List<CommentListsDTO> commentListsDTOList
+    ) {
         this.title = title;
         this.writer = writer;
         this.userId = userId;
         this.content = content;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.commentAmount = commentAmount;
         this.commentListsDTOList = commentListsDTOList;
     }
