@@ -30,6 +30,13 @@ public class OauthService {
     private final GenreRepository genreRepository;
 
     @Transactional
+    public void saveCode(User user, String code) {
+        user.changeCode(code);
+    }
+
+
+
+    @Transactional
     public String saveInformation(User user, SignUpInfoDto signUpInfoDto) {
 
         List<Long> ottIdList = signUpInfoDto.getOttList();

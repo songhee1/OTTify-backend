@@ -19,6 +19,8 @@ import tavebalak.OTTify.oauth.service.OauthService;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -39,13 +41,23 @@ public class AuthController {
     private final OauthService oauthService;
     private final UserRepository userRepository;
 
-//    @PostMapping("token/logout")
-//    public ResponseEntity<StatusResponseDto> logout(@RequestHeader("Authorization") final String accessToken) {
-//
-//        // 엑세스 토큰으로 현재 Redis 정보 삭제
-//        tokenService.removeRefreshToken(accessToken);
-//        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
-//    }
+    @PostMapping("/api/v1/logout")
+    public BaseResponse<String> logout(@RequestHeader("Authorization") String accessToken) {
+
+        // 엑세스 토큰으로 현재 Redis 정보 삭제
+        tokenService.removeRefreshToken(accessToken);
+        return success("로그아웃 성공");
+    }
+
+    @PostMapping("/login/callback")
+    public BaseResponse<String> saveCode(@RequestParam("code") String code){
+        log.info("--saveCode 진입--");
+        String email = getEmail();
+        User user = getUserByEmail(email);
+        oauthService.saveCode(user, code);
+        
+        return success("코드 저장 완료");
+    }
 
     @PostMapping("/token/refresh")
     public BaseResponse<TokenDto> refresh(@RequestHeader("Authorization-Refresh") String refreshToken) {
@@ -69,15 +81,6 @@ public class AuthController {
         String email = getEmail();
         User user = getUserByEmail(email);
         return success(oauthService.saveInformation(user, signUpInfoDto));
-    }
-
-    /*
-    밑 코드는
-    테스트 용 지워도 됨
-     */
-    @GetMapping("/hello")
-    public BaseResponse<String> dd(){
-        return success(SecurityUtil.getCurrentEmail().get());
     }
 
 
