@@ -10,7 +10,6 @@ import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.dto.SignUpInfoDto;
 import tavebalak.OTTify.oauth.jwt.JwtService;
-import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.oauth.jwt.TokenDto;
 import tavebalak.OTTify.oauth.redis.RefreshToken;
 import tavebalak.OTTify.oauth.redis.RefreshTokenRepository;
@@ -19,8 +18,6 @@ import tavebalak.OTTify.oauth.service.OauthService;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -59,11 +56,11 @@ public class AuthController {
     }
 
     @PostMapping("/api/v1/logout")
-    public BaseResponse<String> logout(@RequestHeader("Authorization") String accessToken) {
+    public BaseResponse<String> logout() {
         log.info("========logout 진입=========");
-        oauthService.logout();
-        // 엑세스 토큰으로 현재 Redis 정보 삭제
-        tokenService.removeRefreshToken(accessToken);
+        String email = getEmail();
+        User user = getUserByEmail(email);
+        oauthService.logout(user);
         return success("로그아웃 성공");
     }
 

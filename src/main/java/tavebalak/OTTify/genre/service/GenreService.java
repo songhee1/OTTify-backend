@@ -1,17 +1,15 @@
 package tavebalak.OTTify.genre.service;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import tavebalak.OTTify.genre.dto.OpenApiGenreListResponseDto;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
-import tavebalak.OTTify.user.entity.User;
-import tavebalak.OTTify.user.repository.UserRepository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

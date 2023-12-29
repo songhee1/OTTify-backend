@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import tavebalak.OTTify.oauth.redis.RefreshToken;
-import tavebalak.OTTify.oauth.redis.RefreshTokenRepository;
 import tavebalak.OTTify.oauth.redis.RefreshTokenService;
-import tavebalak.OTTify.user.repository.UserRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

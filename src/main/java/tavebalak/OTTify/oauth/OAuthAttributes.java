@@ -60,13 +60,14 @@ public class OAuthAttributes {
      * OAuth2UserInfo에서 socialId(식별값), nickname, imageUrl을 가져와서 build
      * role은 GUEST로 설정
      */
-    public User toEntity(SocialType socialType, OAuth2UserInfo oauth2UserInfo) {
+    public User toEntity(SocialType socialType, String accessToken, OAuth2UserInfo oauth2UserInfo) {
         return User.builder()
                 .socialType(socialType)
                 .email(oauth2UserInfo.getEmail())
                 .nickName(oauth2UserInfo.getNickname())
                 .profilePhoto(oauth2UserInfo.getImageUrl())
                 .role(Role.GUEST)
+                .code(accessToken)
                 .build();
     }
 }
