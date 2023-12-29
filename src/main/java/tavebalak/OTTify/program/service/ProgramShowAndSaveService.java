@@ -10,14 +10,17 @@ import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.ProgramGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.genre.repository.ProgramGenreRepository;
-import tavebalak.OTTify.program.dto.*;
+import tavebalak.OTTify.program.dto.searchTrending.Response.ProgramTrendingDayInfo;
+import tavebalak.OTTify.program.dto.searchTrending.Response.ProgramTrendingWeekInfo;
+import tavebalak.OTTify.program.dto.searchTrending.Response.SearchResponseDtoV1;
+import tavebalak.OTTify.program.dto.searchTrending.Response.TrendingResponseDto;
+import tavebalak.OTTify.program.dto.searchTrending.openApi.OpenApiSearchTrendingDto;
+import tavebalak.OTTify.program.dto.searchTrending.openApi.SearchTrendingOpenApiProgramInfo;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)

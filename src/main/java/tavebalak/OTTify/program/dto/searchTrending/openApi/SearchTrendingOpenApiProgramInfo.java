@@ -1,12 +1,13 @@
-package tavebalak.OTTify.program.dto;
+package tavebalak.OTTify.program.dto.searchTrending.openApi;
 
 import lombok.Getter;
+import tavebalak.OTTify.program.dto.CommonOpenApiProgramInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SearchTrendingOpenApiProgramInfo extends CommonOpenApiProgramInfo{
+public class SearchTrendingOpenApiProgramInfo extends CommonOpenApiProgramInfo {
     //영화
     private String title;
     private String original_title;
