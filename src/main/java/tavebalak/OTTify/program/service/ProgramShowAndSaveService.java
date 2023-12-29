@@ -121,7 +121,7 @@ public class ProgramShowAndSaveService {
 
         //연관관계 편의 메서드를 통한 장르 저장
         searchTrendingOpenApiProgramInfo.getGenre_ids().forEach(gi->{
-            Genre genre=genreRepository.findByTmDbGenreId(gi).orElseThrow(()->new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
+            Genre genre=genreRepository.findByTmDbGenreId(gi).orElseThrow(()->new NotFoundException(ErrorCode.PROGRAM_GENRE_NOT_FOUND));
             program.addGenre(genre);
         });
         return program;
