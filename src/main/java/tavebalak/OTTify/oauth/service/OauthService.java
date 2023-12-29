@@ -1,8 +1,10 @@
 package tavebalak.OTTify.oauth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
@@ -19,6 +21,7 @@ import java.util.List;
 import static tavebalak.OTTify.error.ErrorCode.ENTITY_NOT_FOUND;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -75,6 +78,9 @@ public class OauthService {
         return "추가정보 저장 완료";
     }
 
-    public void logout() {
+    @Transactional
+    public void logout(User user) {
+        SocialType socialType = user.getSocialType();
+
     }
 }

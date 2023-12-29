@@ -1,12 +1,12 @@
 package tavebalak.OTTify.user.entity;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.constant.GradeType;
 import tavebalak.OTTify.common.constant.Role;
 import tavebalak.OTTify.common.constant.SocialType;
-import lombok.AccessLevel;
 import tavebalak.OTTify.common.entity.BaseEntity;
 
 import javax.persistence.*;
@@ -38,7 +38,7 @@ public class User extends BaseEntity {
     private String code; //구글, 네이버의 로그아웃, 탈퇴를 위한 코드
     
     @Builder
-    public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role) {
+    public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role, String code) {
         this.email = email;
         this.nickName = nickName;
         this.profilePhoto = profilePhoto;
@@ -46,6 +46,7 @@ public class User extends BaseEntity {
         this.grade = GradeType.GENERAL;
         this.socialType = socialType;
         this.role = role;
+        this.code = code;
     }
 
     public void changeUserRole(){

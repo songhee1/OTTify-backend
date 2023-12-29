@@ -45,9 +45,8 @@ public class SecurityConfig {
                             .anyRequest().permitAll() //추후 변경 필요
                 )
                 .oauth2Login(configure ->
-                        configure.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                                .successHandler(oAuth2AuthenticationSuccessHandler)
-//                                .failureHandler(oAuth2AuthenticationFailureHandler)
+                                configure.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
+                                        .successHandler(oAuth2AuthenticationSuccessHandler)
                 );
 
         return http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
