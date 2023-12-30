@@ -15,6 +15,7 @@ public class RefreshToken implements Serializable {
 
 
     @Id
+    @Indexed
     private String email;
 
     @Indexed
