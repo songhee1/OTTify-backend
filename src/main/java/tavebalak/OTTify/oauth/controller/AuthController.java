@@ -22,8 +22,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static tavebalak.OTTify.common.BaseResponse.success;
-import static tavebalak.OTTify.error.ErrorCode.EMAIL_ISNOT_EXIST;
-import static tavebalak.OTTify.error.ErrorCode.ENTITY_NOT_FOUND;
+import static tavebalak.OTTify.error.ErrorCode.*;
 import static tavebalak.OTTify.oauth.jwt.SecurityUtil.getCurrentEmail;
 
 
@@ -38,16 +37,6 @@ public class AuthController {
     private final OauthService oauthService;
     private final UserRepository userRepository;
 
-    @PostMapping("/login/callback")
-    public BaseResponse<String> saveCode(@RequestParam("code") String code){
-        log.info("--saveCode 진입--");
-        String email = getEmail();
-        User user = getUserByEmail(email);
-        oauthService.saveCode(user, code);
-        
-        return success("코드 저장 완료");
-    }
-
     @PostMapping("/api/v1/oauth/info")
     public BaseResponse<String> saveSignUpInformation(@Valid @RequestBody SignUpInfoDto signUpInfoDto){
         String email = getEmail();
@@ -56,12 +45,21 @@ public class AuthController {
     }
 
     @PostMapping("/api/v1/logout")
-    public BaseResponse<String> logout() {
+    public BaseResponse<String> logout(@RequestHeader("Authorization") String accessToken) {
         log.info("========logout 진입=========");
         String email = getEmail();
         User user = getUserByEmail(email);
-        oauthService.logout(user);
+        oauthService.logout(user, accessToken);
         return success("로그아웃 성공");
+    }
+
+    @DeleteMapping("/api/v1/withdrawal")
+    public BaseResponse<String> withdrawal(@RequestHeader("Authorization") String accessToken) {
+        log.info("========logout 진입=========");
+        String email = getEmail();
+        User user = getUserByEmail(email);
+        oauthService.withdrawal(user, accessToken);
+        return success("회원탈퇴 성공");
     }
 
     @PostMapping("/token/refresh")
@@ -94,6 +92,6 @@ public class AuthController {
     private User getUserByEmail(String email){
         Optional<User> opt = userRepository.findByEmail(email);
         if(opt.isPresent()) return opt.get();
-        throw new NotFoundException(ENTITY_NOT_FOUND);
+        throw new NotFoundException(USER_NOT_FOUND);
     }
 }
