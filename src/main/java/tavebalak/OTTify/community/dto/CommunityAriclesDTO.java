@@ -19,6 +19,8 @@ public class CommunityAriclesDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int commentAmount;
+    private int likeCount;
+    private Long subjectId;
     private List<CommentListsDTO> commentListsDTOList;
 
     @Builder
@@ -29,7 +31,9 @@ public class CommunityAriclesDTO {
                                LocalDateTime createdAt,
                                LocalDateTime updatedAt,
                                int commentAmount,
-                               List<CommentListsDTO> commentListsDTOList
+                               List<CommentListsDTO> commentListsDTOList,
+                               int likeCount,
+                               Long subjectId
     ) {
         this.title = title;
         this.writer = writer;
@@ -39,5 +43,7 @@ public class CommunityAriclesDTO {
         this.updatedAt = updatedAt;
         this.commentAmount = commentAmount;
         this.commentListsDTOList = commentListsDTOList;
+        this.likeCount = likeCount;
+        this.subjectId = subjectId;
     }
 }

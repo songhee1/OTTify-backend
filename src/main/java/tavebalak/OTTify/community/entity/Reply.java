@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.dto.ReplyCommentEditorDTO;
 import tavebalak.OTTify.user.entity.User;
@@ -23,6 +25,7 @@ public class Reply extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Community community;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +37,7 @@ public class Reply extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     public void addReply(Reply reply){
@@ -51,8 +55,9 @@ public class Reply extends BaseEntity {
     }
 
     @Builder
-    public Reply(Long id, String content, Community community) {
+    public Reply(Long id, String content, Community community, User user) {
         this.content = content;
+        this.user = user;
         addCommunity(community);
     }
     public ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder toEditor(){
