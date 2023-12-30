@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
+import tavebalak.OTTify.oauth.redis.RefreshTokenRepository;
 import tavebalak.OTTify.oauth.redis.RefreshTokenService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +16,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Optional;
 
+import static tavebalak.OTTify.error.ErrorCode.SIGNIN_EXPIRED;
+
 @Getter
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class JwtService {
-//    private RefreshTokenRepository tokenRepository;
+    private final RefreshTokenRepository tokenRepository;
     private final RefreshTokenService tokenService;
 
     @Value("${jwt.secretKey}")
@@ -116,6 +120,7 @@ public class JwtService {
      * 헤더를 가져온 후 "Bearer"를 삭제(""로 replace)
      */
     public Optional<String> extractAccessToken(HttpServletRequest request) {
+        log.info("extractAccessToken() 호출");
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .filter(refreshToken -> refreshToken.startsWith(BEARER))
                 .map(refreshToken -> refreshToken.replace(BEARER, ""));
@@ -165,12 +170,17 @@ public class JwtService {
 
 
     public boolean isTokenValid(String token) {
+        log.info("isTokenValid 호출");
+        if(tokenRepository.findByRefreshToken(token).isPresent()
+                && tokenRepository.findByRefreshToken(token).get().getEmail().equals("expired")){
+            return false;
+        }
         try {
             JWT.require(Algorithm.HMAC512(secretKey)).build().verify(token);
             return true;
         } catch (Exception e) {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
-            return false;
+            throw new UnauthorizedException(SIGNIN_EXPIRED);
         }
     }
 }
