@@ -18,6 +18,7 @@ public enum ErrorCode {
      * 401 Unauthorized
      */
     UNAUTHORIZED("리소스 접근 권한이 없습니다."),
+    SIGNIN_EXPIRED("다시 로그인 필요-로그인 화면으로 REDIRECT"),
 
     /**
      * 403 Forbidden
@@ -31,6 +32,8 @@ public enum ErrorCode {
      */
     ENTITY_NOT_FOUND("엔티티를 찾을 수 없습니다."),
     GENRE_NOT_FOUND("장르를 찾을 수 없습니다."),
+    USER_NOT_FOUND("유저를 찾을 수 없습니다."),
+
     /**
      * 405 Method Not Allowed
      */
