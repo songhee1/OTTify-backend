@@ -126,6 +126,7 @@ public class CommunityServiceImpl implements CommunityService{
                         .updatedAt(community.getUpdatedAt())
                         .title(community.getTitle())
                         .nickName(community.getUser().getNickName())
+                        .subjectId(community.getId())
                         .programId(programId)
                         .build()
         ).collect(Collectors.toList());
