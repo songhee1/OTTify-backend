@@ -22,7 +22,8 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static tavebalak.OTTify.common.BaseResponse.success;
-import static tavebalak.OTTify.error.ErrorCode.*;
+import static tavebalak.OTTify.error.ErrorCode.EMAIL_ISNOT_EXIST;
+import static tavebalak.OTTify.error.ErrorCode.USER_NOT_FOUND;
 import static tavebalak.OTTify.oauth.jwt.SecurityUtil.getCurrentEmail;
 
 
