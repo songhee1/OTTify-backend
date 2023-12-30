@@ -18,7 +18,12 @@ public class ReplyListsDTO {
     private int likeCount;
 
     @Builder
-    public ReplyListsDTO(Long recommentId, String content, String nickName, Long userId, LocalDateTime createdAt, int likeCount) {
+    public ReplyListsDTO(Long recommentId,
+                         String content,
+                         String nickName,
+                         Long userId,
+                         LocalDateTime createdAt,
+                         int likeCount) {
         this.recommentId = recommentId;
         this.content = content;
         this.nickName = nickName;

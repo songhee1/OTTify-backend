@@ -10,6 +10,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     public List<Reply> findByCommunityIdAndParentId(Long communityId, Long parentId);
     public List<Reply> findByIdAndParentId(Long id, Long parentId);
     public boolean existsByIdAndParentId(Long id, Long parentId);
-    public Optional<Reply> findByIdAndParentIdIsNotNull(Long id);
-    public Optional<Reply> findByIdAndParentIdIsNull(Long id);
+    public Optional<Reply> findByCommunityIdAndIdAndParentIdIsNotNull(Long communityId, Long id);
+    public Optional<Reply> findByCommunityIdAndIdAndParentIdIsNull(Long communityId, Long id);
 }

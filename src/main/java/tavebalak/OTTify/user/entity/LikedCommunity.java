@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.community.entity.Community;
+import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.program.entity.Program;
 
 import javax.persistence.*;

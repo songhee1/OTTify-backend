@@ -28,13 +28,11 @@ public class LikedReply {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community community;
-    private boolean flag;
 
     @Builder
-    public LikedReply(User user, Community community, Reply reply, boolean flag) {
+    public LikedReply(User user, Community community, Reply reply) {
         this.user = user;
         this.community = community;
         this.reply = reply;
-        this.flag = flag;
     }
 }

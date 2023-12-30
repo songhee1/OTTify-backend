@@ -1,7 +1,5 @@
 package tavebalak.OTTify.community.service;
 
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +18,13 @@ import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
-import tavebalak.OTTify.user.entity.*;
+import tavebalak.OTTify.user.entity.LikedCommunity;
+import tavebalak.OTTify.user.entity.LikedReply;
+import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedCommunityRepository;
 import tavebalak.OTTify.user.repository.LikedReplyRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
+import tavebalak.OTTify.error.exception.NoSuchElementException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,6 @@ public class CommunityServiceImpl implements CommunityService{
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
     private final LikedCommunityRepository likedCommunityRepository;
-    private final JPAQueryFactory jpaQueryFactory;
     private final LikedReplyRepository likedReplyRepository;
     @Override
     public Community saveSubject(CommunitySubjectCreateDTO c){
@@ -155,7 +155,8 @@ public class CommunityServiceImpl implements CommunityService{
     public boolean likeSubject(Long subjectId) {
         AtomicBoolean flag = new AtomicBoolean(false);
         User savedUser = getUser();
-        Community findCommunity = communityRepository.findById(subjectId).orElseThrow( () -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
+        Community findCommunity = communityRepository.findById(subjectId).orElseThrow( () ->
+                new tavebalak.OTTify.error.exception.NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
         likedCommunityRepository.findByCommunityIdAndUserId(findCommunity.getId(), savedUser.getId()).ifPresentOrElse(
                 likedCommunityRepository::delete,
                 () -> {
@@ -173,18 +174,16 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     @Override
-    public boolean likeComment(Long subjectId, Long commentId, boolean reply) {
+    public boolean likeComment(Long subjectId, Long commentId) {
+        //only-write object
         AtomicBoolean flag = new AtomicBoolean(false);
         User savedUser = getUser();
-        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
-        Reply findReply;
-        if(reply){
-            findReply = replyRepository.findByIdAndParentIdIsNotNull(commentId).orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
-        }else{
-            findReply = replyRepository.findByIdAndParentIdIsNull(commentId).orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
-        }
+        Community community = communityRepository.findById(subjectId)
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
+        Reply findReply = replyRepository.findById(commentId)
+                .orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
 
-       likedReplyRepository.findByUserIdAndReplyIdAndCommunityIdAndFlag(savedUser.getId(), findReply.getId(), community.getId(), reply).ifPresentOrElse(
+        likedReplyRepository.findByUserIdAndReplyIdAndCommunityId(savedUser.getId(), findReply.getId(), community.getId()).ifPresentOrElse(
                 likedReplyRepository::delete,
                 () -> {
                     likedReplyRepository.save(
@@ -192,20 +191,16 @@ public class CommunityServiceImpl implements CommunityService{
                                     .user(savedUser)
                                     .community(community)
                                     .reply(findReply)
-                                    .flag(reply)
                                     .build()
                     );
                     flag.set(true);
                 }
         );
-        return false;
-    }
-    private Integer getReplyLikeSum(Long communityId) {
-        return 0;
+        return flag.get();
     }
 
     @Override
-    public CommunityAriclesDTO getArticles(Long subjectId) throws NotFoundException {
+    public CommunityAriclesDTO getArticleOfASubject(Long subjectId) throws NotFoundException {
         Community community = communityRepository.findById(subjectId).orElseThrow(
                 () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
@@ -221,7 +216,7 @@ public class CommunityServiceImpl implements CommunityService{
                             .nickName(listone.getUser().getNickName())
                             .userId(listone.getUser().getId())
                             .createdAt(listone.getCreatedAt())
-                            .likeCount(getReplyLikeSum(listone.getId()))
+                            .likeCount(getLikeSumOfReply(community.getId(), listone.getId()))
                             .build()
             ).collect(Collectors.toList());
 
@@ -231,6 +226,8 @@ public class CommunityServiceImpl implements CommunityService{
                     .createdAt(comment.getCreatedAt())
                     .userId(comment.getUser().getId())
                     .replyListsDTOList(collect)
+                    .likeCount(getLikeSumOfReply(community.getId(), comment.getId()))
+                    .commentId(comment.getId())
                     .build();
             commentListsDTOList.add(build);
         }
@@ -244,13 +241,23 @@ public class CommunityServiceImpl implements CommunityService{
                 .updatedAt(community.getUpdatedAt())
                 .commentAmount(replyList.size())
                 .commentListsDTOList(commentListsDTOList)
+                .userId(getUser().getId())
+                .likeCount(getLikeSum(community.getId()))
+                .subjectId(community.getId())
                 .build();
     }
 
-    @Override
-    public CommunitySubjectDTO getArticle(Long subjectId) {
-        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
+    private int getLikeSum(Long communityId) {
+        return likedCommunityRepository.findByCommunityId(communityId).size();
+    }
 
+    private Integer getLikeSumOfReply(Long communityId, Long replyId) {
+        return likedReplyRepository.findByCommunityIdAndReplyId(communityId, replyId).size();
+    }
+
+    @Override
+    public CommunitySubjectDTO getSubject(Long subjectId) {
+        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND));
         return CommunitySubjectDTO.builder()
                 .subjectId(subjectId)
                 .title(community.getTitle())

@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LikedReplyRepository extends JpaRepository<LikedReply, Long> {
-    Optional<LikedReply> findByUserIdAndReplyIdAndCommunityIdAndFlag(Long userId, Long replyId, Long communityId, boolean flag);
+    Optional<LikedReply> findByUserIdAndReplyIdAndCommunityId(Long userId, Long replyId, Long communityId);
+    List<LikedReply> findByCommunityIdAndReplyId(Long communityId, Long replyId);
 }
