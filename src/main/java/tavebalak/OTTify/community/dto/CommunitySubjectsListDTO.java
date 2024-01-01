@@ -1,6 +1,7 @@
 package tavebalak.OTTify.community.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode
 public class CommunitySubjectsListDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
