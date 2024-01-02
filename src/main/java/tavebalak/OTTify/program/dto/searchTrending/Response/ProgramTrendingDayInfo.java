@@ -1,8 +1,9 @@
 package tavebalak.OTTify.program.dto.searchTrending.Response;
 
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class ProgramTrendingDayInfo extends ProgramInfo {
     private String genreName;
     private String backDropPath;

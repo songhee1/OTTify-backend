@@ -1,9 +1,10 @@
 package tavebalak.OTTify.program.dto.searchTrending.Response;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @NoArgsConstructor
 public class ProgramInfo {
     private Long programId;
