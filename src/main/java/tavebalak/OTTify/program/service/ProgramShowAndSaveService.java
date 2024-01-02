@@ -10,16 +10,14 @@ import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.ProgramGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.genre.repository.ProgramGenreRepository;
-import tavebalak.OTTify.program.dto.searchTrending.Response.ProgramTrendingDayInfo;
-import tavebalak.OTTify.program.dto.searchTrending.Response.ProgramTrendingWeekInfo;
-import tavebalak.OTTify.program.dto.searchTrending.Response.SearchResponseDtoV1;
-import tavebalak.OTTify.program.dto.searchTrending.Response.TrendingResponseDto;
+import tavebalak.OTTify.program.dto.searchTrending.Response.*;
 import tavebalak.OTTify.program.dto.searchTrending.openApi.OpenApiSearchTrendingDto;
 import tavebalak.OTTify.program.dto.searchTrending.openApi.SearchTrendingOpenApiProgramInfo;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,43 +30,58 @@ public class ProgramShowAndSaveService {
     private final ProgramGenreRepository programGenreRepository;
 
 
-
+    // 트렌딩 관련 저장 및 조회
     @Transactional
     public TrendingResponseDto showTrending(){
-        TrendingResponseDto trendingResponseDto=new TrendingResponseDto();
+
+        //actor 타입을 거르기 위함
+        List<String> includeList = new ArrayList<>();
+        includeList.add("movie");
+        includeList.add("tv");
+
+
+        //open api 를 통해 day trending 데이터 가져오기
         OpenApiSearchTrendingDto openApiSearchTrendingDto=getTrendingProgram("day");
+
+        //trendingDayInfo 만들기
+        List<ProgramTrendingDayInfo> programTrendingDayInfos = new ArrayList<>();
+
         openApiSearchTrendingDto.getResults().stream().forEach(trendingDayProgramInfo -> {
-                    if(trendingDayProgramInfo.getMedia_type().equals("movie")){
-                        Program program=saveProgramAndGetProgram(trendingDayProgramInfo, ProgramType.Movie);
-                        if(trendingResponseDto.getProgramTrendingDayInfos().size()<8) {
-                            makeTrendingResponse(trendingResponseDto, program,trendingDayProgramInfo,"day");
-                        }
-                    }
-                    if(trendingDayProgramInfo.getMedia_type().equals("tv")){
-                        Program program=saveProgramAndGetProgram(trendingDayProgramInfo,ProgramType.TV);
-                        if(trendingResponseDto.getProgramTrendingDayInfos().size()<8) {
-                            makeTrendingResponse(trendingResponseDto, program,trendingDayProgramInfo,"day");
+                    if(includeList.contains(trendingDayProgramInfo.getMedia_type())){
+
+                        Program program = (trendingDayProgramInfo.getMedia_type().equals("movie"))
+                                ? saveProgramAndGetProgram(trendingDayProgramInfo, ProgramType.Movie)
+                                : saveProgramAndGetProgram(trendingDayProgramInfo, ProgramType.TV);
+
+                        if(programTrendingDayInfos.size()<8){
+                            String firstGenreName = getProgramFirstGenre(trendingDayProgramInfo.getGenre_ids());
+                            programTrendingDayInfos.add(new ProgramTrendingDayInfo(program.getId(),program.getTitle(),program.getCreatedYear(), firstGenreName,trendingDayProgramInfo.getBackdrop_path()));
                         }
                     }
                 }
         );
+
+        //open api 를 통해 week trending 가져오기
         openApiSearchTrendingDto=getTrendingProgram("week");
-        openApiSearchTrendingDto.getResults().stream().forEach(openApiProgram -> {
-            if(openApiProgram.getMedia_type().equals("movie")){
-                Program program=saveProgramAndGetProgram(openApiProgram,ProgramType.Movie);
-                if(trendingResponseDto.getProgramTrendingWeekInfos().size()<8) {
-                    makeTrendingResponse(trendingResponseDto, program,openApiProgram,"week");
-                }
-            }
-            if(openApiProgram.getMedia_type().equals("tv")){
-                Program program=saveProgramAndGetProgram(openApiProgram,ProgramType.TV);
-                if(trendingResponseDto.getProgramTrendingWeekInfos().size()<8) {
-                    makeTrendingResponse(trendingResponseDto, program,openApiProgram,"week");
+
+
+        //trendingWeek 만들기
+        List<ProgramTrendingWeekInfo> programTrendingWeekInfos = new ArrayList<>();
+        openApiSearchTrendingDto.getResults().stream().forEach(trendingWeekProgramInfo -> {
+
+            if(includeList.contains(trendingWeekProgramInfo.getMedia_type())){
+                Program program = (trendingWeekProgramInfo.getMedia_type().equals("movie"))
+                        ? saveProgramAndGetProgram(trendingWeekProgramInfo, ProgramType.Movie)
+                        : saveProgramAndGetProgram(trendingWeekProgramInfo, ProgramType.TV);
+
+                if(programTrendingWeekInfos.size()<8){
+                    String firstGenreName = getProgramFirstGenre(trendingWeekProgramInfo.getGenre_ids());
+                    programTrendingWeekInfos.add(new ProgramTrendingWeekInfo(program.getId(),program.getTitle(),program.getCreatedYear(), firstGenreName,trendingWeekProgramInfo.getPoster_path()));
                 }
             }
         });
 
-        return trendingResponseDto;
+        return new TrendingResponseDto(programTrendingDayInfos,programTrendingWeekInfos);
     }
 
     // 가져온 트렌딩 프로그램 정보 + 부가 정보를 OpenApiSearchTrendingDto 로 매핑합니다
@@ -108,13 +121,13 @@ public class ProgramShowAndSaveService {
         if(programType==ProgramType.Movie){
             programBuilder.title(searchTrendingOpenApiProgramInfo.getTitle());
             String createdDate=searchTrendingOpenApiProgramInfo.getRelease_date();
-            programBuilder.createdYear(createdDate.length()>=4 ? createdDate.substring(0,4) :"");
+            programBuilder.createdYear(createdDate.length()>=4 ? createdDate.substring(0,4) :null);
         }
         //tv 일 경우
         else{
             programBuilder.title(searchTrendingOpenApiProgramInfo.getName());
             String createdDate=searchTrendingOpenApiProgramInfo.getFirst_air_date();
-            programBuilder.createdYear(createdDate.length()>=4 ? createdDate.substring(0,4) : "");
+            programBuilder.createdYear(createdDate.length()>=4 ? createdDate.substring(0,4) : null);
         }
 
         Program program=programBuilder.build();
@@ -126,88 +139,89 @@ public class ProgramShowAndSaveService {
         });
         return program;
     }
-    //프론트에 반환할 트렌딩 리스폰스를 만듭니다.
-    private void makeTrendingResponse(TrendingResponseDto trendingResponseDto,Program p,SearchTrendingOpenApiProgramInfo searchTrendingOpenApiProgram,String range){
-        List<Long> genreIdList=searchTrendingOpenApiProgram.getGenre_ids();
-        String firstGenreName;
-        if(!genreIdList.isEmpty()){
-            ProgramGenre programGenre=programGenreRepository.findByGenreIdAndProgramIdWithFetch(genreIdList.get(0),p.getId());
-            firstGenreName=programGenre.getGenre().getName();
-        }
-        else{
-            firstGenreName=null;
-        }
 
-        if(range.equals("day")){
-            trendingResponseDto.getProgramTrendingDayInfos().add(new ProgramTrendingDayInfo(p.getId(),p.getTitle(),p.getCreatedYear(), firstGenreName, searchTrendingOpenApiProgram.getBackdrop_path()));
-        }
-        else{
-            trendingResponseDto.getProgramTrendingWeekInfos().add(new ProgramTrendingWeekInfo(p.getId(),p.getTitle(),p.getCreatedYear(), firstGenreName, searchTrendingOpenApiProgram.getPoster_path()));
-        }
 
+    //프로그램의 대표 장르 , program 의 첫번쨰 넘어오는 장르 이름을 가지고 옵니다. 프로그램에 장르가 명시되지 않은 경우 null 을 넣습니다.
+    private String getProgramFirstGenre(List<Long> genreIdList){
+        return genreIdList.stream().findFirst().map(gi->{
+            return genreRepository.findByTmDbGenreId(gi).orElseThrow(()->new NotFoundException(ErrorCode.PROGRAM_GENRE_NOT_FOUND)).getName();
+        }).orElse(null);
     }
 
 
 
-    //검색 관련 임시 코드
+    //첫번째 검색시 기본적으로 검색할 때 TV 갯수, MOVIE 갯수, TV를 검색한 1페이지를 반환합니다.
 
     @Transactional
-    public SearchResponseDtoV1 searchByName(String name){
+    public SearchResponseDto searchByName(String name){
+        //tvResponse 를 검색한 DTO 를 반환합니다.
+        SearchTvResponseDto searchTvResponseDto = searchByTvName(name,1);
 
-        SearchResponseDtoV1 searchResponseDto=new SearchResponseDtoV1();
-
-        OpenApiSearchTrendingDto movieSearchList=getSearchProgram("movie",name);
+        //영화를 검색하며 DB에 저장하되 반환하는 것은 갯수 뿐입니다.
+        OpenApiSearchTrendingDto movieSearchList=getSearchProgram("movie",name,1);
         movieSearchList.getResults().stream().forEach(openApiProgram -> {
-            Program program=saveProgramAndGetProgram(openApiProgram,ProgramType.Movie);
-            if(searchResponseDto.getMovieSearchInfos().size()<8){
-                makeSearchResponse(searchResponseDto,program,ProgramType.Movie,openApiProgram);
-            }
+            saveProgramAndGetProgram(openApiProgram,ProgramType.Movie);
         });
-        searchResponseDto.setMovieCount(movieSearchList.getTotal_results());
 
-        OpenApiSearchTrendingDto tvSearchList=getSearchProgram("tv",name);
-        tvSearchList.getResults().stream().forEach(openApiProgram->{
-            Program program=saveProgramAndGetProgram(openApiProgram,ProgramType.TV);
-            if(searchResponseDto.getTvSearchInfos().size()<8){
-                makeSearchResponse(searchResponseDto,program,ProgramType.TV,openApiProgram);
-            }
+        int movieCount = movieSearchList.getTotal_results();
+
+
+        return new SearchResponseDto(movieCount,searchTvResponseDto.getTotalResults(),searchTvResponseDto);
+    }
+
+    //영화를 page 별로 검색할 수 있습니다.
+    @Transactional
+    public SearchMovieResponseDto searchByMovieName(String name,int page){
+
+        //movieSearchInfos 에 관련 내용을 담습니다
+        List<ProgramSearchInfo> movieSearchInfos = new ArrayList<>();
+
+        //open api를 통해 검색 결과를 받아옵니다.
+        OpenApiSearchTrendingDto movieSearchList=getSearchProgram("movie",name,page);
+
+        //저장하고 DTO를 설계합니다
+        movieSearchList.getResults().stream().forEach(movieProgramInfo->{
+            Program program=saveProgramAndGetProgram(movieProgramInfo,ProgramType.Movie);
+            String firstGenreName = getProgramFirstGenre(movieProgramInfo.getGenre_ids());
+            movieSearchInfos.add(new ProgramSearchInfo(program.getId(),program.getTitle(),movieProgramInfo.getRelease_date(),firstGenreName,program.getPosterPath(),movieProgramInfo.getOverview()));
         });
-        searchResponseDto.setTvCount(tvSearchList.getTotal_results());
+
+        return new SearchMovieResponseDto(movieSearchInfos,movieSearchList.getPage(),movieSearchList.getTotal_pages(),movieSearchList.getTotal_results());
+    }
+
+    //TV를 page 별로 검색할 수 있습니다.
+    @Transactional
+    public SearchTvResponseDto searchByTvName(String name,int page){
+
+        //tvSearchInfos 에 관련 내용을 담습니다.
+        List<ProgramSearchInfo> tvSearchInfos = new ArrayList<>();
+
+        // //open api를 통해 검색 결과를 받아옵니다.
+        OpenApiSearchTrendingDto tvSearchList=getSearchProgram("tv",name,page);
+
+        //저장하고 DTO를 설계합니다
+        tvSearchList.getResults().stream().forEach(tvProgramInfo->{
+            Program program=saveProgramAndGetProgram(tvProgramInfo,ProgramType.TV);
+            String firstGenreName = getProgramFirstGenre(tvProgramInfo.getGenre_ids());
+            tvSearchInfos.add(new ProgramSearchInfo(program.getId(),program.getTitle(),tvProgramInfo.getFirst_air_date(),firstGenreName,program.getPosterPath(),tvProgramInfo.getOverview()));
+        });
 
 
-        return searchResponseDto;
+        return new SearchTvResponseDto(tvSearchInfos,tvSearchList.getPage(),tvSearchList.getTotal_pages(),tvSearchList.getTotal_results());
     }
 
 
 
-
-    private OpenApiSearchTrendingDto getSearchProgram(String type,String name){
+    //검색하는 open api 를 데이터로 받아오기
+    private OpenApiSearchTrendingDto getSearchProgram(String type,String name,int page){
         OpenApiSearchTrendingDto openApiSearchTrendingDto=webClient.get()
-                .uri("/search/"+type+"?query="+name+"&include_adult=false&language=ko&page="+1)
+                .uri("/search/"+type+"?query="+name+"&include_adult=false&language=ko&page="+page)
                 .retrieve()
                 .bodyToMono(OpenApiSearchTrendingDto.class)
                 .block();
         return openApiSearchTrendingDto;
     }
 
-    private void makeSearchResponse(SearchResponseDtoV1 searchResponseDto,Program p,ProgramType programType,SearchTrendingOpenApiProgramInfo searchTrendingOpenApiProgramInfo){
-        List<Long> genreIdList=searchTrendingOpenApiProgramInfo.getGenre_ids();
-        String firstGenreName;
-        if(!genreIdList.isEmpty()){
-            ProgramGenre programGenre=programGenreRepository.findByGenreIdAndProgramIdWithFetch(genreIdList.get(0),p.getId());
-            firstGenreName=programGenre.getGenre().getName();
-        }
-        else{
-            firstGenreName=null;
-        }
-
-        if(programType==ProgramType.Movie) {
-            searchResponseDto.getMovieSearchInfos().add(new ProgramTrendingWeekInfo(p.getId(), p.getTitle(),p.getCreatedYear(),firstGenreName , p.getPosterPath()));
-        }
-        if(programType==ProgramType.TV){
-            searchResponseDto.getTvSearchInfos().add(new ProgramTrendingWeekInfo(p.getId(),p.getTitle(),p.getCreatedYear(),firstGenreName,p.getPosterPath()));
-        }
-    }
 
 
 }
