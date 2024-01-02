@@ -18,6 +18,7 @@ public class CommunitySubjectsListDTO {
     private String nickName;
     private Long programId;
     private Long subjectId;
+    private int likeCount;
 
     @Builder
     public CommunitySubjectsListDTO(LocalDateTime createdAt,
@@ -25,7 +26,8 @@ public class CommunitySubjectsListDTO {
                                     String title,
                                     String nickName,
                                     Long programId,
-                                    Long subjectId
+                                    Long subjectId,
+                                    int likeCount
     ) {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -33,5 +35,6 @@ public class CommunitySubjectsListDTO {
         this.nickName = nickName;
         this.programId = programId;
         this.subjectId = subjectId;
+        this.likeCount = likeCount;
     }
 }
