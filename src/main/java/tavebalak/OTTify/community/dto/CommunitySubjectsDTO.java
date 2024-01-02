@@ -9,11 +9,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class CommunitySubjectsDTO {
-    private long subjectAmount;
+    private int subjectAmount;
     private List<CommunitySubjectsListDTO> list;
 
     @Builder
-    public CommunitySubjectsDTO(long subjectAmount, List<CommunitySubjectsListDTO> list){
+    public CommunitySubjectsDTO(int subjectAmount, List<CommunitySubjectsListDTO> list){
         this.subjectAmount = subjectAmount;
         this.list = list;
     }

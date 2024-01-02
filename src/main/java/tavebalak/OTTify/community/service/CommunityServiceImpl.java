@@ -68,6 +68,25 @@ public class CommunityServiceImpl implements CommunityService{
         return communityRepository.save(community);
 
     }
+
+    public Community save(CommunitySubjectCreateDTO c){
+        boolean present = programRepository.findById(c.getProgramId()).isPresent();
+        Program program = null;
+        if(!present) {
+            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+        }else{
+            program = programRepository.findById(c.getProgramId()).get();
+        }
+
+        Community community = Community.builder()
+                .title(c.getSubjectName())
+                .content(c.getContent())
+                .program(program)
+                .build();
+
+        return communityRepository.save(community);
+    }
+
     @Override
     public void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException {
         Community community = communityRepository.findById(c.getSubjectId())
@@ -95,10 +114,46 @@ public class CommunityServiceImpl implements CommunityService{
         community.edit(communitySubjectEditorDTO);
     }
 
+    public Community modify(CommunitySubjectEditDTO c, User user) throws NotFoundException {
+        Community community = communityRepository.findById(c.getSubjectId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        if(!Objects.equals(community.getUser().getId(), user.getId())){
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
+        boolean present = programRepository.findById(c.getProgramId()).isPresent();
+        Program program = null;
+        if(!present){
+            program = programRepository.save(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+        }else {
+            program = programRepository.findById(c.getProgramId()).get();
+        }
+
+        CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder communitySubjectEditorDTOBuilder = community.toEditor();
+        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder
+                .title(c.getSubjectName())
+                .content(c.getContent())
+                .program(program)
+                .build();
+
+        community.edit(communitySubjectEditorDTO);
+        community.setProgram(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+        return community;
+    }
+
     @Override
     public void deleteSubject(Long subjectId) throws NotFoundException {
         Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
         if(!Objects.equals(community.getUser().getId(), getUser().getId())){
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+        communityRepository.delete(community);
+    }
+
+    public void delete(Long subjectId, User user) throws NotFoundException {
+        Community community = communityRepository.findById(subjectId).orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+        if(!Objects.equals(community.getUser().getId(), user.getId())){
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
         communityRepository.delete(community);
@@ -119,7 +174,7 @@ public class CommunityServiceImpl implements CommunityService{
                         .likeCount(getLikeSum(community.getId()))
                         .build()
         ).collect(Collectors.toList());
-        return  CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(listDTO).build();
+        return  CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements()).list(listDTO).build();
     }
 
     private Integer getLikeSum(Long communityId) {
@@ -144,11 +199,12 @@ public class CommunityServiceImpl implements CommunityService{
                         .updatedAt(community.getUpdatedAt())
                         .title(community.getTitle())
                         .nickName(community.getUser().getNickName())
+                        .subjectId(community.getId())
                         .programId(programId)
                         .build()
         ).collect(Collectors.toList());
 
-        return CommunitySubjectsDTO.builder().subjectAmount(communities.getTotalElements()).list(list).build();
+        return CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements()).list(list).build();
     }
 
     @Override
@@ -172,6 +228,26 @@ public class CommunityServiceImpl implements CommunityService{
 
         return flag.get();
     }
+
+    public boolean likeSub(User user, Community community, Long id) {
+        AtomicBoolean flag = new AtomicBoolean(false);
+
+        likedCommunityRepository.findByCommunityIdAndUserId(community.getId(), id).ifPresentOrElse(
+                likedCommunityRepository::delete,
+                () -> {
+                    likedCommunityRepository.save(
+                            LikedCommunity.builder()
+                                    .user(user)
+                                    .community(community)
+                                    .build()
+                    );
+                    flag.set(true);
+                }
+        );
+
+        return flag.get();
+    }
+
 
     @Override
     public boolean likeComment(Long subjectId, Long commentId) {

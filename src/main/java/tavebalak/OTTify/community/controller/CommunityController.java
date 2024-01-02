@@ -113,7 +113,7 @@ public class CommunityController {
         return BaseResponse.success("성공적으로 토론댓글을 삭제하였습니다.");
     }
 
-    @DeleteMapping("/comment/{subjectId}/{commentId}/{recommentId}")
+    @DeleteMapping("/recomment/{subjectId}/{commentId}/{recommentId}")
     public BaseResponse deleteRecomment(@PathVariable Long subjectId,
                                         @PathVariable Long commentId,
                                         @PathVariable Long recommentId) throws NotFoundException {

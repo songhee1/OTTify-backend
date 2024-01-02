@@ -22,6 +22,7 @@ import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -315,6 +316,57 @@ class CommunityControllerTest {
                 .andDo(print());
 
 
+    }
+
+    @Test
+    @DisplayName("DELETE 주제 삭제 컨트롤러 성공")
+    public void 주제_삭제_성공() throws Exception, NotFoundException {
+        //given
+        doNothing().when(communityService).deleteSubject(any());
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/api/v1/discussion/subject/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("성공적으로 토론주제를 삭제하였습니다."));
+    }
+
+    @Test
+    @DisplayName("DELETE 댓글 삭제 컨트롤러 성공")
+    public void 댓글_삭제_성공() throws Exception, NotFoundException {
+        //given
+        doNothing().when(replyService).deleteComment(anyLong(), anyLong());
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/api/v1/discussion/comment/1/50")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("성공적으로 토론댓글을 삭제하였습니다."));
+    }
+
+    @Test
+    @DisplayName("DELETE 토론 대댓글 삭제 컨트롤러 성공")
+    public void 대댓글_삭제_성공() throws NotFoundException, Exception {
+        //given
+        doNothing().when(replyService).deleteRecomment(anyLong(), anyLong(), anyLong());
+
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete("/api/v1/discussion/recomment/1/50/27")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        //then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value("성공적으로 토론대댓글을 삭제하였습니다."));
     }
 
 }
