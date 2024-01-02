@@ -211,6 +211,26 @@ public class CommunityServiceImpl implements CommunityService{
         return flag.get();
     }
 
+    public boolean likeSub(User user, Community community, Long id) {
+        AtomicBoolean flag = new AtomicBoolean(false);
+
+        likedCommunityRepository.findByCommunityIdAndUserId(community.getId(), id).ifPresentOrElse(
+                likedCommunityRepository::delete,
+                () -> {
+                    likedCommunityRepository.save(
+                            LikedCommunity.builder()
+                                    .user(user)
+                                    .community(community)
+                                    .build()
+                    );
+                    flag.set(true);
+                }
+        );
+
+        return flag.get();
+    }
+
+
     @Override
     public boolean likeComment(Long subjectId, Long commentId) {
         //only-write object
