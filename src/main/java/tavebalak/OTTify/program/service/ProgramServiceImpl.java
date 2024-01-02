@@ -3,21 +3,28 @@ package tavebalak.OTTify.program.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.error.ErrorCode;
+import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
+import tavebalak.OTTify.genre.entity.Genre;
+import tavebalak.OTTify.genre.entity.ProgramGenre;
 import tavebalak.OTTify.genre.entity.UserGenre;
-import tavebalak.OTTify.genre.entity.repository.UserGenreRepository;
+import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.genre.repository.ProgramGenreRepository;
+import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.dto.RecommendProgramsDTO;
 import tavebalak.OTTify.program.dto.ServiceListsDTO;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.user.entity.LikedProgram;
+import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
+import tavebalak.OTTify.user.repository.UserRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -26,72 +33,86 @@ public class ProgramServiceImpl implements  ProgramService {
     private final UserGenreRepository userGenreRepository;
     private final LikedProgramRepository likedProgramRepository;
     private final ProgramRepository programRepository;
+    private final UserRepository userRepository;
+    private final GenreRepository genreRepository;
+    private final ProgramGenreRepository programGenreRepository;
 
 
     public RecommendProgramsDTO getRecommendProgram(int count){
-        //1순위 장르가 같은 사람들의 UserGenre 리스트 조회
-        UserGenre byGenreIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(1L, true);
-        List<UserGenre> userGenreList = userGenreRepository.findByGenreId(byGenreIdAndIsFirst.getGenre().getId());
+        User savedUser = getUser();
+        Set<Program> recommendPrograms = new HashSet<>();
 
-        //UserGenre 중 사용자를 제외한 사람들로 좁힘
-        List<UserGenre> collect = userGenreList.stream().filter(userGenre -> userGenre.getUser().getId() != 1L).collect(Collectors.toList());
+        //1순위 장르 리스트 조회
+        //1) 사용자의 1순위 UserGenre 추출
+        Optional<UserGenre> byGenreIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(savedUser.getId(), true);
 
-        Set<Program> GenreRecommendPrograms = new HashSet<>();
-        AtomicInteger firstGenreProgramsSize = new AtomicInteger((int) (count * 0.5));
-        for (UserGenre userGenre : collect) {
-            List<LikedProgram> likedPrograms = likedProgramRepository.findByUserId(userGenre.getUser().getId());
-            likedPrograms.forEach(userLikedProgram-> {
-                if(firstGenreProgramsSize.get() == 0) return;
-                if(!GenreRecommendPrograms.contains(userLikedProgram)) {
-                    GenreRecommendPrograms.add(userLikedProgram.getProgram());
-                    firstGenreProgramsSize.getAndDecrement();
-                }
-            });
+        if(byGenreIdAndIsFirst.isPresent()) {
+            //Genre 추출
+            Genre userFirstGenre = genreRepository.findById(byGenreIdAndIsFirst.get().getId()).orElseThrow(
+                    () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            );
+
+            List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(userFirstGenre.getId());
+
+            for (int i = 1; i < 4; i++) {
+                int idx = new Random().nextInt(programGenreList.size());
+                Optional<Program> program = programRepository.findById(programGenreList.get(idx).getId());
+                program.ifPresent(recommendPrograms::add);
+            }
         }
 
+        //2순위 장르 리스트 조회
+        Optional<UserGenre> byUserIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(savedUser.getId(), false);
+        if(byUserIdAndIsFirst.isPresent()) {
+            Genre userSecondGenre = genreRepository.findById(byUserIdAndIsFirst.get().getId()).orElseThrow(
+                    () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            );
 
-        //2순위 장르가 같은 사람들의 UserGenre 리스트 조회
-        UserGenre byUserIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(1L, false);
-        List<UserGenre> userGenreList1 = userGenreRepository.findByGenreId(byUserIdAndIsFirst.getGenre().getId());
+            List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(userSecondGenre.getId());
 
-        //UserGenre 중 사용자 제외 사람들로 좁힘
-        List<UserGenre> collect1 = userGenreList1.stream().filter(userGenre -> userGenre.getUser().getId() != 1L).collect(Collectors.toList());
-        AtomicInteger secondGenreSize = new AtomicInteger((int) (count * 0.2));
-        for (UserGenre userGenre : collect1) {
-            List<LikedProgram> likedPrograms = likedProgramRepository.findByUserId(userGenre.getUser().getId());
-            likedPrograms.forEach(userLikedProgram-> {
-                if(secondGenreSize.get() == 0) return;
-                if(!GenreRecommendPrograms.contains(userLikedProgram)){
-                    GenreRecommendPrograms.add(userLikedProgram.getProgram());
-                    secondGenreSize.getAndDecrement();
-                }
-            });
+            int idx = new Random().nextInt(programGenreList.size());
+            Optional<Program> program = programRepository.findById(programGenreList.get(idx).getId());
+            program.ifPresent(recommendPrograms::add);
         }
 
-        //찜으로 저장한 프로그램 리스트 조회
-        AtomicInteger likedProgramsSize = new AtomicInteger((int) (count*0.1));
-        likedProgramRepository.findByUserId(1L).forEach(likedProgram ->
+        //찜 리스트 조회
+        AtomicInteger likedProgramsSize = new AtomicInteger(1);
+        likedProgramRepository.findByUserId(savedUser.getId()).forEach(likedProgram ->
                 {
                     if(likedProgramsSize.get() == 0) return;
-                    if(!GenreRecommendPrograms.contains(likedProgram)){
-                        GenreRecommendPrograms.add(programRepository.findById(likedProgram.getProgram().getId()).get());
-                        likedProgramsSize.getAndDecrement();
-                    }
+                    Optional<Program> program = programRepository.findById(likedProgram.getProgram().getId());
+                    program.ifPresent(recommendPrograms::add);
+                    likedProgramsSize.getAndDecrement();
                 });
 
-        //별점 높은 순으로 2개 리스트 조회
+        //별점 높은 순으로 리스트 조회
+        List<Program> programList = programRepository.findTop10ByOrderByAverageRatingDesc();
+        int idx = new Random().nextInt(programList.size());
+        Optional<Program> program = programRepository.findById(programList.get(idx).getId());
+        program.ifPresent(recommendPrograms::add);
+
+        while(recommendPrograms.size()<6){
+            Long index = 1L + ((long) (new Random().nextDouble() * (50L - 1L)));
+            Optional<Program> findProgram = programRepository.findById(index);
+            findProgram.ifPresent(recommendPrograms::add);
+        }
 
         return RecommendProgramsDTO.builder()
                 .recommentAmount(count)
                 .serviceListsDTOList(
-                        GenreRecommendPrograms.stream().map(program ->
+                        recommendPrograms.stream().map(pg ->
                         ServiceListsDTO.builder()
-                                .programId(program.getId())
-                                .title(program.getTitle())
-                                .posterPath(program.getPosterPath())
-                                .averageRating(program.getAverageRating())
+                                .programId(pg.getId())
+                                .title(pg.getTitle())
+                                .posterPath(pg.getPosterPath())
+                                .averageRating(pg.getAverageRating())
                                 .build()).collect(Collectors.toList())
                 ).build();
+    }
 
+    private User getUser() {
+        return userRepository.findByEmail(
+                SecurityUtil.getCurrentEmail().get()).orElseThrow(()-> new UnauthorizedException(ErrorCode.UNAUTHORIZED)
+        );
     }
 }
