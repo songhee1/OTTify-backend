@@ -45,13 +45,7 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public Community saveSubject(CommunitySubjectCreateDTO c){
 
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present) {
-            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else{
-            program = programRepository.findById(c.getProgramId()).get();
-        }
+        Program program = isPresent(c);
 
         Community community = Community.builder()
                 .title(c.getSubjectName())
@@ -70,13 +64,7 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     public Community save(CommunitySubjectCreateDTO c){
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present) {
-            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else{
-            program = programRepository.findById(c.getProgramId()).get();
-        }
+        Program program = isPresent(c);
 
         Community community = Community.builder()
                 .title(c.getSubjectName())
@@ -85,6 +73,17 @@ public class CommunityServiceImpl implements CommunityService{
                 .build();
 
         return communityRepository.save(community);
+    }
+
+    private Program isPresent(CommunitySubjectCreateDTO c) {
+        boolean present = programRepository.findById(c.getProgramId()).isPresent();
+        Program program = null;
+        if(!present) {
+            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+        }else{
+            program = programRepository.findById(c.getProgramId()).get();
+        }
+        return program;
     }
 
     @Override
@@ -161,6 +160,11 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
+        String property = pageable.getSort().toList().get(0).getProperty();
+        if(property.equals("likeCount")){
+
+        }
+
         Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
         List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
                 community -> CommunitySubjectsListDTO

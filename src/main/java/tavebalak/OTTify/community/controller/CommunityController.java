@@ -62,6 +62,7 @@ public class CommunityController {
     }
 
     @GetMapping("/total")
+    
     public BaseResponse getTotalProgramsSubjects(@PageableDefault(size =  10,
                                                                   sort = "createdAt",
                                                                   direction = Sort.Direction.DESC,
