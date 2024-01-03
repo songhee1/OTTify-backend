@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
-    @Query("select distinct r.community from Reply r where r.user.id =:userId")
+    @Query("select distinct r.community from Reply r where r.user.id =:userId order by r.community.createdAt")
     List<Community> findAllCommunityByUserId(Long userId);
 }
