@@ -28,4 +28,5 @@ public class Review extends BaseEntity {
     private String content;
     private double rating;
     private String genre;
+    private Integer likeCnt;
 }
