@@ -4,12 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.community.dto.MyDiscussionDto;
+import tavebalak.OTTify.community.entity.Community;
+import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.review.dto.MyReviewDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.entity.ReviewTag;
 import tavebalak.OTTify.review.repository.LikedReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
+import tavebalak.OTTify.user.repository.LikedCommunityRepository;
+import tavebalak.OTTify.user.repository.LikedReplyRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,6 +29,9 @@ public class UserService {
     private final ReviewRepository reviewRepository;
     private final ReviewReviewTagRepository reviewReviewTagRepository;
     private final LikedReviewRepository likedReviewRepository;
+    private final CommunityRepository communityRepository;
+    private final LikedCommunityRepository likedCommunityRepository;
+    private final LikedReplyRepository likedReplyRepository;
 
     public List<MyReviewDto> getMyReview(Long userId) {
         List<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId);
@@ -81,5 +89,37 @@ public class UserService {
                 });
 
         return reviewDtoList;
+    }
+
+    public List<MyDiscussionDto> getHostedDiscussion(Long userId) {
+        List<Community> discussionList = communityRepository.findByUserIdOrderByCreatedAt(userId);
+
+        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
+        discussionList.stream()
+                .forEach(d -> {
+                    // createdDate format 변경
+                    String createdDateString = d.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+
+                    // likeCnt 계산
+                    Long likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+
+                    // replyCnt 계산
+                    Long replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+
+                    discussionDtoList.add(
+                            MyDiscussionDto.builder()
+                                    .discussionId(d.getId())
+                                    .createdDate(createdDateString)
+                                    .title(d.getTitle())
+                                    .programTitle(d.getProgram().getTitle())
+                                    .content(d.getContent())
+                                    .img(d.getImg())
+                                    .likeCnt(likeCnt)
+                                    .replyCnt(replyCnt)
+                                    .build()
+                    );
+                });
+
+        return discussionDtoList;
     }
 }

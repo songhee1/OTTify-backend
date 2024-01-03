@@ -3,8 +3,10 @@ package tavebalak.OTTify.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
+import tavebalak.OTTify.community.dto.MyDiscussionDto;
 import tavebalak.OTTify.review.dto.MyReviewDto;
 import tavebalak.OTTify.user.Service.UserService;
 
@@ -28,5 +30,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<List<MyReviewDto>> getLikedReview(@PathVariable("id") Long userId) {
         return BaseResponse.success(userService.getLikedReview(userId));
+    }
+
+    @GetMapping("/{id}/discussion/hosting")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PathVariable("id") Long userId) {
+        return BaseResponse.success(userService.getHostedDiscussion(userId));
     }
 }
