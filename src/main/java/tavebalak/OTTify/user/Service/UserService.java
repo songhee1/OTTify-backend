@@ -26,7 +26,7 @@ public class UserService {
     private final LikedReviewRepository likedReviewRepository;
 
     public List<MyReviewDto> getMyReview(Long userId) {
-        List<Review> reviewList = reviewRepository.findByUserId(userId);
+        List<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId);
 
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
         reviewList.stream()

@@ -8,6 +8,6 @@ import tavebalak.OTTify.user.entity.LikedReview;
 import java.util.List;
 
 public interface LikedReviewRepository extends JpaRepository<LikedReview, Long> {
-    @Query("select lr.review from LikedReview lr where lr.user.id =:userId")
+    @Query("select lr.review from LikedReview lr where lr.user.id =:userId order by lr.review.createdAt")
     List<Review> findLikedReviewByUserId(Long userId);
 }
