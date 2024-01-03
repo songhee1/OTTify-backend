@@ -9,14 +9,14 @@ import java.util.List;
 
 @Getter
 public class MyReviewDto {
-    String userProfilePhoto;
-    String userNickName;
-    String createdDate;
-    String programTitle;
-    Double rating;
-    List<ReviewTag> reviewTags = new ArrayList<>();
-    String content;
-    Integer likeCnt;
+    private String userProfilePhoto;
+    private String userNickName;
+    private String createdDate;
+    private String programTitle;
+    private Double rating;
+    private List<ReviewTag> reviewTags = new ArrayList<>();
+    private String content;
+    private Integer likeCnt;
 
     @Builder
     public MyReviewDto(String userProfilePhoto, String userNickName, String createdDate, String programTitle, Double rating, List<ReviewTag> reviewTags, String content, Integer likeCnt) {
