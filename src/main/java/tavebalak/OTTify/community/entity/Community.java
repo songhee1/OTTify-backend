@@ -18,8 +18,11 @@ public class Community extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "community_id")
     private Long id;
+
     private String title;
     private String content;
+    private String img;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
