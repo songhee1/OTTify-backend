@@ -23,4 +23,10 @@ public class UserController {
     public BaseResponse<List<MyReviewDto>> getMyReview(@PathVariable("id") Long userId) {
         return BaseResponse.success(userService.getMyReview(userId));
     }
+
+    @GetMapping("/{id}/likedReviews")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyReviewDto>> getLikedReview(@PathVariable("id") Long userId) {
+        return BaseResponse.success(userService.getLikedReview(userId));
+    }
 }
