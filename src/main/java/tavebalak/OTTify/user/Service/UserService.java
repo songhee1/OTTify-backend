@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.MyDiscussionDto;
 import tavebalak.OTTify.community.entity.Community;
+import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
+import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.review.dto.MyReviewDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.entity.ReviewTag;
@@ -31,6 +33,7 @@ public class UserService {
     private final LikedReviewRepository likedReviewRepository;
     private final CommunityRepository communityRepository;
     private final LikedCommunityRepository likedCommunityRepository;
+    private final ReplyRepository replyRepository;
     private final LikedReplyRepository likedReplyRepository;
 
     public List<MyReviewDto> getMyReview(Long userId) {
@@ -93,6 +96,38 @@ public class UserService {
 
     public List<MyDiscussionDto> getHostedDiscussion(Long userId) {
         List<Community> discussionList = communityRepository.findByUserIdOrderByCreatedAt(userId);
+
+        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
+        discussionList.stream()
+                .forEach(d -> {
+                    // createdDate format 변경
+                    String createdDateString = d.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+
+                    // likeCnt 계산
+                    Long likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+
+                    // replyCnt 계산
+                    Long replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+
+                    discussionDtoList.add(
+                            MyDiscussionDto.builder()
+                                    .discussionId(d.getId())
+                                    .createdDate(createdDateString)
+                                    .title(d.getTitle())
+                                    .programTitle(d.getProgram().getTitle())
+                                    .content(d.getContent())
+                                    .img(d.getImg())
+                                    .likeCnt(likeCnt)
+                                    .replyCnt(replyCnt)
+                                    .build()
+                    );
+                });
+
+        return discussionDtoList;
+    }
+
+    public List<MyDiscussionDto> getParticipatedDiscussion(Long userId) {
+        List<Community> discussionList = replyRepository.findAllCommunityByUserId(userId);
 
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
         discussionList.stream()

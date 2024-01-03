@@ -3,7 +3,6 @@ package tavebalak.OTTify.user.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.MyDiscussionDto;
@@ -36,5 +35,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PathVariable("id") Long userId) {
         return BaseResponse.success(userService.getHostedDiscussion(userId));
+    }
+
+    @GetMapping("/{id}/discussion/participating")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PathVariable("id") Long userId) {
+        return BaseResponse.success(userService.getParticipatedDiscussion(userId));
     }
 }
