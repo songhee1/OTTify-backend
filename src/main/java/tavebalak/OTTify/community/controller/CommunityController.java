@@ -77,7 +77,6 @@ public class CommunityController {
                                                                  direction = Sort.Direction.DESC,
                                                                  page = 0) Pageable pageable,
                                                @PathParam("programId") Long programId){
-
         CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
         return BaseResponse.success(page);
     }
