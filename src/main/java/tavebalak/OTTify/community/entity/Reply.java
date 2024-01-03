@@ -3,6 +3,9 @@ package tavebalak.OTTify.community.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,4 +30,8 @@ public class Reply {
 
     @OneToMany(mappedBy = "parent")
     private List<Reply> child = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
