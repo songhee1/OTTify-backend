@@ -51,7 +51,7 @@ public class Program {
     private List<ProgramGenre> programGenreList=new ArrayList<>();
 
     @Builder
-    Program(String title,String posterPath,Long tmDbProgramId,ProgramType type,String createdYear){
+    public Program(String title,String posterPath,Long tmDbProgramId,ProgramType type,String createdYear){
         this.title=title;
         this.posterPath=posterPath;
         this.tmDbProgramId=tmDbProgramId;
@@ -60,8 +60,7 @@ public class Program {
     }
 
     public void addGenre(Genre genre){
-        ProgramGenre programGenre=new ProgramGenre(genre);
-        programGenre.init(this);
+        ProgramGenre programGenre=ProgramGenre.builder().genre(genre).program(this).build();
         programGenreList.add(programGenre);
     }
 
