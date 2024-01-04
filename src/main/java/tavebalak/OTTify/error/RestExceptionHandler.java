@@ -8,7 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import tavebalak.OTTify.error.ErrorResponse;
 import tavebalak.OTTify.error.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
