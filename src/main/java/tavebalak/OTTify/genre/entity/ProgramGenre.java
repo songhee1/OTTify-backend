@@ -1,6 +1,7 @@
 package tavebalak.OTTify.genre.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.program.entity.Program;
@@ -23,12 +24,9 @@ public class ProgramGenre {
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    public ProgramGenre(Genre genre){
-        this.genre=genre;
-    }
-    public void init(Program program){
-        if(program!=null){
-            this.program=program;
-        }
+    @Builder
+    public ProgramGenre(Program program,Genre genre){
+        this.program = program;
+        this.genre = genre;
     }
 }
