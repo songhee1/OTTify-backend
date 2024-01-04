@@ -6,7 +6,7 @@ import tavebalak.OTTify.review.entity.Review;
 import java.util.List;
 
 public interface ReviewService {
-    public List<LatestReviewsDTO> getLatestReviews();
+    List<LatestReviewsDTO> getLatestReviews();
     void save(Review review);
     boolean likeReview(Long id);
 }
