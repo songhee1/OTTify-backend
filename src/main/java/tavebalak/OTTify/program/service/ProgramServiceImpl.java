@@ -17,7 +17,6 @@ import tavebalak.OTTify.program.dto.RecommendProgramsDTO;
 import tavebalak.OTTify.program.dto.ServiceListsDTO;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
-import tavebalak.OTTify.user.entity.LikedProgram;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
