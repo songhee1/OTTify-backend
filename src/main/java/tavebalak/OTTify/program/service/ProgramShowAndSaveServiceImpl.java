@@ -99,14 +99,11 @@ public class ProgramShowAndSaveServiceImpl implements ProgramShowAndSaveService{
     // 프로그램이 저장되어 있는 경우 저장된 프로그램을 반환하고, 아닌 경우 저장하고 반환합니다.
 
     private Program saveProgramAndGetProgram(SearchTrendingOpenApiProgramInfo searchTrendingOpenApiProgramInfo, ProgramType programType){
-        Program program;
-        if(!programRepository.existsByTmDbProgramIdAndAndType(searchTrendingOpenApiProgramInfo.getId(),programType)){
-            program=apiProgramToProgram(searchTrendingOpenApiProgramInfo,programType);
-            programRepository.save(program);
-        }
-        else{
-            program=programRepository.findByTmDbProgramIdAndType(searchTrendingOpenApiProgramInfo.getId(),programType);
-        }
+        Program program= programRepository.findByTmDbProgramIdAndType(searchTrendingOpenApiProgramInfo.getId(),programType).orElseGet(()->{
+            Program newProgram = apiProgramToProgram(searchTrendingOpenApiProgramInfo, programType);
+            programRepository.save(newProgram);
+            return newProgram;
+        });
         return program;
     }
 
