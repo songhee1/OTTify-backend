@@ -10,8 +10,8 @@ import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.genre.repository.ProgramGenreRepository;
 import tavebalak.OTTify.program.dto.searchTrending.Response.*;
-import tavebalak.OTTify.program.dto.searchTrending.openApi.OpenApiSearchTrendingDto;
-import tavebalak.OTTify.program.dto.searchTrending.openApi.SearchTrendingOpenApiProgramInfo;
+import tavebalak.OTTify.program.dto.searchTrending.openApiRequest.OpenApiSearchTrendingDto;
+import tavebalak.OTTify.program.dto.searchTrending.openApiRequest.SearchTrendingOpenApiProgramInfo;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.ProgramRepository;
@@ -55,7 +55,7 @@ public class ProgramShowAndSaveServiceImpl implements ProgramShowAndSaveService{
 
                         if(programTrendingDayInfos.size()<8){
                             String firstGenreName = getProgramFirstGenre(trendingDayProgramInfo.getGenre_ids());
-                            programTrendingDayInfos.add(new ProgramTrendingDayInfo(program.getId(),program.getTitle(),program.getCreatedYear(), firstGenreName,trendingDayProgramInfo.getBackdrop_path()));
+                            programTrendingDayInfos.add(new ProgramTrendingDayInfo(program.getId(),program.getTitle(),program.getCreatedYear(), firstGenreName,trendingDayProgramInfo.getBackdrop_path(),program.getAverageRating()));
                         }
                     }
                 }
@@ -76,7 +76,7 @@ public class ProgramShowAndSaveServiceImpl implements ProgramShowAndSaveService{
 
                 if(programTrendingWeekInfos.size()<8){
                     String firstGenreName = getProgramFirstGenre(trendingWeekProgramInfo.getGenre_ids());
-                    programTrendingWeekInfos.add(new ProgramTrendingWeekInfo(program.getId(),program.getTitle(),program.getCreatedYear(), firstGenreName,trendingWeekProgramInfo.getPoster_path()));
+                    programTrendingWeekInfos.add(new ProgramTrendingWeekInfo(program.getId(),program.getTitle(),program.getCreatedYear(), firstGenreName,trendingWeekProgramInfo.getPoster_path(),program.getAverageRating()));
                 }
             }
         });

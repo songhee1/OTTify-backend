@@ -57,6 +57,8 @@ public class Program {
         this.tmDbProgramId=tmDbProgramId;
         this.type=type;
         this.createdYear=createdYear;
+        this.averageRating = 0;
+        this.reviewCount = 0;
     }
 
     public void addGenre(Genre genre){
