@@ -6,10 +6,10 @@ import tavebalak.OTTify.program.dto.searchTrending.Response.SearchTvResponseDto;
 import tavebalak.OTTify.program.dto.searchTrending.Response.TrendingResponseDto;
 
 public interface ProgramShowAndSaveService {
-    public TrendingResponseDto showTrending();
-    public SearchResponseDto searchByName(String name);
+     TrendingResponseDto showTrending();
+     SearchResponseDto searchByName(String name);
 
-    public SearchMovieResponseDto searchByMovieName(String name, int page);
+     SearchMovieResponseDto searchByMovieName(String name, int page);
 
-    public SearchTvResponseDto searchByTvName(String name, int page);
+     SearchTvResponseDto searchByTvName(String name, int page);
 }
