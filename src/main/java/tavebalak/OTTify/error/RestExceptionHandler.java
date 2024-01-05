@@ -84,6 +84,13 @@ public class RestExceptionHandler {
         return ErrorResponse.error(exception.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NoSuchElementException.class)
+    public ErrorResponse<String> handlerNoSuchElementException(ForbiddenException exception, HttpServletRequest request) {
+        logInfo(request, exception.getMessage());
+        return ErrorResponse.error(exception.getMessage());
+    }
+
     private void logInfo(HttpServletRequest request, String message) {
         log.info("{} {} : {} (traceId: {})",
                 request.getMethod(), request.getRequestURI(), message, getTraceId());

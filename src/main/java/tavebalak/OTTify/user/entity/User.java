@@ -9,11 +9,16 @@ import tavebalak.OTTify.common.constant.Role;
 import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.common.entity.BaseEntity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "\"User\"")
+@Table(name = "\"user\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
@@ -49,9 +54,31 @@ public class User extends BaseEntity {
         this.code = code;
     }
 
-    public void changeUserRole(){
+    public static TestUserBuilder testUserBuilder(){
+        return new TestUserBuilder();
+    }
+
+    public static class TestUserBuilder extends User {
+        private Long id;
+        private String nickName;
+        private String profilePhoto;
+        private double averageRating;
+        TestUserBuilder(){
+        }
+
+        public User create(final Long id, String nickName, String profilePhoto, double averageRating){
+            this.id = id;
+            this.nickName = nickName;
+            this.profilePhoto = profilePhoto;
+            this.averageRating = averageRating;
+            return this;
+        }
+    }
+
+        public void changeUserRole(){
         role = Role.USER;
     }
 
     public void changeCode(String code) { this.code = code; }
+
 }
