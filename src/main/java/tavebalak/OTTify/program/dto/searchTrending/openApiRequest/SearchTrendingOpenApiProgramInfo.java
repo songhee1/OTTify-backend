@@ -1,7 +1,6 @@
-package tavebalak.OTTify.program.dto.searchTrending.openApi;
+package tavebalak.OTTify.program.dto.searchTrending.openApiRequest;
 
 import lombok.Getter;
-import tavebalak.OTTify.program.dto.CommonOpenApiProgramInfo;
 
 import java.util.ArrayList;
 import java.util.List;

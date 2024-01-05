@@ -1,4 +1,4 @@
-package tavebalak.OTTify.program.dto;
+package tavebalak.OTTify.program.dto.searchTrending.openApiRequest;
 
 import lombok.Getter;
 
