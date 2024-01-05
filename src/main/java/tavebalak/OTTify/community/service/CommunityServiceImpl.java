@@ -29,6 +29,7 @@ import tavebalak.OTTify.error.exception.NoSuchElementException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -116,13 +117,13 @@ public class CommunityServiceImpl implements CommunityService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present){
-            program = programRepository.save(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else {
-            program = programRepository.findById(c.getProgramId()).get();
-        }
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+        Program program;
+
+        program = optionalProgram.orElseGet(() -> programRepository.save(Program.builder()
+                .title(c.getProgramTitle())
+                .posterPath(c.getPosterPath())
+                .build()));
 
         CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder communitySubjectEditorDTOBuilder = community.toEditor();
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder
@@ -156,9 +157,6 @@ public class CommunityServiceImpl implements CommunityService{
     @Override
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
         String property = pageable.getSort().toList().get(0).getProperty();
-        if(property.equals("likeCount")){
-
-        }
 
         Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
         List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
