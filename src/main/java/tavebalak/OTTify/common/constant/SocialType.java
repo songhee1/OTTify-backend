@@ -1,4 +1,4 @@
-package tavebalak.OTTify.oauth.constant;
+package tavebalak.OTTify.common.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
