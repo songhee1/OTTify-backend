@@ -1,6 +1,5 @@
 package tavebalak.OTTify.review.service;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -10,7 +9,6 @@ import tavebalak.OTTify.review.dto.LatestReviewsDTO;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.user.entity.LikedReview;
-import tavebalak.OTTify.user.entity.QLikedReview;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedReviewRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
@@ -29,7 +27,6 @@ public class ReviewServiceImpl  implements  ReviewService{
     private final ReviewRepository reviewRepository;
     private final LikedReviewRepository likedReviewRepository;
     private final UserRepository userRepository;
-    private final JPAQueryFactory jpaQueryFactory;
 
     public List<LatestReviewsDTO> getLatestReviews() {
         List<Review> reviewList = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -49,15 +46,7 @@ public class ReviewServiceImpl  implements  ReviewService{
     }
 
     private Integer getLikeSum(Long reviewId) {
-        QLikedReview likedReview = QLikedReview.likedReview;
-        Review review = reviewRepository.findById(reviewId).orElseThrow(NoSuchElementException::new);
-        Long sum = jpaQueryFactory
-                .select(likedReview.count())
-                .from(likedReview)
-                .where(likedReview.review.eq(review))
-                .fetchOne();
-        if(sum == null) return 0;
-        return sum.intValue();
+        return likedReviewRepository.findByReviewId(reviewId).size();
     }
 
     public void save(Review review){
