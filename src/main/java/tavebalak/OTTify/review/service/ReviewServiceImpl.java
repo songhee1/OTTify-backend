@@ -27,11 +27,17 @@ public class ReviewServiceImpl  implements  ReviewService{
     private final ReviewRepository reviewRepository;
     private final LikedReviewRepository likedReviewRepository;
     private final UserRepository userRepository;
+    private final int TOP8_SIZE = 8;
 
     public List<LatestReviewsDTO> getLatestReviews() {
         List<Review> reviewList = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<Review> top4ReviewList = new ArrayList<>(Arrays.asList(reviewList.get(0), reviewList.get(1), reviewList.get(2), reviewList.get(3)));
-        return top4ReviewList.stream().map(
+        List<Review> top8ReviewList = new ArrayList<>();
+        if(reviewList.size()< TOP8_SIZE){
+            top8ReviewList.addAll(reviewList);
+        }else{
+            top8ReviewList.addAll(reviewList.subList(0, TOP8_SIZE));
+        }
+        return top8ReviewList.stream().map(
                 listOne -> LatestReviewsDTO.builder()
                         .reviewId(listOne.getId())
                         .nickName(listOne.getUser().getNickName())
