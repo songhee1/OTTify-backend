@@ -30,9 +30,20 @@ public class Program {
 
     private String createdYear;
 
-
     @Builder
-    Program(Long id, String title, String posterPath) {
+    public Program(String title,String posterPath,Long tmDbProgramId,ProgramType type,String createdYear){
+        this.title=title;
+        this.posterPath=posterPath;
+        this.tmDbProgramId=tmDbProgramId;
+        this.type=type;
+        this.createdYear=createdYear;
+        this.averageRating = 0;
+        this.reviewCount = 0;
+    }
+
+
+    @Builder(builderMethodName = "testBuilder")
+    public Program(Long id, String title, String posterPath) {
         this.id = id;
         this.title = title;
         this.posterPath = posterPath;
@@ -50,16 +61,7 @@ public class Program {
     @OneToMany(mappedBy = "program",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<ProgramGenre> programGenreList=new ArrayList<>();
 
-    @Builder
-    public Program(String title,String posterPath,Long tmDbProgramId,ProgramType type,String createdYear){
-        this.title=title;
-        this.posterPath=posterPath;
-        this.tmDbProgramId=tmDbProgramId;
-        this.type=type;
-        this.createdYear=createdYear;
-        this.averageRating = 0;
-        this.reviewCount = 0;
-    }
+
 
     public void addGenre(Genre genre){
         ProgramGenre programGenre=ProgramGenre.builder().genre(genre).program(this).build();
