@@ -4,16 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.exception.NotFoundException;
-import tavebalak.OTTify.user.entity.User;
-import tavebalak.OTTify.user.repository.UserRepository;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
@@ -27,7 +23,6 @@ public class CommunityController {
     private final ReplyService replyService;
 
     @PostMapping("/subject")
-
     public BaseResponse registerSubject(@RequestBody CommunitySubjectCreateDTO c){
         communityService.saveSubject(c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
