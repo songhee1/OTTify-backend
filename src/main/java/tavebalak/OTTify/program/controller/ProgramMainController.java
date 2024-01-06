@@ -15,9 +15,9 @@ import tavebalak.OTTify.program.service.ProgramService;
 public class ProgramMainController {
     private final ProgramService programService;
 
-    @GetMapping("/recommendProgram/{count}")
-    public BaseResponse getRecommendProgram(@PathVariable int count){
-        RecommendProgramsDTO recommendProgramsDTO = programService.getRecommendProgram(count);
+    @GetMapping("/recommendProgram")
+    public BaseResponse getRecommendProgram(){
+        RecommendProgramsDTO recommendProgramsDTO = programService.getRecommendProgram(6);
         return BaseResponse.success(recommendProgramsDTO);
     }
 }
