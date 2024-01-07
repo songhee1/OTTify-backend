@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReplyCommentEditorDTO {
     private String comment;
+
     @Builder
     public ReplyCommentEditorDTO(String comment){
         this.comment = comment;
