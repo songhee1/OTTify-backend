@@ -75,7 +75,7 @@ public class User extends BaseEntity {
         }
     }
 
-        public void changeUserRole(){
+    public void changeUserRole(){
         role = Role.USER;
     }
 
