@@ -26,11 +26,13 @@ public class UserProfileDTO {
     private GenreDTO firstGenre;
     private List<GenreDTO> secondGenre = new ArrayList<GenreDTO>();
 
+    private UserOttListDTO ott;
+
     private List<LikedProgramDTO> likedProgram = new ArrayList<>();
     private List<UninterestedProgramDTO> uninterestedProgram = new ArrayList<>();
 
     @Builder
-    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, GenreDTO firstGenre, List<GenreDTO> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
+    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, GenreDTO firstGenre, List<GenreDTO> secondGenre, UserOttListDTO ott, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
         this.profilePhoto = profilePhoto;
         this.nickName = nickName;
         this.grade = grade;
@@ -39,6 +41,7 @@ public class UserProfileDTO {
         this.ratingList = ratingList;
         this.firstGenre = firstGenre;
         this.secondGenre = secondGenre;
+        this.ott = ott;
         this.likedProgram = likedProgram;
         this.uninterestedProgram = uninterestedProgram;
     }

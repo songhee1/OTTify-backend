@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface UserSubscribingOTTRepository extends JpaRepository<UserSubscribingOTT, Long> {
-    List<UserSubscribingOTT> findUserSubscribingOTTByUserId(Long userId);
+    List<UserSubscribingOTT> findByUserId(Long userId);
 
     @Transactional
     @Modifying

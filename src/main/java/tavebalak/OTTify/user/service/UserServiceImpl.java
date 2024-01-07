@@ -15,10 +15,7 @@ import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
 import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
-import tavebalak.OTTify.user.dto.Response.LikedProgramDTO;
-import tavebalak.OTTify.user.dto.Response.UninterestedProgramDTO;
-import tavebalak.OTTify.user.dto.Response.UserOttDTO;
-import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
+import tavebalak.OTTify.user.dto.Response.*;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
@@ -89,6 +86,15 @@ public class UserServiceImpl implements UserService {
                 .fiveCnt(ratingList.get(5.0))
                 .build();
 
+        // OTT 리스트 가져오기
+        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserId(userId).stream()
+                .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
+                .collect(Collectors.toList());
+        UserOttListDTO userOttListDTO = UserOttListDTO.builder()
+                .totalCnt(userOttDTOList.size())
+                .ottList(userOttDTOList)
+                .build();
+
         // 보고싶은 프로그램 가져오기
         List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findByUserIdFetchJoin(userId).stream()
                 .map(p -> new LikedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
@@ -107,6 +113,7 @@ public class UserServiceImpl implements UserService {
                 .averageRating(user.getAverageRating())
                 .firstGenre(firstGenre)
                 .secondGenre(secondGenre)
+                .ott(userOttListDTO)
                 .ratingList(userReviewRatingListDTO)
                 .likedProgram(likedProgramListDTOList)
                 .uninterestedProgram(uninterestedProgramDTOList)
@@ -115,7 +122,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserOttDTO> getUserOTT(Long userId) {
-        return userSubscribingOttRepository.findUserSubscribingOTTByUserId(userId).stream()
+        return userSubscribingOttRepository.findByUserId(userId).stream()
                 .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
                 .collect(Collectors.toList());
     }
@@ -151,7 +158,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 이전에 구독 중이던 ott 리스트
-        List<Long> preSubscribingOttList = userSubscribingOttRepository.findUserSubscribingOTTByUserId(userId).stream()
+        List<Long> preSubscribingOttList = userSubscribingOttRepository.findByUserId(userId).stream()
                 .map((UserSubscribingOTT t) -> t.getOtt().getId())
                 .collect(Collectors.toList());
 
