@@ -12,7 +12,8 @@ import java.util.List;
 
 @Repository
 public interface UserSubscribingOTTRepository extends JpaRepository<UserSubscribingOTT, Long> {
-    List<UserSubscribingOTT> findByUserId(Long userId);
+    @Query("select uso from UserSubscribingOTT uso join fetch uso.ott where uso.user.id =:userId")
+    List<UserSubscribingOTT> findByUserIdFetchJoin(@Param("userId") Long userId);
 
     @Transactional
     @Modifying

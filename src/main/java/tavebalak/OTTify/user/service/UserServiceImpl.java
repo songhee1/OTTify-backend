@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // OTT 리스트 가져오기
-        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserId(userId).stream()
+        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
                 .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
                 .collect(Collectors.toList());
         UserOttListDTO userOttListDTO = UserOttListDTO.builder()
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserOttDTO> getUserOTT(Long userId) {
-        return userSubscribingOttRepository.findByUserId(userId).stream()
+        return userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
                 .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
                 .collect(Collectors.toList());
     }
@@ -158,7 +158,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 이전에 구독 중이던 ott 리스트
-        List<Long> preSubscribingOttList = userSubscribingOttRepository.findByUserId(userId).stream()
+        List<Long> preSubscribingOttList = userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
                 .map((UserSubscribingOTT t) -> t.getOtt().getId())
                 .collect(Collectors.toList());
 
