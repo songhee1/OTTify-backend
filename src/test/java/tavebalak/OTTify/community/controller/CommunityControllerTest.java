@@ -94,7 +94,7 @@ class CommunityControllerTest {
         //given
         Community response = Community.builder().title("test-title")
                 .content("test-content")
-                .program(Program.builder().title("test-title").id(1L).posterPath("test-path").build())
+                .program(Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
                 .title("test-title")
                 .build();
         ReplyCommentCreateDTO replyRequest = ReplyCommentCreateDTO.builder()
@@ -128,7 +128,7 @@ class CommunityControllerTest {
         //given
         Community response = Community.builder().title("test-title")
                 .content("test-content")
-                .program(Program.builder().title("test-title").id(1L).posterPath("test-path").build())
+                .program(Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
                 .title("test-title")
                 .build();
         Reply replyResponse = Reply.builder()
@@ -186,7 +186,7 @@ class CommunityControllerTest {
         Community community = Community.builder()
                 .id(1L)
                 .title(noExistCommunity.getSubjectName())
-                .program(Program.builder().title(noExistCommunity.getProgramTitle()).posterPath(noExistCommunity.getPosterPath())
+                .program(Program.testBuilder().title(noExistCommunity.getProgramTitle()).posterPath(noExistCommunity.getPosterPath())
                         .id(noExistCommunity.getProgramId()).build())
                 .content(noExistCommunity.getContent())
                 .build();
@@ -205,7 +205,7 @@ class CommunityControllerTest {
         //given
         Community response = Community.builder().title("test-title")
                 .content("test-content")
-                .program(Program.builder().title("test-title").id(1L).posterPath("test-path").build())
+                .program(Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
                 .title("test-title")
                 .build();
         Reply replyResponse = Reply.builder()
@@ -240,7 +240,7 @@ class CommunityControllerTest {
         //given
         Community response = Community.builder().title("test-title")
                 .content("test-content")
-                .program(Program.builder().title("test-title").id(1L).posterPath("test-path").build())
+                .program(Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
                 .title("test-title")
                 .build();
         when(communityService.saveSubject(any())).thenReturn(response);
@@ -279,7 +279,7 @@ class CommunityControllerTest {
         //given
         Community response = Community.builder().title("test-title")
                 .content("test-content")
-                .program(Program.builder().title("test-title").id(1L).posterPath("test-path").build())
+                .program(Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
                 .title("test-title")
                 .build();
         Reply replyResponse = Reply.builder()

@@ -82,7 +82,7 @@ public class CommunityServiceTest {
                 .user(user)
                 .id(1L)
                 .title(dto.getSubjectName())
-                .program(Program.builder().id(dto.getProgramId())
+                .program(Program.testBuilder().id(dto.getProgramId())
                         .posterPath(dto.getPosterPath())
                         .title(dto.getProgramTitle())
                         .build())
