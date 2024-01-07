@@ -35,6 +35,9 @@ public enum ErrorCode {
     USER_NOT_FOUND("유저를 찾을 수 없습니다."),
     OTT_NOT_FOUND("OTT를 찾을 수 없습니다."),
 
+
+    PROGRAM_GENRE_NOT_FOUND("프로그램과 관련된 장르를 찾을 수 없습니다."),
+
     /**
      * 405 Method Not Allowed
      */
@@ -50,6 +53,17 @@ public enum ErrorCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR("서버 내부 오류입니다.");
+
+
+
+
+
+
+
+
+
+
+
 
     private final String message;
 }

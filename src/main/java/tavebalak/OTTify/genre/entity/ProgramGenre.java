@@ -1,6 +1,7 @@
 package tavebalak.OTTify.genre.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.program.entity.Program;
@@ -22,4 +23,10 @@ public class ProgramGenre {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
+
+    @Builder
+    public ProgramGenre(Program program,Genre genre){
+        this.program = program;
+        this.genre = genre;
+    }
 }
