@@ -40,10 +40,6 @@ public class UserController {
     @PatchMapping("/{id}/profile")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<Long> updateUserProfile(@PathVariable("id") Long userId, @Validated @RequestBody UserProfileUpdateRequestDTO updateRequestDTO) throws NotFoundException {
-
-        // 닉네임 중복 여부 검증
-        userService.checkNicknameDuplication(userId, updateRequestDTO);
-
         return BaseResponse.success(userService.updateUserProfile(userId, updateRequestDTO));
     }
 

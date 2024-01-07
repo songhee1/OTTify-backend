@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
@@ -41,8 +42,13 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 1순위 & 2순위 장르 가져오기
-        String firstGenre = userGenreRepository.findFirstGenre(userId);
-        List<String> secondGenre = userGenreRepository.findSecondGenre(userId);
+        String firstGenre = userGenreRepository.find1stGenreByUserId(userId).getGenre().getName();
+
+        List<String> secondGenre = new ArrayList<>();
+        userGenreRepository.find2ndGenreByUserId(userId).stream()
+                .forEach(ug -> {
+                    secondGenre.add(ug.getGenre().getName());
+                });
 
         // 별점 리스트 가져오기
         HashMap<Double, Integer> ratingList = new HashMap<Double, Integer>();
@@ -102,6 +108,9 @@ public class UserService {
     public Long updateUserProfile(Long userId, UserProfileUpdateRequestDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+        // 닉네임 중복 여부 검증
+        checkNicknameDuplication(userId, updateRequestDTO);
 
         user.changeNickName(updateRequestDTO.getNickName());
         user.changeProfilePhoto(updateRequestDTO.getProfilePhoto());
