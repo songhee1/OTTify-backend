@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 @Validated
 public class ReplyServiceImpl implements ReplyService{
 
-
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
@@ -75,8 +74,8 @@ public class ReplyServiceImpl implements ReplyService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder replyCommentEditorDTOBuilder = savedReply.toEditor();
-        ReplyCommentEditorDTO edit = replyCommentEditorDTOBuilder.comment(c.getComment()).build();
+        ReplyCommentEditorDTO replyCommentEditorDTOBuilder = savedReply.toEditor();
+        ReplyCommentEditorDTO edit = replyCommentEditorDTOBuilder.changeComment(c.getComment());
 
         savedReply.edit(edit);
 
@@ -100,8 +99,8 @@ public class ReplyServiceImpl implements ReplyService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder reReplyCommentEditorDTOBuilder = savedReply.toEditor();
-        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.comment(c.getContent()).build();
+        ReplyCommentEditorDTO reReplyCommentEditorDTOBuilder = savedReply.toEditor();
+        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.changeComment(c.getContent());
 
         savedReply.edit(build);
     }

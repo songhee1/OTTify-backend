@@ -14,7 +14,6 @@ public class ReplyCommentEditDTO {
     @NotBlank(message = "댓글 내용이 비워져 있어서는 안됩니다.")
     private String comment;
 
-    @Builder
     public ReplyCommentEditDTO(Long subjectId, Long commentId, String comment){
         this.subjectId = subjectId;
         this.commentId = commentId;

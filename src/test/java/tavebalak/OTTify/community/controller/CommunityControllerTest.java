@@ -297,11 +297,7 @@ class CommunityControllerTest {
         replyService.saveRecomment(registerRecommentRequest());
 
 
-        ReplyCommentEditDTO replyCommentEditDTOs = ReplyCommentEditDTO.builder()
-                .subjectId(savedCommunity.getId())
-                .commentId(1L)
-                .comment("test-content")
-                .build();
+        ReplyCommentEditDTO replyCommentEditDTOs = new ReplyCommentEditDTO(savedCommunity.getId(), 1L, "test-content");
 
         doNothing().when(replyService).modifyComment(any());
 

@@ -42,11 +42,8 @@ public class Community extends BaseEntity {
         this.user = user;
     }
 
-    public CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder toEditor(){
-        return CommunitySubjectEditorDTO.builder()
-                .title(title)
-                .content(content)
-                .program(program);
+    public CommunitySubjectEditorDTO toEditor(){
+        return new CommunitySubjectEditorDTO(title, content, program);
     }
 
     public void edit(CommunitySubjectEditorDTO communitySubjectEditorDTO){
