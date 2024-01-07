@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private final LikedProgramRepository likedProgramRepository;
     private final UninterestedProgramRepository uninterestedProgramRepository;
 
+    @Override
     public UserProfileDTO getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
@@ -89,10 +90,14 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // 보고싶은 프로그램 가져오기
-        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findLikedProgram(userId);
+        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findByUserId(userId).stream()
+                .map(p -> new LikedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
+                .collect(Collectors.toList());
 
         // 관심없는 프로그램 가져오기
-        List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findUninterestedProgram(userId);
+        List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findByUserId(userId).stream()
+                .map(p -> new UninterestedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
+                .collect(Collectors.toList());
 
         return UserProfileDTO.builder()
                 .profilePhoto(user.getProfilePhoto())
@@ -108,12 +113,14 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
     public List<UserOttDTO> getUserOTT(Long userId) {
         return userSubscribingOttRepository.findUserSubscribingOTTByUserId(userId).stream()
                 .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
                 .collect(Collectors.toList());
     }
 
+    @Override
     @Transactional
     public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
@@ -137,6 +144,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
     @Transactional
     public Long updateUserOTT(Long userId, List<UserOttUpdateDTO> updateRequestDTO) {
         User user = userRepository.findById(userId)
