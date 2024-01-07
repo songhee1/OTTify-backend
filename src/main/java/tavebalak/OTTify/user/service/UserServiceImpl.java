@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.genre.dto.GenreDTO;
 import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.program.repository.OttRepository;
@@ -48,14 +49,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 1순위 & 2순위 장르 가져오기
-        UserGenre firstGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
+        UserGenre firstUserGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+        GenreDTO firstGenre = new GenreDTO(firstUserGenre);
 
-        List<String> secondGenre = new ArrayList<>();
-        userGenreRepository.find2ndGenreByUserId(userId).stream()
-                .forEach(ug -> {
-                    secondGenre.add(ug.getGenre().getName());
-                });
+        List<GenreDTO> secondGenre = userGenreRepository.find2ndGenreByUserId(userId).stream()
+                .map(ug -> new GenreDTO(ug))
+                .collect(Collectors.toList());
 
         // 별점 리스트 가져오기
         HashMap<Double, Integer> ratingList = new HashMap<Double, Integer>();
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
                 .grade(user.getGrade())
                 .email(user.getEmail())
                 .averageRating(user.getAverageRating())
-                .firstGenre(firstGenre.getGenre().getName())
+                .firstGenre(firstGenre)
                 .secondGenre(secondGenre)
                 .ratingList(userReviewRatingListDTO)
                 .likedProgram(likedProgramListDTOList)
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    @Override
+    @Override a
     @Transactional
     public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)

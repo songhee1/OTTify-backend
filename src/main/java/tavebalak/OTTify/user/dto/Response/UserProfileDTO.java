@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.constant.GradeType;
+import tavebalak.OTTify.genre.dto.GenreDTO;
+import tavebalak.OTTify.genre.dto.OpenApiGenreDto;
+import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 
 import java.util.ArrayList;
@@ -20,14 +23,14 @@ public class UserProfileDTO {
     private double averageRating;
     private UserReviewRatingListDTO ratingList;
 
-    private String firstGenre;
-    private List<String> secondGenre = new ArrayList<String>();
+    private GenreDTO firstGenre;
+    private List<GenreDTO> secondGenre = new ArrayList<GenreDTO>();
 
     private List<LikedProgramDTO> likedProgram = new ArrayList<>();
     private List<UninterestedProgramDTO> uninterestedProgram = new ArrayList<>();
 
     @Builder
-    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
+    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, GenreDTO firstGenre, List<GenreDTO> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
         this.profilePhoto = profilePhoto;
         this.nickName = nickName;
         this.grade = grade;
