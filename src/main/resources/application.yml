@@ -64,3 +64,6 @@ redis:
 logging:
   level:
     org.hibernate.SQL: debug
+
+api:
+  key: eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzODc0NmZmMjkyMTU0YzgxNjJmMGQ5YzM2MGUyZjY0MiIsInN1YiI6IjY1NTRjOWRlOTY1M2Y2MTNmNzRlMzEzMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.989JKUCdDeX-1d7q_0lXYNUYDCwH_CyRSqvyoj8pDCE
