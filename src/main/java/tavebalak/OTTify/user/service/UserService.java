@@ -7,12 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
-import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.repository.ReviewRepository;
-import tavebalak.OTTify.user.dto.*;
+import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.LikedProgramDTO;
+import tavebalak.OTTify.user.dto.Response.UninterestedProgramDTO;
+import tavebalak.OTTify.user.dto.Response.UserOttDTO;
+import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
@@ -37,7 +41,7 @@ public class UserService {
     private final LikedProgramRepository likedProgramRepository;
     private final UninterestedProgramRepository uninterestedProgramRepository;
 
-    public UserProfileResponseDTO getUserProfile(Long userId) {
+    public UserProfileDTO getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -79,12 +83,12 @@ public class UserService {
                 .build();
 
         // 보고싶은 프로그램 가져오기
-        List<LikedProgramResponseDTO> likedProgramListDTOList = likedProgramRepository.findLikedProgram(userId);
+        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findLikedProgram(userId);
 
         // 관심없는 프로그램 가져오기
-        List<UninterestedProgramResponseDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findUninterestedProgram(userId);
+        List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findUninterestedProgram(userId);
 
-        return UserProfileResponseDTO.builder()
+        return UserProfileDTO.builder()
                 .profilePhoto(user.getProfilePhoto())
                 .nickName(user.getNickName())
                 .grade(user.getGrade())
@@ -98,14 +102,14 @@ public class UserService {
                 .build();
     }
 
-    public List<UserOttResponseDTO> getUserOTT(Long userId) {
+    public List<UserOttDTO> getUserOTT(Long userId) {
         return userSubscribingOttRepository.findUserSubscribingOTTByUserId(userId).stream()
-                .map((UserSubscribingOTT uso) -> new UserOttResponseDTO(uso))
+                .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public Long updateUserProfile(Long userId, UserProfileUpdateRequestDTO updateRequestDTO) {
+    public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -118,7 +122,7 @@ public class UserService {
         return userRepository.save(user).getId();
     }
 
-    public void checkNicknameDuplication(Long userId, UserProfileUpdateRequestDTO updateRequestDTO) {
+    public void checkNicknameDuplication(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -128,7 +132,7 @@ public class UserService {
     }
 
     @Transactional
-    public Long updateUserOTT(Long userId, List<UserOttUpdateRequestDTO> updateRequestDTO) {
+    public Long updateUserOTT(Long userId, List<UserOttUpdateDTO> updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -139,7 +143,7 @@ public class UserService {
 
         // 현재 구독 중인 ott 리스트
         List<Long> nowSubscribingOttList = updateRequestDTO.stream()
-                .map(UserOttUpdateRequestDTO::getId)
+                .map(UserOttUpdateDTO::getId)
                 .collect(Collectors.toList());
 
         if (!preSubscribingOttList.isEmpty()) { // 이전 구독 중인 OTT가 있는 경우

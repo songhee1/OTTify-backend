@@ -1,4 +1,4 @@
-package tavebalak.OTTify.user.dto;
+package tavebalak.OTTify.user.dto.Request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
-public class UserOttUpdateRequestDTO {
+public class UserOttUpdateDTO {
 
     @NotNull
     private Long id;

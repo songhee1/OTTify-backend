@@ -1,4 +1,4 @@
-package tavebalak.OTTify.user.dto;
+package tavebalak.OTTify.user.dto.Response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class LikedProgramResponseDTO {
+public class UninterestedProgramDTO {
     private Long programId;
     private String posterPath;
 
     @Builder
-    public LikedProgramResponseDTO(Long programId, String posterPath) {
+    public UninterestedProgramDTO(Long programId, String posterPath) {
         this.programId = programId;
         this.posterPath = posterPath;
     }

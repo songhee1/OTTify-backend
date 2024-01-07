@@ -1,4 +1,4 @@
-package tavebalak.OTTify.user.dto;
+package tavebalak.OTTify.user.dto.Response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class UserProfileResponseDTO {
+public class UserProfileDTO {
     private String profilePhoto;
     private String nickName;
     private GradeType grade;
@@ -23,11 +23,11 @@ public class UserProfileResponseDTO {
     private String firstGenre;
     private List<String> secondGenre = new ArrayList<String>();
 
-    private List<LikedProgramResponseDTO> likedProgram = new ArrayList<>();
-    private List<UninterestedProgramResponseDTO> uninterestedProgram = new ArrayList<>();
+    private List<LikedProgramDTO> likedProgram = new ArrayList<>();
+    private List<UninterestedProgramDTO> uninterestedProgram = new ArrayList<>();
 
     @Builder
-    public UserProfileResponseDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramResponseDTO> likedProgram, List<UninterestedProgramResponseDTO> uninterestedProgram) {
+    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, String firstGenre, List<String> secondGenre, List<LikedProgramDTO> likedProgram, List<UninterestedProgramDTO> uninterestedProgram) {
         this.profilePhoto = profilePhoto;
         this.nickName = nickName;
         this.grade = grade;
