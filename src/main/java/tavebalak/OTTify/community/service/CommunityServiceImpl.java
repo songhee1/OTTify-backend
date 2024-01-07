@@ -75,7 +75,7 @@ public class CommunityServiceImpl implements CommunityService{
         boolean present = programRepository.findById(c.getProgramId()).isPresent();
         Program program = null;
         if(!present) {
-            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+            program = programRepository.save(Program.testBuilder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
         }else{
             program = programRepository.findById(c.getProgramId()).get();
         }
