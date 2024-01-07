@@ -96,14 +96,22 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // 보고싶은 프로그램 가져오기
-        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findByUserIdFetchJoin(userId).stream()
+        List<LikedProgramDTO> likedProgramDTOList = likedProgramRepository.findByUserIdFetchJoin(userId).stream()
                 .map(p -> new LikedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
                 .collect(Collectors.toList());
+        LikedProgramListDTO likedProgramListDTO = LikedProgramListDTO.builder()
+                .totalCnt(likedProgramDTOList.size())
+                .likedProgramList(likedProgramDTOList)
+                .build();
 
         // 관심없는 프로그램 가져오기
         List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findByUserIdFetchJoin(userId).stream()
                 .map(p -> new UninterestedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
                 .collect(Collectors.toList());
+        UninterestedProgramListDTO uninterestedProgramListDTO = UninterestedProgramListDTO.builder()
+                .totalCnt(uninterestedProgramDTOList.size())
+                .uninterestedProgramList(uninterestedProgramDTOList)
+                .build();
 
         return UserProfileDTO.builder()
                 .profilePhoto(user.getProfilePhoto())
@@ -115,8 +123,8 @@ public class UserServiceImpl implements UserService {
                 .secondGenre(secondGenre)
                 .ott(userOttListDTO)
                 .ratingList(userReviewRatingListDTO)
-                .likedProgram(likedProgramListDTOList)
-                .uninterestedProgram(uninterestedProgramDTOList)
+                .likedProgram(likedProgramListDTO)
+                .uninterestedProgram(uninterestedProgramListDTO)
                 .build();
     }
 
