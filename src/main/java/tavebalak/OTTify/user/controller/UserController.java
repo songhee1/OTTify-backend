@@ -25,21 +25,19 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<UserProfileDTO> getUserProfile(@PathVariable("id") Long userId) throws NotFoundException {
-        UserProfileDTO userProfileResponseDTO = userService.getUserProfile(userId);
-        return BaseResponse.success(userProfileResponseDTO);
+    public BaseResponse<UserProfileDTO> getUserProfile(@PathVariable("id") Long userId) {
+        return BaseResponse.success(userService.getUserProfile(userId));
     }
 
     @GetMapping("/{id}/otts")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<UserOttDTO>> getUserOTT(@PathVariable("id") Long userId) throws NotFoundException {
-        List<UserOttDTO> userOttResponseDTO = userService.getUserOTT(userId);
-        return BaseResponse.success(userOttResponseDTO);
+    public BaseResponse<List<UserOttDTO>> getUserOTT(@PathVariable("id") Long userId) {
+        return BaseResponse.success(userService.getUserOTT(userId));
     }
 
     @PatchMapping("/{id}/profile")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Long> updateUserProfile(@PathVariable("id") Long userId, @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) throws NotFoundException {
+    public BaseResponse<Long> updateUserProfile(@PathVariable("id") Long userId, @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
         return BaseResponse.success(userService.updateUserProfile(userId, updateRequestDTO));
     }
 
