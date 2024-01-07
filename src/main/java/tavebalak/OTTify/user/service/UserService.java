@@ -17,11 +17,10 @@ import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
 import tavebalak.OTTify.user.repository.UninterestedProgramRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
-import tavebalak.OTTify.user.repository.UserSubscribingOttRepository;
+import tavebalak.OTTify.user.repository.UserSubscribingOTTRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,7 +30,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserGenreRepository userGenreRepository;
-    private final UserSubscribingOttRepository userSubscribingOttRepository;
+    private final UserSubscribingOTTRepository userSubscribingOttRepository;
     private final OttRepository ottRepository;
     private final ReviewRepository reviewRepository;
     private final LikedProgramRepository likedProgramRepository;

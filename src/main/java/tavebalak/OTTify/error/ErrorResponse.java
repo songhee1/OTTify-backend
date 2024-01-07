@@ -10,7 +10,7 @@ public class ErrorResponse<T> {
         this.message = message;
     }
 
-    public static ErrorResponse<String> error(String message) {
+    public static ErrorResponse error(String message) {
         return new ErrorResponse(message);
     }
 }

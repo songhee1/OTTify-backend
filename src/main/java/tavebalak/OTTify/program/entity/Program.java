@@ -1,24 +1,33 @@
 package tavebalak.OTTify.program.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Program {
-    @Id @GeneratedValue
+    @Id
     @Column(name = "program_id")
+    @GeneratedValue
     private Long id;
     private String title;
     private String posterPath;
     private double averageRating;
     private int reviewCount;
-    private Long tmdb_program_id;
+    private Long tmDbProgramId;
     @Enumerated(EnumType.STRING)
     private ProgramType type;
+
+    @Builder
+    Program(Long id, String title, String posterPath){
+        this.id = id;
+        this.title = title;
+        this.posterPath = posterPath;
+    }
 
 }

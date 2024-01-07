@@ -3,8 +3,8 @@ package tavebalak.OTTify.user.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.common.constant.GradeType;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
-import tavebalak.OTTify.user.entity.GradeType;
 
 import java.util.ArrayList;
 import java.util.List;
