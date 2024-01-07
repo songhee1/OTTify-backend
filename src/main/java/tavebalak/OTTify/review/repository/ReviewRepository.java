@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query("select r.rating from Review r where r.user.id=:userId")
-    List<Double> findReviewRatingByUserId(@Param("userId") Long userId);
+    List<Review> findByUserId(@Param("userId") Long userId);
 
 }

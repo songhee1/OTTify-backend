@@ -60,7 +60,11 @@ public class UserServiceImpl implements UserService {
         HashMap<Double, Integer> ratingList = new HashMap<Double, Integer>();
         ArrayList<Double> ratingSet = new ArrayList<>(Arrays.asList(0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0));
 
-        List<Double> reviewRatingList = reviewRepository.findReviewRatingByUserId(userId);
+        List<Double> reviewRatingList = new ArrayList<>();
+        reviewRepository.findByUserId(userId).stream()
+                .forEach(r -> {
+                    reviewRatingList.add(r.getRating());
+                });
         for (Double r : ratingSet) {
             if (Collections.frequency(reviewRatingList, r) == 0) {
                 ratingList.put(r, 0);
