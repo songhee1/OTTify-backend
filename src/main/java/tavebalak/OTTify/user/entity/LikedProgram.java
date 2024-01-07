@@ -1,6 +1,7 @@
 package tavebalak.OTTify.user.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.program.entity.Program;
@@ -22,4 +23,10 @@ public class LikedProgram {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id")
     private Program program;
+
+    @Builder
+    public LikedProgram(User user, Program program) {
+        this.user = user;
+        this.program = program;
+    }
 }

@@ -1,15 +1,24 @@
 package tavebalak.OTTify.user.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.common.constant.GradeType;
+import tavebalak.OTTify.common.constant.Role;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.common.entity.BaseEntity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "\"User\"")
+@Table(name = "\"user\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
@@ -29,6 +38,47 @@ public class User extends BaseEntity {
     private GradeType grade;
 
     @Enumerated(EnumType.STRING)
-    private RoleType role;
+    private Role role;
+
+    private String code; //구글, 네이버의 로그아웃, 탈퇴를 위한 코드
+
+    @Builder
+    public User(String email, String nickName, String profilePhoto, SocialType socialType, Role role, String code) {
+        this.email = email;
+        this.nickName = nickName;
+        this.profilePhoto = profilePhoto;
+        this.averageRating = 0;
+        this.grade = GradeType.GENERAL;
+        this.socialType = socialType;
+        this.role = role;
+        this.code = code;
+    }
+
+    public static TestUserBuilder testUserBuilder(){
+        return new TestUserBuilder();
+    }
+
+    public static class TestUserBuilder extends User {
+        private Long id;
+        private String nickName;
+        private String profilePhoto;
+        private double averageRating;
+        TestUserBuilder(){
+        }
+
+        public User create(final Long id, String nickName, String profilePhoto, double averageRating){
+            this.id = id;
+            this.nickName = nickName;
+            this.profilePhoto = profilePhoto;
+            this.averageRating = averageRating;
+            return this;
+        }
+    }
+
+        public void changeUserRole(){
+        role = Role.USER;
+    }
+
+    public void changeCode(String code) { this.code = code; }
 
 }
