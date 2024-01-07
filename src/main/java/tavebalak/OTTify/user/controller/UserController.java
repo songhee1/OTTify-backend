@@ -9,6 +9,7 @@ import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.user.dto.Response.UserOttDTO;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
 import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
 import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
 import tavebalak.OTTify.user.service.UserService;
@@ -31,7 +32,7 @@ public class UserController {
 
     @GetMapping("/{id}/otts")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<UserOttDTO>> getUserOTT(@PathVariable("id") Long userId) {
+    public BaseResponse<UserOttListDTO> getUserOTT(@PathVariable("id") Long userId) {
         return BaseResponse.success(userService.getUserOTT(userId));
     }
 

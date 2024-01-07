@@ -121,10 +121,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserOttDTO> getUserOTT(Long userId) {
-        return userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
+    public UserOttListDTO getUserOTT(Long userId) {
+        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
                 .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
                 .collect(Collectors.toList());
+        return UserOttListDTO.builder()
+                .totalCnt(userOttDTOList.size())
+                .ottList(userOttDTOList)
+                .build();
     }
 
     @Override
