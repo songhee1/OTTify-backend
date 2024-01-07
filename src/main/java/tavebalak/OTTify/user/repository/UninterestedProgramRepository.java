@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface UninterestedProgramRepository extends JpaRepository<UninterestedProgram, Long> {
 
-    @Query("select new tavebalak.OTTify.user.dto.UninterestedProgramResponseDTO(up.program.id, up.program.posterPath) from UninterestedProgram up where up.user.id =:userId")
+    @Query("select new tavebalak.OTTify.user.dto.Response.UninterestedProgramDTO(up.program.id, up.program.posterPath) from UninterestedProgram up where up.user.id =:userId")
     List<UninterestedProgramDTO> findUninterestedProgram(@Param("userId") Long userId);
 }

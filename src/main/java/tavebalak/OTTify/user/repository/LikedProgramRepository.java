@@ -9,8 +9,8 @@ import tavebalak.OTTify.user.entity.LikedProgram;
 import java.util.List;
 
 public interface LikedProgramRepository extends JpaRepository<LikedProgram, Long> {
-    public List<LikedProgram> findByUserId(Long userId);
+    List<LikedProgram> findByUserId(Long userId);
 
-    @Query("select new tavebalak.OTTify.user.dto.LikedProgramResponseDTO(lp.program.id, lp.program.posterPath) from LikedProgram lp where lp.user.id =:userId")
+    @Query("select new tavebalak.OTTify.user.dto.Response.LikedProgramDTO(lp.program.id, lp.program.posterPath) from LikedProgram lp where lp.user.id =:userId")
     List<LikedProgramDTO> findLikedProgram(@Param("userId") Long userId);
 }
