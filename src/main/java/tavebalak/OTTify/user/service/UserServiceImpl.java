@@ -49,11 +49,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 1순위 & 2순위 장르 가져오기
-        UserGenre firstUserGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
+        UserGenre firstUserGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
         GenreDTO firstGenre = new GenreDTO(firstUserGenre);
 
-        List<GenreDTO> secondGenre = userGenreRepository.find2ndGenreByUserId(userId).stream()
+        List<GenreDTO> secondGenre = userGenreRepository.find2ndGenreByUserIdFetchJoin(userId).stream()
                 .map(ug -> new GenreDTO(ug))
                 .collect(Collectors.toList());
 
@@ -90,12 +90,12 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // 보고싶은 프로그램 가져오기
-        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findByUserId(userId).stream()
+        List<LikedProgramDTO> likedProgramListDTOList = likedProgramRepository.findByUserIdFetchJoin(userId).stream()
                 .map(p -> new LikedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
                 .collect(Collectors.toList());
 
         // 관심없는 프로그램 가져오기
-        List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findByUserId(userId).stream()
+        List<UninterestedProgramDTO> uninterestedProgramDTOList = uninterestedProgramRepository.findByUserIdFetchJoin(userId).stream()
                 .map(p -> new UninterestedProgramDTO(p.getId(), p.getProgram().getPosterPath()))
                 .collect(Collectors.toList());
 
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    @Override a
+    @Override
     @Transactional
     public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
