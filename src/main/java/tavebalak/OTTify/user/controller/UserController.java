@@ -19,13 +19,15 @@ public class UserController {
 
     @PatchMapping("/{id}/1stGenre")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Long> update1stLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDto) {
-        return BaseResponse.success(userService.update1stGenre(userId, updateRequestDto));
+    public BaseResponse update1stLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDto) {
+        userService.update1stGenre(userId, updateRequestDto);
+        return BaseResponse.success("성공적으로 1순위 장르가 업데이트 되었습니다.");
     }
 
     @PatchMapping("/{id}/2ndGenre")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Long> update2ndLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDTO) {
-        return BaseResponse.success(userService.update2ndGenre(userId, updateRequestDTO));
+    public BaseResponse update2ndLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDTO) {
+        userService.update2ndGenre(userId, updateRequestDTO);
+        return BaseResponse.success("성공적으로 2순위 장르가 업데이트 되었습니다.");
     }
 }
