@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         Genre genre = genreRepository.findById(updateRequestDTO.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
-        userGenre.change1stGenre(genre);
+        userGenre.changeGenre(genre);
 
         return userId;
     }

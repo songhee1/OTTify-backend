@@ -40,7 +40,7 @@ public class UserGenre {
                 .build();
     }
 
-    public void change1stGenre(Genre genre) {
+    public void changeGenre(Genre genre) {
         this.genre = genre;
     }
 }
