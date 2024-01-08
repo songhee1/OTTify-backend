@@ -80,34 +80,34 @@ public class User extends BaseEntity {
 
     //리뷰 추가시 userReviewCount 증가 및 평균 재계산.
     public void addUsersReviewAndRecalculateRating(double ratings){
-        double beforeSumRatings=averageRating * userReviewCounts;
+        double beforeSumRatings = this.averageRating * this.userReviewCounts;
         double afterSumRatings = beforeSumRatings + ratings;
 
-        userReviewCounts++;
-        averageRating = afterSumRatings / userReviewCounts;
+        this.userReviewCounts++;
+        this.averageRating = afterSumRatings / this.userReviewCounts;
 
     }
 
     //리뷰 변화시 평균 재계산
     public void changeUsersReviewAndRecalculateRating(double beforeRatings,double afterRatings){
-        double beforeSumRatings=averageRating * userReviewCounts;
+        double beforeSumRatings = this.averageRating * this.userReviewCounts;
         double afterSumRatings = beforeSumRatings - beforeRatings + afterRatings;
 
-        averageRating = afterSumRatings / userReviewCounts;
+        this.averageRating = afterSumRatings / this.userReviewCounts;
     }
 
 
     //리뷰 삭제시 userReviewCount 감소 및 평균 재계산
     public void deleteUsersReviewAndRecalculateRating(double deleteRatings){
-        double beforeSumRatings = averageRating * userReviewCounts;
+        double beforeSumRatings = this.averageRating * this.userReviewCounts;
         double afterSumRatings  =  beforeSumRatings - deleteRatings;
 
-        userReviewCounts--;
-        if(userReviewCounts == 0 ){
-            averageRating = 0;
+        this.userReviewCounts--;
+        if(this.userReviewCounts == 0 ){
+            this.averageRating = 0;
         }
         else{
-            averageRating = afterSumRatings / userReviewCounts;
+            this.averageRating = afterSumRatings / this.userReviewCounts;
         }
     }
 

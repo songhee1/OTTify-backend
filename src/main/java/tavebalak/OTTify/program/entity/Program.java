@@ -65,28 +65,28 @@ public class Program {
     private List<Review> reviewList = new ArrayList<>();
 
     public void addReview(Review review){
-        reviewList.add(review);
+        this.reviewList.add(review);
 
-        double beforeRatingSum = averageRating * reviewCount;
+        double beforeRatingSum = this.averageRating * this.reviewCount;
         double afterRatingSum = beforeRatingSum + review.getRating();
 
-        reviewCount++;
-        averageRating = afterRatingSum / reviewCount;
+        this.reviewCount++;
+        this.averageRating = afterRatingSum / this.reviewCount;
 
     }
 
     //리뷰 삭제시 평점 변화
 
     public void deleteReview(Review review){
-        double beforeRatingSum = averageRating * reviewCount;
+        double beforeRatingSum = this.averageRating * this.reviewCount;
         double afterRatingSum = beforeRatingSum - review.getRating();
 
-        reviewCount--;
-        if(reviewCount==0){
-            averageRating = 0;
+        this.reviewCount--;
+        if(this.reviewCount==0){
+            this.averageRating = 0;
         }
         else{
-            averageRating = afterRatingSum / reviewCount;
+            this.averageRating = afterRatingSum / this.reviewCount;
         }
 
         reviewList.remove(review);
