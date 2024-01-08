@@ -9,22 +9,24 @@ import java.util.List;
 
 @Getter
 public class MyReviewDto {
+    private Long reviewId;
+    private String createdDate;
     private String userProfilePhoto;
     private String userNickName;
-    private String createdDate;
     private String programTitle;
-    private Double rating;
+    private Double reviewRating;
     private List<ReviewTag> reviewTags = new ArrayList<>();
     private String content;
-    private Integer likeCnt;
+    private int likeCnt;
 
     @Builder
-    public MyReviewDto(String userProfilePhoto, String userNickName, String createdDate, String programTitle, Double rating, List<ReviewTag> reviewTags, String content, Integer likeCnt) {
+    public MyReviewDto(Long reviewId, String createdDate, String userProfilePhoto, String userNickName, String programTitle, Double reviewRating, List<ReviewTag> reviewTags, String content, int likeCnt) {
+        this.reviewId = reviewId;
+        this.createdDate = createdDate;
         this.userProfilePhoto = userProfilePhoto;
         this.userNickName = userNickName;
-        this.createdDate = createdDate;
         this.programTitle = programTitle;
-        this.rating = rating;
+        this.reviewRating = reviewRating;
         this.reviewTags = reviewTags;
         this.content = content;
         this.likeCnt = likeCnt;
