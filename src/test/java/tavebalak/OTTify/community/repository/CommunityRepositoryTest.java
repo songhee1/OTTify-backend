@@ -9,9 +9,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import tavebalak.OTTify.common.constant.Role;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.community.entity.Community;
-import tavebalak.OTTify.oauth.constant.Role;
-import tavebalak.OTTify.oauth.constant.SocialType;
+
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.user.entity.User;

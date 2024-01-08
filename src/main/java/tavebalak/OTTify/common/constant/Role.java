@@ -1,4 +1,4 @@
-package tavebalak.OTTify.oauth.constant;
+package tavebalak.OTTify.common.constant;
 
 
 public enum Role {

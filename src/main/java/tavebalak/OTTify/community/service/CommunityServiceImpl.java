@@ -75,7 +75,7 @@ public class CommunityServiceImpl implements CommunityService{
         boolean present = programRepository.findById(c.getProgramId()).isPresent();
         Program program = null;
         if(!present) {
-            program = programRepository.save(Program.builder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
+            program = programRepository.save(Program.testBuilder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
         }else{
             program = programRepository.findById(c.getProgramId()).get();
         }
@@ -112,13 +112,13 @@ public class CommunityServiceImpl implements CommunityService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present){
-            program = programRepository.save(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else {
-            program = programRepository.findById(c.getProgramId()).get();
-        }
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+        Program program;
+
+        program = optionalProgram.orElseGet(() -> programRepository.save(Program.builder()
+                .title(c.getProgramTitle())
+                .posterPath(c.getPosterPath())
+                .build()));
 
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(c.getSubjectName(), c.getContent(), program);

@@ -7,8 +7,8 @@ import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
-import tavebalak.OTTify.oauth.constant.Role;
-import tavebalak.OTTify.oauth.constant.SocialType;
+import tavebalak.OTTify.common.constant.Role;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
@@ -39,7 +39,7 @@ public class ReviewRepositoryTest {
         Review review = Review.builder()
                 .content("test-content")
                 .genre("test-genre")
-                .program(Program.builder().id(1L).title("test-title").build())
+                .program(Program.testBuilder().id(1L).title("test-title").build())
                 .rating(5.55)
                 .user(testUserBuilder.create(1L, "test-nickName", "test-url", 5.55))
                 .build();
@@ -74,35 +74,35 @@ public class ReviewRepositoryTest {
         Review savedReview1 = Review.builder()
                 .content("test-content1")
                 .genre("test-genre")
-                .program(Program.builder().id(1L).title("test-title").build())
+                .program(Program.testBuilder().id(1L).title("test-title").build())
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview2 = Review.builder()
                 .content("test-content2")
                 .genre("test-genre")
-                .program(Program.builder().id(1L).title("test-title").build())
+                .program(Program.testBuilder().id(1L).title("test-title").build())
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview3 = Review.builder()
                 .content("test-content3")
                 .genre("test-genre")
-                .program(Program.builder().id(1L).title("test-title").build())
+                .program(Program.testBuilder().id(1L).title("test-title").build())
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview4 = Review.builder()
                 .content("test-content4")
                 .genre("test-genre")
-                .program(Program.builder().id(1L).title("test-title").build())
+                .program(Program.testBuilder().id(1L).title("test-title").build())
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview5 = Review.builder()
                 .content("test-content5")
                 .genre("test-genre")
-                .program(Program.builder().id(1L).title("test-title").build())
+                .program(Program.testBuilder().id(1L).title("test-title").build())
                 .rating(5.55)
                 .user(savedUser)
                 .build();

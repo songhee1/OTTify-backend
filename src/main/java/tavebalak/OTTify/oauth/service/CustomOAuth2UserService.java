@@ -8,9 +8,9 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.oauth.CustomOAuth2User;
 import tavebalak.OTTify.oauth.OAuthAttributes;
-import tavebalak.OTTify.oauth.constant.SocialType;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
 
@@ -31,16 +31,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("CustomOAuth2UserService - OAuth2 로그인 요청 진입");
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
+        String accessToken = userRequest.getAccessToken().getTokenValue();
+        log.info("accessToken = "+accessToken);
+
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         SocialType socialType = getSocialType(registrationId);
-//        이부분 변경 고민
+
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName(); // OAuth2 로그인 시 키(PK)가 되는 값 (id, sub)
         Map<String, Object> attributes = oAuth2User.getAttributes(); // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
 
         OAuthAttributes extractAttributes = OAuthAttributes.of(socialType, userNameAttributeName, attributes);
 
-        User createdUser = getUser(extractAttributes, socialType); // getUser() 메소드로 User 객체 생성 후 반환
+        User createdUser = getUser(extractAttributes, accessToken, socialType); // getUser() 메소드로 User 객체 생성 후 반환
 
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
         return new CustomOAuth2User(
@@ -61,17 +64,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private User getUser(OAuthAttributes attributes, SocialType socialType) {
+    private User getUser(OAuthAttributes attributes, String accessToken, SocialType socialType) {
         User findUser = userRepository.findByEmailAndSocialType(attributes.getOauth2UserInfo().getEmail(), socialType).orElse(null);
 
         if(findUser == null) {
-            return saveUser(attributes, socialType);
+            return saveUser(attributes, accessToken, socialType);
         }
+        log.info("code 저장");
+        findUser.changeCode(accessToken);
+        userRepository.save(findUser);
         return findUser;
     }
 
-    private User saveUser(OAuthAttributes attributes, SocialType socialType) {
-        User createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo());
+    private User saveUser(OAuthAttributes attributes, String accessToken, SocialType socialType) {
+        User createdUser = attributes.toEntity(socialType, accessToken, attributes.getOauth2UserInfo());
         return userRepository.save(createdUser);
     }
 }

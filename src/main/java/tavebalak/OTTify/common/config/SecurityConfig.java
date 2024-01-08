@@ -12,9 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tavebalak.OTTify.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import tavebalak.OTTify.oauth.jwt.JwtAuthFilter;
 import tavebalak.OTTify.oauth.service.CustomOAuth2UserService;
-import tavebalak.OTTify.oauth.handler.OAuth2AuthenticationSuccessHandler;
 
 
 @RequiredArgsConstructor
@@ -45,9 +45,8 @@ public class SecurityConfig {
                             .anyRequest().permitAll() //추후 변경 필요
                 )
                 .oauth2Login(configure ->
-                        configure.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
-                                .successHandler(oAuth2AuthenticationSuccessHandler)
-//                                .failureHandler(oAuth2AuthenticationFailureHandler)
+                                configure.userInfoEndpoint(config -> config.userService(customOAuth2UserService))
+                                        .successHandler(oAuth2AuthenticationSuccessHandler)
                 );
 
         return http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
