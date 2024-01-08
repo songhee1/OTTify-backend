@@ -21,7 +21,7 @@ import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 import tavebalak.OTTify.user.repository.LikedProgramRepository;
 import tavebalak.OTTify.user.repository.UninterestedProgramRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
-import tavebalak.OTTify.user.repository.UserSubscribingOTTRepository;
+import tavebalak.OTTify.user.repository.UserSubscribingOttRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserGenreRepository userGenreRepository;
-    private final UserSubscribingOTTRepository userSubscribingOttRepository;
+    private final UserSubscribingOttRepository userSubscribingOttRepository;
     private final OttRepository ottRepository;
     private final ReviewRepository reviewRepository;
     private final LikedProgramRepository likedProgramRepository;

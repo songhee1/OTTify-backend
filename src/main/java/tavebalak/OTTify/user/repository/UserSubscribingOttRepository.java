@@ -11,7 +11,7 @@ import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 import java.util.List;
 
 @Repository
-public interface UserSubscribingOTTRepository extends JpaRepository<UserSubscribingOTT, Long> {
+public interface UserSubscribingOttRepository extends JpaRepository<UserSubscribingOTT, Long> {
     @Query("select uso from UserSubscribingOTT uso join fetch uso.ott where uso.user.id =:userId")
     List<UserSubscribingOTT> findByUserIdFetchJoin(@Param("userId") Long userId);
 
