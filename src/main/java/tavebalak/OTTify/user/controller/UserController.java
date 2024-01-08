@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
-import tavebalak.OTTify.genre.dto.request.SecondGenreUpdateRequestDTO;
 import tavebalak.OTTify.user.service.UserServiceImpl;
 
 @RestController
@@ -26,7 +25,7 @@ public class UserController {
 
     @PatchMapping("/{id}/2ndGenre")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Long> update2ndLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody SecondGenreUpdateRequestDTO updateRequestDTO) {
+    public BaseResponse<Long> update2ndLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDTO) {
         return BaseResponse.success(userService.update2ndGenre(userId, updateRequestDTO));
     }
 }

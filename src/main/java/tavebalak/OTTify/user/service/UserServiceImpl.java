@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
-import tavebalak.OTTify.genre.dto.request.SecondGenreUpdateRequestDTO;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
@@ -39,7 +38,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long update2ndGenre(Long userId, SecondGenreUpdateRequestDTO updateRequestDTO) {
+    public Long update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
         // req로 들어온 id 값이 유효한 장르 id인지 확인
         Genre genre = genreRepository.findById(updateRequestDTO.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
