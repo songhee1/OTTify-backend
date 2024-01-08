@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import tavebalak.OTTify.genre.entity.UserGenre;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,5 +22,4 @@ public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
 
     Boolean existsByGenreIdAndUserIdAndIsFirst(@Param("genreId") Long genreId, @Param("userId") Long userId, boolean isFirst);
     UserGenre findByGenreIdAndUserIdAndIsFirst(@Param("genreId") Long genreId, @Param("userId") Long userId, boolean isFirst);
-
 }

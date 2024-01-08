@@ -62,6 +62,8 @@ dependencies {
 	//querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa'
 	implementation 'com.querydsl:querydsl-apt'
+
+
 }
 
 tasks.named('bootBuildImage') {
