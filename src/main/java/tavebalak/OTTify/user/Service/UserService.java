@@ -6,17 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.MyDiscussionDto;
 import tavebalak.OTTify.community.entity.Community;
-import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.review.dto.MyReviewDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.entity.ReviewTag;
-import tavebalak.OTTify.review.repository.LikedReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.user.repository.LikedCommunityRepository;
 import tavebalak.OTTify.user.repository.LikedReplyRepository;
+import tavebalak.OTTify.user.repository.LikedReviewRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
