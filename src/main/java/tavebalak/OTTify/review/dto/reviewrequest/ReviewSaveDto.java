@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import tavebalak.OTTify.error.reviewCheck.ReviewRatingCheck;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
@@ -22,7 +23,7 @@ public class ReviewSaveDto {
     @PositiveOrZero(message = "프로그램 ID 값을 넣어 주세요")
     private Long programId;
 
-    @PositiveOrZero(message = "값은 0 이상이어야 합니다.")
+    @ReviewRatingCheck
     private double rating;
 
     private List<ReviewTagIdDto> reviewTagIdDtoList;
