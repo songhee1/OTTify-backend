@@ -47,7 +47,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 
     @Query("select sum(r.rating) from Review r where r.genre=:genre and r.program=:program")
-    double sumReviewRatingByGenreName(@Param("genre")String genreName,@Param("program")Program program);
+    Double sumReviewRatingByGenreName(@Param("genre")String genreName,@Param("program")Program program);
 
 
 }

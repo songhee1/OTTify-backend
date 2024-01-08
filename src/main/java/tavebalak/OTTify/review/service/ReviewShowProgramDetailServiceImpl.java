@@ -140,7 +140,9 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
         long userSpecificGenreCount = reviewRepository.countByMyGenreName(usersFirstGenre.getName(),program);
 
 
-        double userSpecificReviewRatingSum = reviewRepository.sumReviewRatingByGenreName(usersFirstGenre.getName(),program);
+        Double sumRating = reviewRepository.sumReviewRatingByGenreName(usersFirstGenre.getName(),program);
+
+        double userSpecificReviewRatingSum = (sumRating != null) ? sumRating : 0.0;
 
         double avg;
 
