@@ -20,6 +20,5 @@ public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
     @Query("select ug from UserGenre ug where ug.user.id =:userId and ug.isFirst = false")
     List<UserGenre> find2ndGenreByUserId(@Param("userId") Long userId);
 
-    Boolean existsByGenreIdAndUserIdAndIsFirst(@Param("genreId") Long genreId, @Param("userId") Long userId, boolean isFirst);
-    UserGenre findByGenreIdAndUserIdAndIsFirst(@Param("genreId") Long genreId, @Param("userId") Long userId, boolean isFirst);
+    Optional<UserGenre> findByGenreIdAndUserIdAndIsFirst(@Param("genreId") Long genreId, @Param("userId") Long userId, boolean isFirst);
 }

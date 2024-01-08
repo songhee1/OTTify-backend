@@ -25,40 +25,32 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+    public void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
         UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
         Genre genre = genreRepository.findById(updateRequestDTO.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
         userGenre.changeGenre(genre);
-
-        return userId;
     }
 
     @Override
     @Transactional
-    public Long update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+    public void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
         // req로 들어온 id 값이 유효한 장르 id인지 확인
         Genre genre = genreRepository.findById(updateRequestDTO.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
-        // genreId와 userId로 UserGenre 조회
-        boolean isUserGenreExists = userGenreRepository.existsByGenreIdAndUserIdAndIsFirst(genre.getId(), userId, false);
-
-        // 조회된 UserGenre가 없을 경우 저장 & 있을 경우 삭제
-        if (isUserGenreExists) {
-            UserGenre findUserGenre = userGenreRepository.findByGenreIdAndUserIdAndIsFirst(genre.getId(), userId, false);
-            userGenreRepository.delete(findUserGenre);
-        } else {
-            userGenreRepository.save(UserGenre.builder()
-                    .genre(genre)
-                    .user(userRepository.findById(userId)
-                            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)))
-                    .build());
-        }
-
-        return userId;
+        // 조회된 UserGenre가 있을 경우 삭제 & 없을 경우 저장
+        userGenreRepository.findByGenreIdAndUserIdAndIsFirst(genre.getId(), userId, false).ifPresentOrElse(
+                ug -> userGenreRepository.delete(ug),
+                () -> userGenreRepository.save(
+                        UserGenre.builder()
+                                .genre(genre)
+                                .user(userRepository.findById(userId)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)))
+                                .build())
+        );
     }
 
 }
