@@ -8,7 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import tavebalak.OTTify.error.ErrorResponse;
 import tavebalak.OTTify.error.exception.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,6 +80,13 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(ForbiddenException.class)
     public ErrorResponse<String> handlerForbiddenException(ForbiddenException exception, HttpServletRequest request) {
+        logInfo(request, exception.getMessage());
+        return ErrorResponse.error(exception.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NoSuchElementException.class)
+    public ErrorResponse<String> handlerNoSuchElementException(ForbiddenException exception, HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.genre.dto.FirstGenreUpdateRequestDTO;
 import tavebalak.OTTify.genre.dto.SecondGenreUpdateRequestDTO;
-import tavebalak.OTTify.user.service.UserService;
+import tavebalak.OTTify.user.service.UserServiceImpl;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @PatchMapping("/{id}/1stLikedGenre")
     @ResponseStatus(HttpStatus.OK)
