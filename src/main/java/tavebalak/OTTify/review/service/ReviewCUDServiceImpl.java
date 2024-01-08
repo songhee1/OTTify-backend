@@ -15,9 +15,13 @@ import tavebalak.OTTify.review.dto.reviewrequest.ReviewUpdateDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.entity.ReviewTag;
 import tavebalak.OTTify.review.repository.ReviewRepository;
+import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.review.repository.ReviewTagRepository;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedReviewRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class ReviewCUDServiceImpl implements ReviewCUDService{
     private final UserGenreRepository userGenreRepository;
     private final ReviewTagRepository reviewTagRepository;
     private final LikedReviewRepository likedReviewRepository;
+    private final ReviewReviewTagRepository reviewReviewTagRepository;
 
     //리뷰 저장
 
@@ -95,15 +100,35 @@ public class ReviewCUDServiceImpl implements ReviewCUDService{
 
 
 
-        //리뷰 태그 전체 삭제
-        review.getReviewReviewTags().clear();
 
 
-        //리뷰 태그 전체 삽입
-        reviewUpdateDto.getReviewTagIdDtoList().forEach(tag->{
-            ReviewTag reviewTag= reviewTagRepository.findById(tag.getId()).orElseThrow(()->new NotFoundException(ErrorCode.REVIEW_TAG_NOT_FOUND));
-            review.addReviewTag(reviewTag);
-        });
+        //이전에 있었던 ReviewTag 리스트
+        List<Long> preReviewTagList = review.getReviewReviewTags().stream().map(reviewReviewTag -> reviewReviewTag.getReviewTag().getId()).collect(Collectors.toList());
+        List<Long> nowReviewTagList = reviewUpdateDto.getReviewTagIdDtoList().stream().map(reviewTagIdDto -> reviewTagIdDto.getId()).collect(Collectors.toList());
+
+        if(!preReviewTagList.isEmpty()){// 이전 ReviewTag가 존재하는 경우
+          // 삭제 tags - 이전 리스트에는 있는데 현재 리스트에 없는 경우
+          List<Long> deleteTags = preReviewTagList.stream()
+                  .filter(tag->!nowReviewTagList.contains(tag))
+                  .collect(Collectors.toList());
+          reviewReviewTagRepository.deleteAllByIdInQuery(deleteTags,reviewId);
+
+          //추가 tags - 이전 리스트에는 없는데 현재 리스트에 있는 경우
+            List<Long> insertTags = nowReviewTagList.stream()
+                    .filter(tag->!preReviewTagList.contains(tag))
+                    .collect(Collectors.toList());
+
+            insertTags.stream()
+                    .forEach(tag->{
+                        review.addReviewTag(reviewTagRepository.findById(tag).orElseThrow(()->new NotFoundException(ErrorCode.REVIEW_TAG_NOT_FOUND)));
+                    });
+
+        }else{
+            nowReviewTagList.stream().forEach(tag->{
+                review.addReviewTag(reviewTagRepository.findById(tag).orElseThrow(()->new NotFoundException(ErrorCode.REVIEW_TAG_NOT_FOUND)));
+            });
+        }
+
 
 
         // contents 와 Rating 수정
