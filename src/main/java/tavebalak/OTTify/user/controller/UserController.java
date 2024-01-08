@@ -8,8 +8,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.community.dto.MyDiscussionDto;
-import tavebalak.OTTify.review.dto.MyReviewDto;
+import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.review.dto.response.MyReviewDto;
 import tavebalak.OTTify.user.Service.UserService;
 
 import java.util.List;

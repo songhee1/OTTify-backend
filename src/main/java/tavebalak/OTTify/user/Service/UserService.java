@@ -1,8 +1,8 @@
 package tavebalak.OTTify.user.Service;
 
 import org.springframework.data.domain.Pageable;
-import tavebalak.OTTify.community.dto.MyDiscussionDto;
-import tavebalak.OTTify.review.dto.MyReviewDto;
+import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.review.dto.response.MyReviewDto;
 
 import java.util.List;
 
