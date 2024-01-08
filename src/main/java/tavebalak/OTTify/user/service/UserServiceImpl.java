@@ -31,7 +31,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public Long update1stGenre(Long userId, FirstGenreUpdateRequestDTO updateRequestDTO) {
-        UserGenre userGenre = userGenreRepository.find1stGenreByUserId(userId);
+        UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
         Genre genre = genreRepository.findById(updateRequestDTO.getId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
