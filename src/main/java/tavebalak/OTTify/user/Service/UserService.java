@@ -2,6 +2,8 @@ package tavebalak.OTTify.user.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.community.dto.MyDiscussionDto;
@@ -35,8 +37,8 @@ public class UserService {
     private final ReplyRepository replyRepository;
     private final LikedReplyRepository likedReplyRepository;
 
-    public List<MyReviewDto> getMyReview(Long userId) {
-        List<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId);
+    public List<MyReviewDto> getMyReview(Long userId, Pageable pageable) {
+        Slice<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable);
 
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
         reviewList.stream()
@@ -64,8 +66,8 @@ public class UserService {
         return reviewDtoList;
     }
 
-    public List<MyReviewDto> getLikedReview(Long userId) {
-        List<Review> reviewList = likedReviewRepository.findLikedReviewByUserId(userId);
+    public List<MyReviewDto> getLikedReview(Long userId, Pageable pageable) {
+        Slice<Review> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable);
 
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
         reviewList.stream()
@@ -93,8 +95,8 @@ public class UserService {
         return reviewDtoList;
     }
 
-    public List<MyDiscussionDto> getHostedDiscussion(Long userId) {
-        List<Community> discussionList = communityRepository.findByUserIdOrderByCreatedAt(userId);
+    public List<MyDiscussionDto> getHostedDiscussion(Long userId, Pageable pageable) {
+        Slice<Community> discussionList = communityRepository.findByUserId(userId, pageable);
 
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
         discussionList.stream()
@@ -125,8 +127,8 @@ public class UserService {
         return discussionDtoList;
     }
 
-    public List<MyDiscussionDto> getParticipatedDiscussion(Long userId) {
-        List<Community> discussionList = replyRepository.findAllCommunityByUserId(userId);
+    public List<MyDiscussionDto> getParticipatedDiscussion(Long userId, Pageable pageable) {
+        Slice<Community> discussionList = replyRepository.findAllCommunityByUserId(userId, pageable);
 
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
         discussionList.stream()

@@ -2,6 +2,9 @@ package tavebalak.OTTify.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
@@ -21,25 +24,37 @@ public class UserController {
 
     @GetMapping("/{id}/reviews")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyReviewDto>> getMyReview(@PathVariable("id") Long userId) {
-        return BaseResponse.success(userService.getMyReview(userId));
+    public BaseResponse<List<MyReviewDto>> getMyReview(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            sort = "createdAt",
+            direction = Sort.Direction.DESC,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getMyReview(userId, pageable));
     }
 
     @GetMapping("/{id}/likedReviews")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyReviewDto>> getLikedReview(@PathVariable("id") Long userId) {
-        return BaseResponse.success(userService.getLikedReview(userId));
+    public BaseResponse<List<MyReviewDto>> getLikedReview(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getLikedReview(userId, pageable));
     }
 
     @GetMapping("/{id}/discussion/hosting")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PathVariable("id") Long userId) {
-        return BaseResponse.success(userService.getHostedDiscussion(userId));
+    public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            sort = "createdAt",
+            direction = Sort.Direction.DESC,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getHostedDiscussion(userId, pageable));
     }
 
     @GetMapping("/{id}/discussion/participating")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PathVariable("id") Long userId) {
-        return BaseResponse.success(userService.getParticipatedDiscussion(userId));
+    public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getParticipatedDiscussion(userId, pageable));
     }
 }
