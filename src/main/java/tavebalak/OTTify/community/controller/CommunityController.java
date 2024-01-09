@@ -1,5 +1,9 @@
 package tavebalak.OTTify.community.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,14 +26,24 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/discussion")
+@Api(tags = {"토론 컨트롤러"})
 
 public class CommunityController {
     private final CommunityService communityService;
     private final ReplyService replyService;
 
+    @ApiOperation(value = "토론주제 생성", notes = "회원이 작성한 토론내용을 기반으로 생성됩니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "programId", dataType = "long", value = "토론하고 싶은 특정 프로그램 id"),
+            @ApiImplicitParam(name = "subjectName", dataType = "String", value = "토론 제목"),
+            @ApiImplicitParam(name = "content", dataType = "String", value = "토론 내용"),
+            @ApiImplicitParam(name = "programTitle", dataType = "String", value = "프로그램명"),
+            @ApiImplicitParam(name = "posterPath", dataType = "String", value = "프로그램 포스터 url")
+    })
     @PostMapping(value = "/subject", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public BaseResponse<String> registerSubject(@RequestBody CommunitySubjectCreateDTO c,
-                                        @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+    public BaseResponse<String> registerSubject(
+            @Valid @RequestBody CommunitySubjectCreateDTO c,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
         communityService.saveSubject(image, c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }

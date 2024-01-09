@@ -19,7 +19,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/**"))
+                .paths(PathSelectors.ant("/api/v1/**"))
                 .build();
     }
 
