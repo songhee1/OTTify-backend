@@ -17,7 +17,7 @@ import tavebalak.OTTify.community.dto.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.user.entity.LikedCommunity;
