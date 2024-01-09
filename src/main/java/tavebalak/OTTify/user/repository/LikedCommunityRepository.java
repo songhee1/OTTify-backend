@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface LikedCommunityRepository extends JpaRepository<LikedCommunity, Long> {
     Optional<LikedCommunity> findByCommunityIdAndUserId(Long communityId, Long userId);
     List<LikedCommunity> findByCommunityId(Long communityId);
-    Long countByCommunityId(Long communityId);
+    int countByCommunityId(Long communityId);
 }

@@ -4,13 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 import tavebalak.OTTify.review.entity.ReviewTag;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class MyReviewDto {
     private Long reviewId;
-    private String createdDate;
+    private LocalDateTime createdDate;
     private String userProfilePhoto;
     private String userNickName;
     private String programTitle;
@@ -20,7 +21,7 @@ public class MyReviewDto {
     private int likeCnt;
 
     @Builder
-    public MyReviewDto(Long reviewId, String createdDate, String userProfilePhoto, String userNickName, String programTitle, Double reviewRating, List<ReviewTag> reviewTags, String content, int likeCnt) {
+    public MyReviewDto(Long reviewId, LocalDateTime createdDate, String userProfilePhoto, String userNickName, String programTitle, Double reviewRating, List<ReviewTag> reviewTags, String content, int likeCnt) {
         this.reviewId = reviewId;
         this.createdDate = createdDate;
         this.userProfilePhoto = userProfilePhoto;

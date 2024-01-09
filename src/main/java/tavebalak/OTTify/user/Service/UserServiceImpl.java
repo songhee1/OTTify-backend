@@ -44,16 +44,13 @@ public class UserServiceImpl implements UserService {
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
         reviewList.stream()
                         .forEach(r -> {
-                            // createdDate format 변경
-                            String createdDateString = r.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
-
                             // 리뷰에 달린 reviewTags 가져오기
                             List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(r.getId());
 
                             reviewDtoList.add(
                                     MyReviewDto.builder()
                                             .reviewId(r.getId())
-                                            .createdDate(createdDateString)
+                                            .createdDate(r.getCreatedAt())
                                             .userProfilePhoto(r.getUser().getProfilePhoto())
                                             .userNickName(r.getUser().getNickName())
                                             .programTitle(r.getProgram().getTitle())
@@ -75,16 +72,13 @@ public class UserServiceImpl implements UserService {
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
         reviewList.stream()
                 .forEach(r -> {
-                    // createdDate format 변경
-                    String createdDateString = r.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
-
                     // 리뷰에 달린 reviewTags 가져오기
                     List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(r.getId());
 
                     reviewDtoList.add(
                             MyReviewDto.builder()
                                     .reviewId(r.getId())
-                                    .createdDate(createdDateString)
+                                    .createdDate(r.getCreatedAt())
                                     .userProfilePhoto(r.getUser().getProfilePhoto())
                                     .userNickName(r.getUser().getNickName())
                                     .programTitle(r.getProgram().getTitle())
@@ -106,19 +100,13 @@ public class UserServiceImpl implements UserService {
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
         discussionList.stream()
                 .forEach(d -> {
-                    // createdDate format 변경
-                    String createdDateString = d.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
-
-                    // likeCnt 계산
-                    Long likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
-
-                    // replyCnt 계산
-                    Long replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+                    int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+                    int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
 
                     discussionDtoList.add(
                             MyDiscussionDto.builder()
                                     .discussionId(d.getId())
-                                    .createdDate(createdDateString)
+                                    .createdDate(d.getCreatedAt())
                                     .programTitle(d.getProgram().getTitle())
                                     .discussionTitle(d.getTitle())
                                     .content(d.getContent())
@@ -139,19 +127,13 @@ public class UserServiceImpl implements UserService {
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
         discussionList.stream()
                 .forEach(d -> {
-                    // createdDate format 변경
-                    String createdDateString = d.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
-
-                    // likeCnt 계산
-                    Long likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
-
-                    // replyCnt 계산
-                    Long replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+                    int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+                    int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
 
                     discussionDtoList.add(
                             MyDiscussionDto.builder()
                                     .discussionId(d.getId())
-                                    .createdDate(createdDateString)
+                                    .createdDate(d.getCreatedAt())
                                     .programTitle(d.getProgram().getTitle())
                                     .discussionTitle(d.getTitle())
                                     .content(d.getContent())
