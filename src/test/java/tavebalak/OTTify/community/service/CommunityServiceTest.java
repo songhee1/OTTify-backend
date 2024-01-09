@@ -1,5 +1,6 @@
 package tavebalak.OTTify.community.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,11 +25,13 @@ import tavebalak.OTTify.user.entity.LikedCommunity;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedCommunityRepository;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
@@ -44,6 +47,7 @@ public class CommunityServiceTest {
     private ReplyRepository replyRepository;
     @Mock
     private ProgramRepository programRepository;
+
 
     @InjectMocks
     private CommunityServiceImpl communityService;
@@ -130,16 +134,15 @@ public class CommunityServiceTest {
 
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
         when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
-        Community savedCommunity = communityService.save(requestDto);
+       communityService.save(requestDto);
         when(communityRepository.findById(anyLong())).thenReturn(Optional.of(toEntity(requestDto, user)));
         doNothing().when(communityRepository).delete(any());
 
         //when
         communityService.delete(1L, user);
-        Optional<Community> findCommunity = communityRepository.findById(savedCommunity.getId());
 
         //then
-        assertThat(findCommunity.isPresent()).isFalse();
+        assertEquals(0, communityRepository.count());
     }
 
     @Test

@@ -33,6 +33,8 @@ public class Community extends BaseEntity {
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replyList = new ArrayList<>();
 
+    private String imageUrl;
+
     @Builder
     public Community(Long id, String title, String content, Program program, User user){
         this.id = id;
@@ -57,4 +59,8 @@ public class Community extends BaseEntity {
     }
 
     public void setProgram(Program program){ this.program = program; }
+
+    public void setImageUrl(String storedFileName){
+        this.imageUrl = storedFileName;
+    }
 }

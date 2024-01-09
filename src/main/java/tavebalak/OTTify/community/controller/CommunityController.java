@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.service.CommunityService;
@@ -13,6 +15,7 @@ import tavebalak.OTTify.exception.NotFoundException;
 
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,9 +25,10 @@ public class CommunityController {
     private final CommunityService communityService;
     private final ReplyService replyService;
 
-    @PostMapping("/subject")
-    public BaseResponse registerSubject(@RequestBody CommunitySubjectCreateDTO c){
-        communityService.saveSubject(c);
+    @PostMapping(value = "/subject", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public BaseResponse registerSubject(@RequestBody CommunitySubjectCreateDTO c,
+                                        @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+        communityService.saveSubject(image, c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }
 

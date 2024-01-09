@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.community.dto.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
@@ -44,16 +45,15 @@ public class CommunityServiceImpl implements CommunityService{
     private final LikedCommunityRepository likedCommunityRepository;
     private final LikedReplyRepository likedReplyRepository;
     @Override
-    public Community saveSubject(CommunitySubjectCreateDTO c){
+    public Community saveSubject(MultipartFile image, CommunitySubjectCreateDTO c){
 
         Program program = isPresent(c);
-
         Community community = Community.builder()
-                .title(c.getSubjectName())
-                .content(c.getContent())
-                .user(getUser())
-                .program(program)
-                .build();
+                    .title(c.getSubjectName())
+                    .content(c.getContent())
+                    .user(getUser())
+                    .program(program)
+                    .build();
 
         return communityRepository.save(community);
 
@@ -72,14 +72,15 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     private Program isPresent(CommunitySubjectCreateDTO c) {
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present) {
-            program = programRepository.save(Program.testBuilder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else{
-            program = programRepository.findById(c.getProgramId()).get();
-        }
-        return program;
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+
+        return optionalProgram.orElseGet(() ->
+                programRepository.save(Program.testBuilder()
+                        .id(c.getProgramId())
+                        .title(c.getProgramTitle())
+                        .posterPath(c.getPosterPath())
+                        .build())
+        );
     }
 
     @Override
@@ -92,9 +93,7 @@ public class CommunityServiceImpl implements CommunityService{
         }
 
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
-        Program program;
-
-        program = optionalProgram.orElseGet(() -> programRepository.save(Program.builder()
+        Program program = optionalProgram.orElseGet(() -> programRepository.save(Program.builder()
                 .title(c.getProgramTitle())
                 .posterPath(c.getPosterPath())
                 .build()));
