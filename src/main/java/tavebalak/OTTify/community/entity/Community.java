@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.entity.BaseEntity;
-import tavebalak.OTTify.community.dto.CommunitySubjectEditorDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectEditorDTO;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.user.entity.User;
 

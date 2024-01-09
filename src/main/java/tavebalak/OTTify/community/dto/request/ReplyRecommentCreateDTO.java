@@ -1,22 +1,23 @@
-package tavebalak.OTTify.community.dto;
+package tavebalak.OTTify.community.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @NoArgsConstructor
-public class ReplyRecommentEditDTO {
+public class ReplyRecommentCreateDTO {
     private Long subjectId;
     private Long commentId;
-    private Long recommentId;
+    @NotBlank(message = "대댓글 내용이 비워져 있어서는 안됩니다.")
     private String content;
 
     @Builder
-    public ReplyRecommentEditDTO(Long subjectId, Long commentId, Long recommentId, String content) {
+    public ReplyRecommentCreateDTO(Long subjectId, Long commentId, String content) {
         this.subjectId = subjectId;
         this.commentId = commentId;
-        this.recommentId = recommentId;
         this.content = content;
     }
 }

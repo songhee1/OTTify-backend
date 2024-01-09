@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import tavebalak.OTTify.community.dto.*;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.response.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
@@ -146,8 +148,6 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
-        String property = pageable.getSort().toList().get(0).getProperty();
-
         Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
         List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
                 community -> CommunitySubjectsListDTO

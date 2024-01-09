@@ -1,4 +1,4 @@
-package tavebalak.OTTify.review.dto;
+package tavebalak.OTTify.review.dto.response;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

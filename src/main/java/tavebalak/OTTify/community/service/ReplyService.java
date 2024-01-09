@@ -1,6 +1,10 @@
 package tavebalak.OTTify.community.service;
 
-import tavebalak.OTTify.community.dto.*;
+import tavebalak.OTTify.community.dto.request.ReplyCommentCreateDTO;
+import tavebalak.OTTify.community.dto.request.ReplyCommentEditDTO;
+import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
+import tavebalak.OTTify.community.dto.request.ReplyRecommentEditDTO;
+import tavebalak.OTTify.community.dto.response.CommentDTO;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.exception.NotFoundException;
 

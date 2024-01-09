@@ -1,6 +1,5 @@
 package tavebalak.OTTify.community.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectsDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectsListDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
@@ -25,7 +24,6 @@ import tavebalak.OTTify.user.entity.LikedCommunity;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedCommunityRepository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

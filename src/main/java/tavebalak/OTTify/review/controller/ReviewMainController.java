@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.review.dto.LatestReviewsDTO;
+import tavebalak.OTTify.review.dto.response.LatestReviewsDTO;
 import tavebalak.OTTify.review.service.ReviewService;
 
 import javax.websocket.server.PathParam;
@@ -19,7 +19,7 @@ public class ReviewMainController {
     private final ReviewService reviewService;
 
     @GetMapping("/latestReviews")
-    public BaseResponse getLatestReviews(){
+    public BaseResponse<List<LatestReviewsDTO>> getLatestReviews(){
         List<LatestReviewsDTO> reviewsDTOList = reviewService.getLatestReviews();
         return BaseResponse.success(reviewsDTOList);
     }

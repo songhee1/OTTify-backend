@@ -1,4 +1,4 @@
-package tavebalak.OTTify.program.dto;
+package tavebalak.OTTify.program.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

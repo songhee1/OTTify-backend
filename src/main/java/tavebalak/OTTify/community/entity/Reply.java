@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import tavebalak.OTTify.common.entity.BaseEntity;
-import tavebalak.OTTify.community.dto.ReplyCommentEditorDTO;
+import tavebalak.OTTify.community.dto.response.ReplyCommentEditorDTO;
 import tavebalak.OTTify.user.entity.User;
 
 import javax.persistence.*;

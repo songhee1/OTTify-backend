@@ -1,4 +1,4 @@
-package tavebalak.OTTify.community.dto;
+package tavebalak.OTTify.community.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
