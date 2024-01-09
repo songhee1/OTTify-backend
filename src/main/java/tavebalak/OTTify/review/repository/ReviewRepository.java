@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tavebalak.OTTify.program.entity.Program;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
 
@@ -49,5 +51,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("select sum(r.rating) from Review r where r.genre=:genre and r.program=:program")
     Double sumReviewRatingByGenreName(@Param("genre")String genreName,@Param("program")Program program);
 
+
+    List<Review> findByUserId(@Param("userId") Long userId);
 
 }
