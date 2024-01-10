@@ -5,7 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
-import tavebalak.OTTify.review.dto.LatestReviewsDTO;
+import tavebalak.OTTify.review.dto.response.LatestReviewsDTO;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.user.entity.LikedReview;
@@ -13,10 +13,7 @@ import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.LikedReviewRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -28,7 +25,6 @@ public class ReviewServiceImpl  implements  ReviewService{
     private final LikedReviewRepository likedReviewRepository;
     private final UserRepository userRepository;
     private final int TOP8_SIZE = 8;
-
     public List<LatestReviewsDTO> getLatestReviews() {
         List<Review> reviewList = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
         List<Review> top8ReviewList = new ArrayList<>();
@@ -52,8 +48,34 @@ public class ReviewServiceImpl  implements  ReviewService{
     }
 
     private Integer getLikeSum(Long reviewId) {
-        return likedReviewRepository.findByReviewId(reviewId).size();
+        Optional<List<LikedReview>> likedReviews = likedReviewRepository.findByReviewId(reviewId);
+        return likedReviews
+                .map(List::size)
+                .orElse(0);
     }
+
+    public List<LatestReviewsDTO> getLatestReviewsTest() {
+        List<Review> reviewList = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Review> top8ReviewList = new ArrayList<>();
+        if(reviewList.size()< TOP8_SIZE){
+            top8ReviewList.addAll(reviewList);
+        }else{
+            top8ReviewList.addAll(reviewList.subList(0, TOP8_SIZE));
+        }
+        return top8ReviewList.stream().map(
+                listOne -> LatestReviewsDTO.builder()
+                        .reviewId(listOne.getId())
+                        .nickName(listOne.getUser().getNickName())
+                        .content(listOne.getContent())
+                        .programTitle(listOne.getProgram().getTitle())
+                        .userRating(listOne.getRating())
+                        .profilePhoto(listOne.getUser().getProfilePhoto())
+                        .likeCount(0)
+                        .build()
+        ).collect(Collectors.toList());
+
+    }
+
 
     public void save(Review review){
         reviewRepository.save(review);

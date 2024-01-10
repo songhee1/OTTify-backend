@@ -1,6 +1,6 @@
 package tavebalak.OTTify.review.service;
 
-import tavebalak.OTTify.review.dto.LatestReviewsDTO;
+import tavebalak.OTTify.review.dto.response.LatestReviewsDTO;
 import tavebalak.OTTify.review.entity.Review;
 
 import java.util.List;

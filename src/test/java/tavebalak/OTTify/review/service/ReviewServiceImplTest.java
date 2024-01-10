@@ -8,10 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 import tavebalak.OTTify.program.entity.Program;
-import tavebalak.OTTify.review.dto.LatestReviewsDTO;
+import tavebalak.OTTify.review.dto.response.LatestReviewsDTO;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.LikedReviewRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,8 @@ class ReviewServiceImplTest {
 
     @Mock
     private ReviewRepository reviewRepository;
+    @Mock
+    private LikedReviewRepository likedReviewRepository;
 
     @InjectMocks
     private ReviewServiceImpl reviewService;
@@ -77,11 +80,11 @@ class ReviewServiceImplTest {
                 .user(user)
                 .build();
 
-        when(reviewRepository.save(any())).thenReturn(review1);
-        when(reviewRepository.save(any())).thenReturn(review2);
-        when(reviewRepository.save(any())).thenReturn(review3);
-        when(reviewRepository.save(any())).thenReturn(review4);
-        when(reviewRepository.save(any())).thenReturn(review5);
+        when(reviewRepository.save(any())).thenReturn(review1)
+                                          .thenReturn(review2)
+                                          .thenReturn(review3)
+                                          .thenReturn(review4)
+                                          .thenReturn(review5);
 
         review1.setCreatedAt(LocalDateTime.now().minusDays(5));
         review2.setCreatedAt(LocalDateTime.now().minusDays(2));
@@ -100,7 +103,7 @@ class ReviewServiceImplTest {
         when(reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))).thenReturn(list);
 
         //when
-        List<LatestReviewsDTO> latestReviews = reviewService.getLatestReviews();
+        List<LatestReviewsDTO> latestReviews = reviewService.getLatestReviewsTest();
         List<LatestReviewsDTO> collect = list.stream().map(review -> LatestReviewsDTO.builder()
                 .reviewId(review.getId())
                 .programTitle(review.getProgram().getTitle())
