@@ -80,13 +80,23 @@ tasks.named('test') {
 }
 
 // submodules 관련 설정
-processResources.dependsOn('copySecret')
 
-tasks.register('copySecret', Copy) {
-	from './submodule-config'
-	include "application*.yml"
-	into 'src/main/resources'
+//processResources.dependsOn('copySecret')
+
+//tasks.register('copySecret', Copy) {
+//	from './submodule-config'
+//	include "application*.yml"
+//	into 'src/main/resources'
+//}
+
+task copyPrivate(type: Copy) {
+	copy {
+		from './submodule-config'
+		include "*.yml"
+		into 'src/main/resources'
+	}
 }
+
 
 //querydsl 추가
 def querydslDir = 'src/main/generated'
