@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import tavebalak.OTTify.genre.entity.UserGenre;
+import tavebalak.OTTify.user.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +26,6 @@ public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
     @Query("select ug from UserGenre ug join fetch ug.genre where ug.user.id =:userId and ug.isFirst = false")
     List<UserGenre> find2ndGenreByUserIdFetchJoin(@Param("userId") Long userId);
 
+
+    Optional<UserGenre> findByUserAndIsFirst(User user, boolean isFirst);
 }

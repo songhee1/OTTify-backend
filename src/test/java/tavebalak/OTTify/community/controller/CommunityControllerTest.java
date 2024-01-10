@@ -18,7 +18,7 @@ import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 
 import static org.mockito.ArgumentMatchers.any;
