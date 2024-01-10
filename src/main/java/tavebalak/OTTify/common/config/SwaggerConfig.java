@@ -33,25 +33,23 @@ public class SwaggerConfig {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("jwt", "jwt", "header");
+        return new ApiKey("Authorization", "Authorization", "header");
     }
 
     private SecurityContext securityContext() {
-        return springfox
-            .documentation
-            .spi.service
-            .contexts
-            .SecurityContext
-            .builder()
-            .securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build();
+        return SecurityContext.builder()
+            .securityReferences(defaultAuth())
+            .build();
     }
+
 
     private List<SecurityReference> defaultAuth() {
         AuthorizationScope authorizationScope = new AuthorizationScope("global",
             "accessEveryThing");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Collections.singletonList(new SecurityReference("jwt", authorizationScopes));
+        return Collections.singletonList(
+            new SecurityReference("Authorization", authorizationScopes));
     }
 
     private ApiInfo apiInfo() {
