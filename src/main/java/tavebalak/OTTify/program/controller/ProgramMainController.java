@@ -1,5 +1,6 @@
 package tavebalak.OTTify.program.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import tavebalak.OTTify.program.service.ProgramService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/main")
+@Api(tags = {"메인페이지 프로그램 추천 컨트롤러"})
 public class ProgramMainController {
 
     private final ProgramService programService;

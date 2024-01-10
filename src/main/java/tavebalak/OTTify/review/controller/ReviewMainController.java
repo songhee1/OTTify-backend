@@ -1,5 +1,6 @@
 package tavebalak.OTTify.review.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -17,6 +18,7 @@ import tavebalak.OTTify.review.service.ReviewService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/main")
+@Api(tags = {"메인페이지 리뷰 컨트롤러"})
 public class ReviewMainController {
 
     private final ReviewService reviewService;

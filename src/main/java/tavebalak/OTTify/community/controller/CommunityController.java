@@ -96,7 +96,8 @@ public class CommunityController {
     })
     @ApiResponse(code = 200, message = "성공적으로 토론 댓글 공감이 적용/해제되었습니다.")
     @PostMapping("/like/comment")
-    public BaseResponse<String> likeComment(@PathParam("subjectId") Long subjectId,
+    public BaseResponse<String> likeComment(
+        @PathParam("subjectId") Long subjectId,
         @PathParam("commentId") Long commentId) {
         boolean hasLiked = communityService.likeComment(subjectId, commentId);
         if (hasLiked) {
@@ -109,14 +110,16 @@ public class CommunityController {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
         @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path")
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
     })
     @GetMapping("/total")
-    public BaseResponse<CommunitySubjectsDTO> getTotalProgramsSubjects(@PageableDefault(size = 10,
-        sort = "createdAt",
-        direction = Sort.Direction.DESC,
-        page = 0
-    ) Pageable pageable) {
+    public BaseResponse<CommunitySubjectsDTO> getTotalProgramsSubjects(
+        @PageableDefault(size = 10,
+            sort = "createdAt",
+            direction = Sort.Direction.DESC,
+            page = 0
+        ) Pageable pageable) {
         CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
         return BaseResponse.success(page);
     }
@@ -125,13 +128,15 @@ public class CommunityController {
     @ApiImplicitParams({
         @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
         @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path")
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
     })
     @GetMapping("/program")
-    public BaseResponse<CommunitySubjectsDTO> getTotalProgramSubjects(@PageableDefault(size = 10,
-        sort = "createdAt",
-        direction = Sort.Direction.DESC,
-        page = 0) Pageable pageable,
+    public BaseResponse<CommunitySubjectsDTO> getTotalProgramSubjects(
+        @PageableDefault(size = 10,
+            sort = "createdAt",
+            direction = Sort.Direction.DESC,
+            page = 0) Pageable pageable,
         @PathParam("programId") Long programId) {
 
         CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
@@ -141,35 +146,39 @@ public class CommunityController {
     @ApiOperation(value = "토론 댓글 생성", notes = "회원이 작성한 토론 주제에 댓글을 생성한다.")
     @ApiResponse(code = 200, message = "성공적으로 토론 댓글을 생성하였습니다.")
     @PostMapping("/comment")
-    public BaseResponse<String> registerComment(@Valid @RequestBody ReplyCommentCreateDTO c)
+    public BaseResponse<String> registerComment(
+        @Valid @RequestBody ReplyCommentCreateDTO replyCommentCreateDTO)
         throws NotFoundException {
-        replyService.saveComment(c);
+        replyService.saveComment(replyCommentCreateDTO);
         return BaseResponse.success("성공적으로 토론댓글을 생성하였습니다.");
     }
 
     @ApiOperation(value = "토론 대댓글 생성", notes = "회원이 작성한 토론 주제의 댓글에 대댓글을 생성한다.")
     @ApiResponse(code = 200, message = "성공적으로 토론 대댓글을 생성하였습니다.")
     @PostMapping("/recomment")
-    public BaseResponse<String> registerRecomment(@Valid @RequestBody ReplyRecommentCreateDTO c) {
-        replyService.saveRecomment(c);
+    public BaseResponse<String> registerRecomment(
+        @Valid @RequestBody ReplyRecommentCreateDTO replyRecommentCreateDTO) {
+        replyService.saveRecomment(replyRecommentCreateDTO);
         return BaseResponse.success("성공적으로 토론 대댓글을 생성하였습니다.");
     }
 
     @ApiOperation(value = "토론 댓글 수정", notes = "회원이 작성한 토론 주제의 댓글을 수정한다.")
     @ApiResponse(code = 200, message = "성공적으로 토론 댓글을 수정하였습니다.")
     @PutMapping("/comment")
-    public BaseResponse<String> modifyComment(@Valid @RequestBody ReplyCommentEditDTO c)
+    public BaseResponse<String> modifyComment(
+        @Valid @RequestBody ReplyCommentEditDTO replyCommentEditDTO)
         throws NotFoundException {
-        replyService.modifyComment(c);
+        replyService.modifyComment(replyCommentEditDTO);
         return BaseResponse.success("성공적으로 토론댓글을 수정하였습니다.");
     }
 
     @ApiOperation(value = "토론 대댓글 수정", notes = "회원이 작성한 토론 주제의 대댓글을 수정한다.")
     @ApiResponse(code = 200, message = "성공적으로 토론 대댓글을 수정하였습니다.")
     @PutMapping("/recomment")
-    public BaseResponse<String> modifyRecomment(@Valid @RequestBody ReplyRecommentEditDTO c)
+    public BaseResponse<String> modifyRecomment(
+        @Valid @RequestBody ReplyRecommentEditDTO replyRecommentEditDTO)
         throws NotFoundException {
-        replyService.modifyRecomment(c);
+        replyService.modifyRecomment(replyRecommentEditDTO);
         return BaseResponse.success("성공적으로 토론대댓글을 수정하였습니다.");
     }
 
