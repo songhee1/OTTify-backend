@@ -79,10 +79,13 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-task copyGitSubmodule(type: Copy) {
+// submodules 관련 설정
+processResources.dependsOn('copySecret')
+
+tasks.register('copySecret', Copy) {
 	from './submodule-config'
-	include '*.yml'
-	into './src/main/resources'
+	include "application*.yml"
+	into 'src/main/resources'
 }
 
 //querydsl 추가
