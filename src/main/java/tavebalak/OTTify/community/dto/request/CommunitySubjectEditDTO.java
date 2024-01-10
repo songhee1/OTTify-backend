@@ -6,15 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor
 public class CommunitySubjectEditDTO {
+    @NotNull
     private Long subjectId;
     @NotBlank(message = "토론 주제 제목이 비워져 있어서는 안됩니다.")
     private String subjectName;
     @NotBlank(message = "토론 주제 내용이 비워져 있어서는 안됩니다.")
     private String content;
+    @NotNull
     private Long programId;
     @NotBlank(message = "프로그램 제목이 비워져 있어서는 안됩니다.")
     private String programTitle;
