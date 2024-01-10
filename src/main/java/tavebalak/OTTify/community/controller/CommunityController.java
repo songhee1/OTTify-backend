@@ -34,7 +34,7 @@ import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 
 @RestController
 @RequiredArgsConstructor

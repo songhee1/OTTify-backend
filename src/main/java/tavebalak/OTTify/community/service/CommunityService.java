@@ -8,7 +8,7 @@ import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
 import tavebalak.OTTify.community.entity.Community;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 
 public interface CommunityService {
     Community saveSubject(MultipartFile image, CommunitySubjectCreateDTO c);

@@ -6,7 +6,7 @@ import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentEditDTO;
 import tavebalak.OTTify.community.dto.response.CommentDTO;
 import tavebalak.OTTify.community.entity.Reply;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 
 import java.util.List;
 
