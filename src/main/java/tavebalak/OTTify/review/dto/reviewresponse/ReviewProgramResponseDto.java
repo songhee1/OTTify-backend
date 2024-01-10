@@ -15,7 +15,7 @@ public class ReviewProgramResponseDto {
     private String contents;
     private String userPosterPath;
     private String userNickName;
-    private String createdDate;
+    private LocalDateTime localDateTime;
     private String ratings;
     private List<String> reviewTagNames = new ArrayList<>();
 
@@ -26,7 +26,7 @@ public class ReviewProgramResponseDto {
         this.contents=contents;
         this.userPosterPath = userPosterPath;
         this.userNickName = userNickName;
-        this.createdDate = createdDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm"));
+        this.localDateTime = createdDateTime;
         this.ratings =String.format("%.1f", ratings);
         this.reviewTagNames = reviewTagNames;
     }
