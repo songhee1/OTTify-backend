@@ -1,0 +1,4 @@
+[submodule "submodule-config"]
+	path = submodule-config
+	url = https://github.com/TAVE-balak/submodule-config
+	branch = develop
