@@ -1,5 +1,17 @@
 package tavebalak.OTTify.community.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,15 +22,13 @@ import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.dto.response.ReplyCommentEditorDTO;
 import tavebalak.OTTify.user.entity.User;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reply extends BaseEntity {
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reply_id")
     private Long id;
     private String content;
@@ -40,16 +50,16 @@ public class Reply extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
-    public void addReply(Reply reply){
+    public void addReply(Reply reply) {
         this.child.add(reply);
         reply.addParent(this);
     }
 
-    public void addParent(Reply reply){
+    public void addParent(Reply reply) {
         this.parent = reply;
     }
 
-    public void addCommunity(Community community){
+    public void addCommunity(Community community) {
         this.community = community;
         community.getReplyList().add(this);
     }
@@ -61,12 +71,12 @@ public class Reply extends BaseEntity {
         addCommunity(community);
     }
 
-    public ReplyCommentEditorDTO toEditor(){
+    public ReplyCommentEditorDTO toEditor() {
         return new ReplyCommentEditorDTO(content);
     }
 
 
-    public void edit(ReplyCommentEditorDTO c){
+    public void edit(ReplyCommentEditorDTO c) {
         this.content = c.getComment();
     }
 }

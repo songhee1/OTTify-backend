@@ -1,43 +1,52 @@
 package tavebalak.OTTify.program.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.ProgramGenre;
 import tavebalak.OTTify.review.entity.Review;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Program {
+
     @Id
     @Column(name = "program_id")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String posterPath;
     private double averageRating;
     private int reviewCount;
     private Long tmDbProgramId;
+    
     @Enumerated(EnumType.STRING)
     private ProgramType type;
 
     private String createdYear;
 
     @Builder
-    public Program(String title,String posterPath,Long tmDbProgramId,ProgramType type,String createdYear){
-        this.title=title;
-        this.posterPath=posterPath;
-        this.tmDbProgramId=tmDbProgramId;
-        this.type=type;
-        this.createdYear=createdYear;
+    public Program(String title, String posterPath, Long tmDbProgramId, ProgramType type,
+        String createdYear) {
+        this.title = title;
+        this.posterPath = posterPath;
+        this.tmDbProgramId = tmDbProgramId;
+        this.type = type;
+        this.createdYear = createdYear;
         this.averageRating = 0;
         this.reviewCount = 0;
     }
@@ -50,13 +59,12 @@ public class Program {
         this.posterPath = posterPath;
     }
 
-    @OneToMany(mappedBy = "program",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<ProgramGenre> programGenreList=new ArrayList<>();
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProgramGenre> programGenreList = new ArrayList<>();
 
 
-
-    public void addGenre(Genre genre){
-        ProgramGenre programGenre=ProgramGenre.builder().genre(genre).program(this).build();
+    public void addGenre(Genre genre) {
+        ProgramGenre programGenre = ProgramGenre.builder().genre(genre).program(this).build();
         programGenreList.add(programGenre);
     }
 
@@ -64,7 +72,7 @@ public class Program {
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
-    public void addReview(Review review){
+    public void addReview(Review review) {
         this.reviewList.add(review);
 
         double beforeRatingSum = this.averageRating * this.reviewCount;
@@ -77,15 +85,14 @@ public class Program {
 
     //리뷰 삭제시 평점 변화
 
-    public void deleteReview(Review review){
+    public void deleteReview(Review review) {
         double beforeRatingSum = this.averageRating * this.reviewCount;
         double afterRatingSum = beforeRatingSum - review.getRating();
 
         this.reviewCount--;
-        if(this.reviewCount==0){
+        if (this.reviewCount == 0) {
             this.averageRating = 0;
-        }
-        else{
+        } else {
             this.averageRating = afterRatingSum / this.reviewCount;
         }
 
@@ -93,7 +100,8 @@ public class Program {
     }
 
     //리뷰 점수 업데이트시 평점 변화
-    public void changeProgramReviewRatingAndRecalculatingAverage(double beforeRating, double afterRating){
+    public void changeProgramReviewRatingAndRecalculatingAverage(double beforeRating,
+        double afterRating) {
         double beforeRatingSum = averageRating * reviewCount;
         double afterRatingSum = beforeRatingSum - beforeRating + afterRating;
         averageRating = afterRatingSum / reviewCount;
