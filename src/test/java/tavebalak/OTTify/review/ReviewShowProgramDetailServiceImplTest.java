@@ -61,7 +61,7 @@ class ReviewShowProgramDetailServiceImplTest {
     //user 의 평균 별점 변화를 테스트 합니다.
 
     @Test
-    @Rollback(value = true)
+    @Rollback(value = false)
     @Transactional
     void saveReview() {
         User user=makeUser();

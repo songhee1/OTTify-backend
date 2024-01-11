@@ -43,7 +43,8 @@ public class Review extends BaseEntity {
     private String genre;
 
     //좋아요 수 필드 추가
-    private int likeNumber;
+    @Column(name = "like_counts")
+    private int likeCounts;
 
 
     @Builder
@@ -53,7 +54,7 @@ public class Review extends BaseEntity {
         this.genre = genre;
         this.user = user;
         this.program = program;
-        this.likeNumber = 0;
+        this.likeCounts = 0;
     }
 
 
@@ -72,13 +73,13 @@ public class Review extends BaseEntity {
 
     //좋아요 수 증가
     public void addLikeNumber() {
-        this.likeNumber++;
+        this.likeCounts++;
     }
 
     //좋아요 수 취소
 
     public void cancelLikeNumber() {
-        this.likeNumber--;
+        this.likeCounts--;
     }
 
 
