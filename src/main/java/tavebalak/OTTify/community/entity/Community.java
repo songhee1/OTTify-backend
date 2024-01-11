@@ -1,5 +1,17 @@
 package tavebalak.OTTify.community.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,15 +21,13 @@ import tavebalak.OTTify.community.dto.response.CommunitySubjectEditorDTO;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.user.entity.User;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends BaseEntity {
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "community_id")
     private Long id;
     private String title;
@@ -36,7 +46,7 @@ public class Community extends BaseEntity {
     private String imageUrl;
 
     @Builder
-    public Community(Long id, String title, String content, Program program, User user){
+    public Community(Long id, String title, String content, Program program, User user) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -44,23 +54,25 @@ public class Community extends BaseEntity {
         this.user = user;
     }
 
-    public CommunitySubjectEditorDTO toEditor(){
+    public CommunitySubjectEditorDTO toEditor() {
         return new CommunitySubjectEditorDTO(title, content, program);
     }
 
-    public void edit(CommunitySubjectEditorDTO communitySubjectEditorDTO){
+    public void edit(CommunitySubjectEditorDTO communitySubjectEditorDTO) {
         this.title = communitySubjectEditorDTO.getTitle();
         this.content = communitySubjectEditorDTO.getContent();
         this.program = communitySubjectEditorDTO.getProgram();
     }
 
-    public void setUser(User user){
+    public void setUser(User user) {
         this.user = user;
     }
 
-    public void setProgram(Program program){ this.program = program; }
+    public void setProgram(Program program) {
+        this.program = program;
+    }
 
-    public void setImageUrl(String storedFileName){
+    public void setImageUrl(String storedFileName) {
         this.imageUrl = storedFileName;
     }
 }
