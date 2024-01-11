@@ -39,15 +39,10 @@ public enum ErrorCode {
     GENRE_NOT_FOUND("장르를 찾을 수 없습니다."),
     USER_NOT_FOUND("유저를 찾을 수 없습니다."),
     OTT_NOT_FOUND("OTT를 찾을 수 없습니다."),
-
-
     PROGRAM_GENRE_NOT_FOUND("프로그램과 관련된 장르를 찾을 수 없습니다."),
     PROGRAM_NOT_FOUND("프로그램을 찾을 수 없습니다"),
-
     USER_FIRST_GENRE_NOT_FOUND("USER는 첫번째 우선 순위 장르를 지정하지 않았습니다"),
-
     REVIEW_TAG_NOT_FOUND("지정된 리뷰 태그가 존재하지 않습니다"),
-
     REVIEW_NOT_FOUND("리뷰를 찾을 수 없습니다"),
 
     /**
@@ -65,17 +60,6 @@ public enum ErrorCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR("서버 내부 오류입니다.");
-
-
-
-
-
-
-
-
-
-
-
 
     private final String message;
 }

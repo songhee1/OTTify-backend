@@ -48,4 +48,8 @@ public class UserGenre {
             .isFirst(isFirst)
             .build();
     }
+
+    public void changeGenre(Genre genre) {
+        this.genre = genre;
+    }
 }
