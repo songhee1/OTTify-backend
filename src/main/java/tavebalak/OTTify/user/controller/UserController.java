@@ -51,8 +51,9 @@ public class UserController {
     @ApiResponse(code = 200, message = "성공적으로 프로필이 업데이트 되었습니다.")
     @PatchMapping("/{userId}/profile")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Long> updateUserProfile(@PathVariable("userId") Long userId, @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
-        return BaseResponse.success(userService.updateUserProfile(userId, updateRequestDTO));
+    public BaseResponse updateUserProfile(@PathVariable("userId") Long userId, @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
+        userService.updateUserProfile(userId, updateRequestDTO);
+        return BaseResponse.success("성공적으로 프로필이 업데이트 되었습니다.");
     }
 
     @ApiOperation(value = "구독 중인 OTT 수정 api", notes = "유저가 구독 중인 OTT를 수정합니다.")
@@ -60,8 +61,9 @@ public class UserController {
     @ApiResponse(code = 200, message = "성공적으로 구독 중인 OTT가 업데이트 되었습니다.")
     @PatchMapping("/{userId}/otts")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Long> updateUserOTT(@PathVariable("userId") Long userId, @RequestBody List<UserOttUpdateDTO> updateRequestDTO) {
-        return BaseResponse.success(userService.updateUserOTT(userId, updateRequestDTO));
+    public BaseResponse updateUserOTT(@PathVariable("userId") Long userId, @RequestBody List<UserOttUpdateDTO> updateRequestDTO) {
+        userService.updateUserOTT(userId, updateRequestDTO);
+        return BaseResponse.success("성공적으로 구독 중인 OTT가 업데이트 되었습니다.");
     }
 
     @ApiOperation(value = "1순위 취향 장르 수정 api", notes = "유저의 1순위 취향 장르를 수정합니다.")
