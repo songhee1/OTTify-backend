@@ -10,5 +10,5 @@ import javax.validation.constraints.NotNull;
 public class UserOttUpdateDTO {
 
     @NotNull
-    private Long id;
+    private Long ottId;
 }
