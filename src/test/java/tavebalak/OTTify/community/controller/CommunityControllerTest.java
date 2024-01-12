@@ -13,10 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import tavebalak.OTTify.community.dto.*;
+import tavebalak.OTTify.community.dto.request.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
-import tavebalak.OTTify.community.service.CommunityService;
+import tavebalak.OTTify.community.service.CommunityServiceImpl;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
@@ -35,7 +35,7 @@ class CommunityControllerTest {
     @InjectMocks
     private CommunityController communityController;
     @Mock
-    private CommunityService communityService;
+    private CommunityServiceImpl communityService;
     @Mock
     private ReplyService replyService;
     private MockMvc mockMvc; //HTTP호출
@@ -60,10 +60,7 @@ class CommunityControllerTest {
     public void registerSubject () throws Exception{
         //given
         CommunitySubjectCreateDTO request = registerSubjectRequest();
-        Community response = communityService.saveSubject(request);
-
-        when(communityService.saveSubject(any(CommunitySubjectCreateDTO.class)))
-                .thenReturn(response);
+        Community response = communityService.save(request);
 
         //when
         ResultActions resultActions = mockMvc.perform(
@@ -103,8 +100,8 @@ class CommunityControllerTest {
                 .build();
         Reply replyResponse = replyService.saveComment(replyRequest);
 
-        when(communityService.saveSubject(any())).thenReturn(response);
-        communityService.saveSubject(registerSubjectRequest());
+        when(communityService.save(any())).thenReturn(response);
+        communityService.save(registerSubjectRequest());
 
         when(replyService.saveComment(any(ReplyCommentCreateDTO.class)))
                 .thenReturn(replyResponse);
@@ -137,11 +134,11 @@ class CommunityControllerTest {
                 .content("test-content")
                 .build();
 
-        when(communityService.saveSubject(any())).thenReturn(response);
+        when(communityService.save(any())).thenReturn(response);
         when(replyService.saveComment(any())).thenReturn(replyResponse);
         doNothing().when(replyService).saveRecomment(any());
 
-        communityService.saveSubject(registerSubjectRequest());
+        communityService.save(registerSubjectRequest());
         replyService.saveComment(registerCommentRequest());
 
 
@@ -214,10 +211,10 @@ class CommunityControllerTest {
                 .content("test-content")
                 .build();
 
-        when(communityService.saveSubject(any())).thenReturn(response);
+        when(communityService.save(any())).thenReturn(response);
         when(replyService.saveComment(any())).thenReturn(replyResponse);
 
-        communityService.saveSubject(registerSubjectRequest());
+        communityService.save(registerSubjectRequest());
         replyService.saveComment(registerCommentRequest());
 
         ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
@@ -243,8 +240,8 @@ class CommunityControllerTest {
                 .program(Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
                 .title("test-title")
                 .build();
-        when(communityService.saveSubject(any())).thenReturn(response);
-        Community savedCommunity = communityService.saveSubject(registerSubjectRequest());
+        when(communityService.save(any())).thenReturn(response);
+        Community savedCommunity = communityService.save(registerSubjectRequest());
 
         doNothing().when(communityService).modifySubject(any());
 
@@ -288,20 +285,16 @@ class CommunityControllerTest {
                 .content("test-content")
                 .build();
 
-        when(communityService.saveSubject(any())).thenReturn(response);
+        when(communityService.save(any())).thenReturn(response);
         when(replyService.saveComment(any())).thenReturn(replyResponse);
         doNothing().when(replyService).saveRecomment(any());
 
-        Community savedCommunity = communityService.saveSubject(registerSubjectRequest());
+        Community savedCommunity = communityService.save(registerSubjectRequest());
         replyService.saveComment(registerCommentRequest());
         replyService.saveRecomment(registerRecommentRequest());
 
 
-        ReplyCommentEditDTO replyCommentEditDTOs = ReplyCommentEditDTO.builder()
-                .subjectId(savedCommunity.getId())
-                .commentId(1L)
-                .comment("test-content")
-                .build();
+        ReplyCommentEditDTO replyCommentEditDTOs = new ReplyCommentEditDTO(savedCommunity.getId(), 1L, "test-content");
 
         doNothing().when(replyService).modifyComment(any());
 

@@ -15,6 +15,8 @@ import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
 import tavebalak.OTTify.user.service.UserService;
 
 import java.util.List;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
+import tavebalak.OTTify.user.service.UserServiceImpl;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,5 +48,19 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<Long> updateUserOTT(@PathVariable("id") Long userId, @RequestBody List<UserOttUpdateDTO> updateRequestDTO) {
         return BaseResponse.success(userService.updateUserOTT(userId, updateRequestDTO));
+    }
+
+    @PatchMapping("/{id}/1stGenre")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse update1stLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDto) {
+        userService.update1stGenre(userId, updateRequestDto);
+        return BaseResponse.success("성공적으로 1순위 장르가 업데이트 되었습니다.");
+    }
+
+    @PatchMapping("/{id}/2ndGenre")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse update2ndLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDTO) {
+        userService.update2ndGenre(userId, updateRequestDTO);
+        return BaseResponse.success("성공적으로 2순위 장르가 업데이트 되었습니다.");
     }
 }

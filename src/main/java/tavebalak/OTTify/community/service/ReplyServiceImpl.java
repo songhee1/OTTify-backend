@@ -4,7 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import tavebalak.OTTify.community.dto.*;
+import tavebalak.OTTify.community.dto.request.ReplyCommentCreateDTO;
+import tavebalak.OTTify.community.dto.request.ReplyCommentEditDTO;
+import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
+import tavebalak.OTTify.community.dto.request.ReplyRecommentEditDTO;
+import tavebalak.OTTify.community.dto.response.CommentDTO;
+import tavebalak.OTTify.community.dto.response.ReplyCommentEditorDTO;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
@@ -27,7 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Validated
 public class ReplyServiceImpl implements ReplyService{
-
 
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
@@ -75,8 +79,8 @@ public class ReplyServiceImpl implements ReplyService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder replyCommentEditorDTOBuilder = savedReply.toEditor();
-        ReplyCommentEditorDTO edit = replyCommentEditorDTOBuilder.comment(c.getComment()).build();
+        ReplyCommentEditorDTO replyCommentEditorDTOBuilder = savedReply.toEditor();
+        ReplyCommentEditorDTO edit = replyCommentEditorDTOBuilder.changeComment(c.getComment());
 
         savedReply.edit(edit);
 
@@ -100,8 +104,8 @@ public class ReplyServiceImpl implements ReplyService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        ReplyCommentEditorDTO.ReplyCommentEditorDTOBuilder reReplyCommentEditorDTOBuilder = savedReply.toEditor();
-        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.comment(c.getContent()).build();
+        ReplyCommentEditorDTO reReplyCommentEditorDTOBuilder = savedReply.toEditor();
+        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.changeComment(c.getContent());
 
         savedReply.edit(build);
     }

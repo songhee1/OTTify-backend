@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tavebalak.OTTify.program.entity.Program;
-import tavebalak.OTTify.review.dto.LatestReviewsDTO;
+import tavebalak.OTTify.review.dto.response.LatestReviewsDTO;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.service.ReviewService;
 import tavebalak.OTTify.user.entity.User;

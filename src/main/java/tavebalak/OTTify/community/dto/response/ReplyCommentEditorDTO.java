@@ -1,6 +1,5 @@
-package tavebalak.OTTify.community.dto;
+package tavebalak.OTTify.community.dto.response;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,8 +8,13 @@ import lombok.NoArgsConstructor;
 public class ReplyCommentEditorDTO {
     private String comment;
 
-    @Builder
     public ReplyCommentEditorDTO(String comment){
         this.comment = comment;
     }
+
+    public ReplyCommentEditorDTO changeComment(String comment){
+        this.comment = comment;
+        return this;
+    }
+
 }

@@ -25,6 +25,13 @@ import tavebalak.OTTify.user.repository.UserSubscribingOttRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
+import tavebalak.OTTify.genre.entity.Genre;
+import tavebalak.OTTify.genre.entity.UserGenre;
+import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.user.repository.UserRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,6 +46,7 @@ public class UserServiceImpl implements UserService {
     private final ReviewRepository reviewRepository;
     private final LikedProgramRepository likedProgramRepository;
     private final UninterestedProgramRepository uninterestedProgramRepository;
+    private final GenreRepository genreRepository;
 
     @Override
     public UserProfileDTO getUserProfile(Long userId) {
@@ -141,6 +149,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+        UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+        Genre genre = genreRepository.findById(updateRequestDTO.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
+
+        userGenre.changeGenre(genre);
+    }
+
+    @Override
+    @Transactional
+    public void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+        // req로 들어온 id 값이 유효한 장르 id인지 확인
+        Genre genre = genreRepository.findById(updateRequestDTO.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
+
+        // 조회된 UserGenre가 있을 경우 삭제 & 없을 경우 저장
+        userGenreRepository.findByGenreIdAndUserIdAndIsFirst(genre.getId(), userId, false).ifPresentOrElse(
+                ug -> userGenreRepository.delete(ug),
+                () -> userGenreRepository.save(
+                        UserGenre.builder()
+                                .genre(genre)
+                                .user(userRepository.findById(userId)
+                                        .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)))
+                                .build())
+        );
+    }
+
     public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
