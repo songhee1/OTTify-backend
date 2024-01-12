@@ -6,15 +6,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tavebalak.OTTify.community.dto.*;
+import org.springframework.web.multipart.MultipartFile;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.response.*;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.entity.Reply;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.BadRequestException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
-import tavebalak.OTTify.exception.NotFoundException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
@@ -44,16 +47,15 @@ public class CommunityServiceImpl implements CommunityService{
     private final LikedCommunityRepository likedCommunityRepository;
     private final LikedReplyRepository likedReplyRepository;
     @Override
-    public Community saveSubject(CommunitySubjectCreateDTO c){
+    public Community saveSubject(MultipartFile image, CommunitySubjectCreateDTO c){
 
         Program program = isPresent(c);
-
         Community community = Community.builder()
-                .title(c.getSubjectName())
-                .content(c.getContent())
-                .user(getUser())
-                .program(program)
-                .build();
+                    .title(c.getSubjectName())
+                    .content(c.getContent())
+                    .user(getUser())
+                    .program(program)
+                    .build();
 
         return communityRepository.save(community);
 
@@ -72,14 +74,15 @@ public class CommunityServiceImpl implements CommunityService{
     }
 
     private Program isPresent(CommunitySubjectCreateDTO c) {
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present) {
-            program = programRepository.save(Program.testBuilder().id(c.getProgramId()).title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else{
-            program = programRepository.findById(c.getProgramId()).get();
-        }
-        return program;
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+
+        return optionalProgram.orElseGet(() ->
+                programRepository.save(Program.testBuilder()
+                        .id(c.getProgramId())
+                        .title(c.getProgramTitle())
+                        .posterPath(c.getPosterPath())
+                        .build())
+        );
     }
 
     @Override
@@ -91,21 +94,14 @@ public class CommunityServiceImpl implements CommunityService{
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        boolean present = programRepository.findById(c.getProgramId()).isPresent();
-        Program program = null;
-        if(!present){
-            program = programRepository.save(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
-        }else {
-            program = programRepository.findById(c.getProgramId()).get();
-        }
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+        Program program = optionalProgram.orElseGet(() -> programRepository.save(Program.builder()
+                .title(c.getProgramTitle())
+                .posterPath(c.getPosterPath())
+                .build()));
 
-        CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder communitySubjectEditorDTOBuilder = community.toEditor();
-        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder
-                                                                .title(c.getSubjectName())
-                                                                .content(c.getContent())
-                                                                .program(program)
-                                                                .build();
-
+        CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
+        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(c.getSubjectName(), c.getContent(), program);
         community.edit(communitySubjectEditorDTO);
     }
 
@@ -125,12 +121,8 @@ public class CommunityServiceImpl implements CommunityService{
                 .posterPath(c.getPosterPath())
                 .build()));
 
-        CommunitySubjectEditorDTO.CommunitySubjectEditorDTOBuilder communitySubjectEditorDTOBuilder = community.toEditor();
-        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder
-                .title(c.getSubjectName())
-                .content(c.getContent())
-                .program(program)
-                .build();
+        CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
+        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(c.getSubjectName(), c.getContent(), program);
 
         community.edit(communitySubjectEditorDTO);
         community.setProgram(Program.builder().title(c.getProgramTitle()).posterPath(c.getPosterPath()).build());
@@ -156,8 +148,6 @@ public class CommunityServiceImpl implements CommunityService{
 
     @Override
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
-        String property = pageable.getSort().toList().get(0).getProperty();
-
         Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
         List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
                 community -> CommunitySubjectsListDTO

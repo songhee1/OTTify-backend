@@ -10,8 +10,10 @@ import org.springframework.data.domain.Sort;
 import tavebalak.OTTify.common.constant.Role;
 import tavebalak.OTTify.common.constant.SocialType;
 import tavebalak.OTTify.program.entity.Program;
+import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.LikedReviewRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
 
 import javax.persistence.EntityManager;
@@ -28,7 +30,8 @@ public class ReviewRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private EntityManager em;
+    private ProgramRepository programRepository;
+
     User.TestUserBuilder testUserBuilder = User.testUserBuilder();
 
 
@@ -71,38 +74,40 @@ public class ReviewRepositoryTest {
                         .build()
         );
 
+        Program savedProgram = programRepository.save(Program.testBuilder().id(1L).title("test-title").build());
+
         Review savedReview1 = Review.builder()
                 .content("test-content1")
                 .genre("test-genre")
-                .program(Program.testBuilder().id(1L).title("test-title").build())
+                .program(savedProgram)
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview2 = Review.builder()
                 .content("test-content2")
                 .genre("test-genre")
-                .program(Program.testBuilder().id(1L).title("test-title").build())
+                .program(savedProgram)
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview3 = Review.builder()
                 .content("test-content3")
                 .genre("test-genre")
-                .program(Program.testBuilder().id(1L).title("test-title").build())
+                .program(savedProgram)
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview4 = Review.builder()
                 .content("test-content4")
                 .genre("test-genre")
-                .program(Program.testBuilder().id(1L).title("test-title").build())
+                .program(savedProgram)
                 .rating(5.55)
                 .user(savedUser)
                 .build();
         Review savedReview5 = Review.builder()
                 .content("test-content5")
                 .genre("test-genre")
-                .program(Program.testBuilder().id(1L).title("test-title").build())
+                .program(savedProgram)
                 .rating(5.55)
                 .user(savedUser)
                 .build();
@@ -120,9 +125,9 @@ public class ReviewRepositoryTest {
         }
 
         //then
-        assertThat(allReviews.get(0).getContent()).isEqualTo("test-content1");
-        assertThat(allReviews.get(1).getContent()).isEqualTo("test-content2");
+        assertThat(allReviews.get(0).getContent()).isEqualTo("test-content5");
+        assertThat(allReviews.get(1).getContent()).isEqualTo("test-content4");
         assertThat(allReviews.get(2).getContent()).isEqualTo("test-content3");
-        assertThat(allReviews.get(3).getContent()).isEqualTo("test-content4");
+        assertThat(allReviews.get(3).getContent()).isEqualTo("test-content2");
     }
 }

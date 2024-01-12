@@ -10,14 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import tavebalak.OTTify.community.dto.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectEditDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectsDTO;
-import tavebalak.OTTify.community.dto.CommunitySubjectsListDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
-import tavebalak.OTTify.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.user.entity.LikedCommunity;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
@@ -44,6 +45,7 @@ public class CommunityServiceTest {
     private ReplyRepository replyRepository;
     @Mock
     private ProgramRepository programRepository;
+
 
     @InjectMocks
     private CommunityServiceImpl communityService;
@@ -130,16 +132,15 @@ public class CommunityServiceTest {
 
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
         when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
-        Community savedCommunity = communityService.save(requestDto);
+       communityService.save(requestDto);
         when(communityRepository.findById(anyLong())).thenReturn(Optional.of(toEntity(requestDto, user)));
         doNothing().when(communityRepository).delete(any());
 
         //when
         communityService.delete(1L, user);
-        Optional<Community> findCommunity = communityRepository.findById(savedCommunity.getId());
 
         //then
-        assertThat(findCommunity.isPresent()).isFalse();
+        assertEquals(0, communityRepository.count());
     }
 
     @Test

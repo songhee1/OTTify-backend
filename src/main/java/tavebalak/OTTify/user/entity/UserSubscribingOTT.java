@@ -1,17 +1,27 @@
 package tavebalak.OTTify.user.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.program.entity.Ott;
 
-import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserSubscribingOTT {
-    @Id @GeneratedValue
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_subscribingott_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,9 +34,9 @@ public class UserSubscribingOTT {
 
     public static UserSubscribingOTT create(User user, Ott ott) {
         return UserSubscribingOTT.builder()
-                .user(user)
-                .ott(ott)
-                .build();
+            .user(user)
+            .ott(ott)
+            .build();
     }
 
     @Builder
