@@ -12,12 +12,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.entity.Community;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikedCommunity {
+public class LikedCommunity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
