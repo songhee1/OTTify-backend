@@ -2,13 +2,13 @@ version: 0.0
 os: linux
 
 files:
-  - source: scripts/*.sh
+  - source: scripts/deploy.sh
     destination: /home/ubuntu/spring-github-action
     overwrite: yes
   - source: appspec.yml
     destination: /home/ubuntu/spring-github-action
     overwrite: yes
-  - source: build/libs/*.jar
+  - source: build/libs/OTTify-0.0.1-SNAPSHOT.jar
     destination: /home/ubuntu/spring-github-action
     overwrite: yes
 
