@@ -30,7 +30,7 @@ public class ProgramChoiceController {
 
     @ApiOperation(value = "프로그램 좋아요 지정 및 취소", notes = "프로그램 좋아요를 지정하고 한번 더 호출하면 취소합니다.")
     @ApiResponse(code = 200, message = "프로그램 좋아요 및 해제 실행 완료")
-    @ApiImplicitParam(name = "programId", dataType = "long", value = "프로그램 ID 값", required = true, paramType = "path")
+    @ApiImplicitParam(name = "programId", dataType = "long", value = "프로그램 ID 값", required = true, paramType = "path", example = "1")
     @PostMapping("/api/v1/program/like/{programId}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse likeProgram(@PathVariable("programId") Long programId) {
@@ -41,7 +41,7 @@ public class ProgramChoiceController {
 
     @ApiOperation(value = "프로그램 관심없어요 지정 및 취소", notes = "프로그램 관심없어요를 지정하고 한번 더 호출하면 취소합니다")
     @ApiResponse(code = 200, message = "프로그램 관심없어요 및 해제 실행 완료")
-    @ApiImplicitParam(name = "programId", dataType = "long", value = "프로그램 ID 값", required = true, paramType = "path")
+    @ApiImplicitParam(name = "programId", dataType = "long", value = "프로그램 ID 값", required = true, paramType = "path", example = "1")
     @PostMapping("/api/v1/program/uninterested/{programId}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse unInterestedProgram(@PathVariable("programId") Long programId) {

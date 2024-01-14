@@ -34,7 +34,7 @@ public class ProgramController {
     }
 
     @ApiOperation(value = "프로그램 검색하기", notes = "초기화면에서 프로그램을 검색합니다.")
-    @ApiImplicitParam(name = "name", dataType = "String", value = "프로그램명 검색", required = true, paramType = "query")
+    @ApiImplicitParam(name = "name", dataType = "String", value = "프로그램명 검색", required = true, paramType = "query", example = "코코")
     @GetMapping("/api/v1/program/search")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<SearchResponseDto> getSearchProgram(@RequestParam("name") String name) {
@@ -43,8 +43,8 @@ public class ProgramController {
 
     @ApiOperation(value = "영화 검색하기", notes = "영화를 검색합니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "name", dataType = "String", value = "영화명 검색", required = true, paramType = "query"),
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(1부터 시작)", required = true, paramType = "query")
+        @ApiImplicitParam(name = "name", dataType = "String", value = "영화명 검색", required = true, paramType = "query", example = "코코"),
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(1부터 시작)", required = true, paramType = "query", example = "1")
     })
     @GetMapping("/api/v1/movie/search")
     @ResponseStatus(HttpStatus.OK)
@@ -55,8 +55,8 @@ public class ProgramController {
 
     @ApiOperation(value = "TV 프로그램 검색하기", notes = "TV를 검색합니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "name", dataType = "String", value = "TV 프로그램 검색", required = true, paramType = "query"),
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(1부터 시작)", required = true, paramType = "query")
+        @ApiImplicitParam(name = "name", dataType = "String", value = "TV 프로그램 검색", required = true, paramType = "query", example = "나혼자산다"),
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(1부터 시작)", required = true, paramType = "query", example = "1")
     })
     @GetMapping("/api/v1/tv/search")
     @ResponseStatus(HttpStatus.OK)

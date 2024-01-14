@@ -47,7 +47,7 @@ public class ReviewCUDController {
 
     @ApiOperation(value = "리뷰 수정", notes = "프로그램에 대한 리뷰를 수정합니다")
     @ApiResponse(code = 200, message = "리뷰 수정 완료")
-    @ApiImplicitParam(name = "reviewId", dataType = "long", value = "리뷰 ID 값", required = true, paramType = "path")
+    @ApiImplicitParam(name = "reviewId", dataType = "long", value = "리뷰 ID 값", required = true, paramType = "path", example = "1")
     @PutMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse updateReview(@PathVariable("reviewId") Long reviewId,
@@ -59,7 +59,7 @@ public class ReviewCUDController {
 
     @ApiOperation(value = "리뷰 삭제", notes = "프로그램에 대한 리뷰를 삭제합니다")
     @ApiResponse(code = 200, message = "리뷰 삭제 완료")
-    @ApiImplicitParam(name = "reviewId", dataType = "long", value = "리뷰 ID 값", required = true, paramType = "path")
+    @ApiImplicitParam(name = "reviewId", dataType = "long", value = "리뷰 ID 값", required = true, paramType = "path", example = "1")
     @DeleteMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse deleteReview(@PathVariable("reviewId") Long reviewId) {
@@ -70,7 +70,7 @@ public class ReviewCUDController {
 
     @ApiOperation(value = "리뷰 좋아요 및 해제", notes = "프로그램에 대한 리뷰 좋아요 혹은 해제를 실행합니다")
     @ApiResponse(code = 200, message = "리뷰 좋아요 및 해제 완료")
-    @ApiImplicitParam(name = "reviewId", dataType = "long", value = "리뷰 ID 값", required = true, paramType = "path")
+    @ApiImplicitParam(name = "reviewId", dataType = "long", value = "리뷰 ID 값", required = true, paramType = "path", example = "1")
     @PostMapping("/like/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse likeReview(@PathVariable("reviewId") Long reviewId) {

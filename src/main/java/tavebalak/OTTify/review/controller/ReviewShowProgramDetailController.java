@@ -37,9 +37,7 @@ public class ReviewShowProgramDetailController {
 
 
     @ApiOperation(value = "프로그램 페이지의 초기 리뷰 보여주기", notes = "프로그램 페이지의 처음 4개의 리뷰를 보여줍니다")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path"),
-    })
+    @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path")
     @GetMapping("/normal/reviews/count/4")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<ReviewResponseDtoList> show4ReviewList(
@@ -49,10 +47,10 @@ public class ReviewShowProgramDetailController {
 
     @ApiOperation(value = "전체 리뷰 리스트를 보여주기", notes = "전체 리뷰 리스트를 보여줍니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", required = false, paramType = "query"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, defaultValue = "DESC", paramType = "query"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", required = false, defaultValue = "likeCounts", paramType = "query"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", required = false, paramType = "query")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", required = false, paramType = "query", example = "1"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, defaultValue = "DESC", paramType = "query", example = "Desc"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", required = false, defaultValue = "likeCounts", paramType = "query", example = "createdAt"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", required = false, paramType = "query", example = "5")
     })
     @GetMapping("/normal/reviews")
     @ResponseStatus(HttpStatus.OK)
@@ -67,9 +65,7 @@ public class ReviewShowProgramDetailController {
     }
 
     @ApiOperation(value = "프로그램 페이지의 자신의 취향에 맞는 장르 보여주기", notes = "자신의 취향에 맞는 좋아요 순  처음 4개의 리뷰를 보여줍니다")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path"),
-    })
+    @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path", example = "1")
     @GetMapping("/user/specific/reviews/count/4")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<ReviewResponseDtoList> show4UserSpecificReviewList(
@@ -82,10 +78,10 @@ public class ReviewShowProgramDetailController {
 
     @ApiOperation(value = "사용자의 취향에 맞는 전체 장르 리스트를 보여주기", notes = "전체 장르 리스트를 보여줍니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", required = false, paramType = "query"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, defaultValue = "DESC", paramType = "query"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", required = false, defaultValue = "likeCounts", paramType = "query"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", required = false, paramType = "query")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", required = false, paramType = "query", example = "1"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, defaultValue = "DESC", paramType = "query", example = "Desc"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", required = false, defaultValue = "likeCounts", paramType = "query", example = "createdAt"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", required = false, paramType = "query", example = "5")
     })
     @GetMapping("/user/specific/reviews")
     @ResponseStatus(HttpStatus.OK)
@@ -103,9 +99,7 @@ public class ReviewShowProgramDetailController {
 
 
     @ApiOperation(value = "자신의 취향에 맞는 사람들의 리뷰의 평균 별점 보여주기", notes = "자신의 취향에 맞는 사람들의 리뷰의 평균 별점 보여줍니다")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path"),
-    })
+    @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path")
     @GetMapping("/user/specific/review/rating")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<String> showUserSpecificReviewRating(
