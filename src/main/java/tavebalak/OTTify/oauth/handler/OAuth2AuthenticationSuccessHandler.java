@@ -37,14 +37,20 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 String refreshToken = jwtService.createRefreshToken();
 
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
+                response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
+                String url = generateUrl(accessToken, refreshToken);
 //                response.sendRedirect("oauth2/sign-up"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
                 jwtService.sendAccessAndRefreshToken(response, oAuth2User.getEmail(), accessToken, refreshToken);
+
+                response.sendRedirect(url);
+
                 log.info(tokenRepository.findByRefreshToken(refreshToken).get().getEmail());
 //                User findUser = userRepository.findByEmail(oAuth2User.getEmail())
 //                                .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 유저가 없습니다."));
 //                findUser.authorizeUser();
             } else {
+                log.info("===user login===");
                 loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
             }
         } catch (Exception e) {
@@ -59,7 +65,25 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
         response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
 
+        String url = generateUrl(accessToken, refreshToken);
+        log.info("===redirect===");
+
         jwtService.sendAccessAndRefreshToken(response, oAuth2User.getEmail(), accessToken, refreshToken);
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
+
+        response.sendRedirect(url);
+
+    }
+
+    private String generateUrl(final String accessToken, final String refreshToken) {
+        StringBuilder sb = new StringBuilder();
+        StringBuilder url = sb.append("http://52.79.200.90:3000/login/oauth2/code")
+                .append("?")
+                .append("accessToken=")
+                .append(accessToken)
+                .append("&")
+                .append("refreshToken=")
+                .append(refreshToken);
+        return url.toString();
     }
 }

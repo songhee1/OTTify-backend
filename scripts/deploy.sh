@@ -1,32 +1,27 @@
 #!/bin/bash
 
-ROOT_PATH="/home/ubuntu/spring-github-action"
-JAR_NAME=$(ls $ROOT_PATH/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
-JAR_PATH=$ROOT_PATH/build/libs/$JAR_NAME
+REPOSITORY="/home/ubuntu/spring-github-action"
 
-APP_LOG="$ROOT_PATH/application.log"
-ERROR_LOG="$ROOT_PATH/error.log"
-START_LOG="$ROOT_PATH/start.log"
-STOP_LOG="$ROOT_PATH/stop.log"
+echo "> 현재 구동 중인 애플리케이션 pid 확인"
+CURRENT_PID=$(pgrep -fl action | grep java | awk '{print $1}')
 
-SERVICE_PID=$(pgrep -f $JAR_NAME) # 실행 중인 Spring 서버의 PID
+echo "현재 구동 중인 애플리케이션 pid: $CURRENT_PID"
 
-if [ -z $SERVICE_PID ]; then
-  echo "서비스 NotFound" >> $STOP_LOG
+if [ -z "$CURRENT_PID" ]; then
+  echo "현재 구동 중인 애플리케이션이 없으므로 종료하지 않습니다."
 else
-  echo "서비스 종료 " >> $STOP_LOG
-  kill -15 $SERVICE_PID
+  echo "> kill -15 $CURRENT_PID"
+  kill -15 $CURRENT_PID
+  sleep 5
 fi
 
-NOW=$(date +%c)
+echo "> 새 애플리케이션 배포"
+JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
 
-# build 파일 복사
-echo "[$NOW] $JAR_NAME 복사" >> $START_LOG
-cp $JAR_PATH $ROOT_PATH/$JAR_NAME
+echo "> JAR NAME: $JAR_NAME"
 
-# jar 파일 실행
-echo "[$NOW] > $JAR_NAME 실행" >> $START_LOG
-nohup java -jar $ROOT_PATH/$JAR_NAME > $APP_LOG 2> $ERROR_LOG &
+echo "> $JAR_NAME 에 실행권한 추가"
+chmod +x $JAR_NAME
 
-SERVICE_PID=$(pgrep -f $ROOT_PATH/$JAR_NAME)
-echo "[$NOW] > 서비스 PID: $SERVICE_PID" >> $START_LOG
+echo "> $JAR_NAME 실행"
+nohup java -jar $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
