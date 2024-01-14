@@ -19,12 +19,16 @@ public class ServiceListsDTO {
     private String posterPath;
     @ApiModelProperty(value = "평균 펼점")
     private double averageRating;
+    @ApiModelProperty(value = "개봉년도")
+    private String createdYear;
 
     @Builder
-    public ServiceListsDTO(Long programId, String title, String posterPath, double averageRating) {
+    public ServiceListsDTO(Long programId, String title, String posterPath, double averageRating,
+        String createdYear) {
         this.programId = programId;
         this.title = title;
         this.posterPath = posterPath;
         this.averageRating = averageRating;
+        this.createdYear = createdYear;
     }
 }

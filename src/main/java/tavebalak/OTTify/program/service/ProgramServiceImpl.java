@@ -126,6 +126,7 @@ public class ProgramServiceImpl implements ProgramService {
                         .title(pg.getTitle())
                         .posterPath(pg.getPosterPath())
                         .averageRating(pg.getAverageRating())
+                        .createdYear(pg.getCreatedYear())
                         .build()).collect(Collectors.toList())
             ).build();
     }
