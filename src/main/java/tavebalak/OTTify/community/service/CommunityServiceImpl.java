@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.response.CommentListsDTO;
@@ -54,7 +53,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final LikedReplyRepository likedReplyRepository;
 
     @Override
-    public Community saveSubject(MultipartFile image, CommunitySubjectCreateDTO c) {
+    public Community saveSubject(CommunitySubjectCreateDTO c) {
 
         Program program = isPresent(c);
         Community community = Community.builder()
@@ -119,11 +118,18 @@ public class CommunityServiceImpl implements CommunityService {
         Program program = programRepository.findById(c.getProgramId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
 
+        if (!Objects.equals(community.getUser().getId(), user.getId())) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        }
+
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(
             c.getSubjectName(), c.getContent(), program);
 
         community.edit(communitySubjectEditorDTO);
+
+        community.setProgram(program);
+
         return community;
     }
 
@@ -191,6 +197,7 @@ public class CommunityServiceImpl implements CommunityService {
         User savedUser = getUser();
         Community findCommunity = communityRepository.findById(subjectId).orElseThrow(() ->
             new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
         likedCommunityRepository.findByCommunityIdAndUserId(findCommunity.getId(),
             savedUser.getId()).ifPresentOrElse(
             likedCommunityRepository::delete,
@@ -316,6 +323,7 @@ public class CommunityServiceImpl implements CommunityService {
     public CommunitySubjectDTO getSubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
         return CommunitySubjectDTO.builder()
             .subjectId(subjectId)
             .title(community.getTitle())

@@ -69,7 +69,7 @@ public class Community extends BaseEntity {
     }
 
 
-    public void setImageUrl(String storedFileName) {
-        this.imageUrl = storedFileName;
+    public void setProgram(Program program) {
+        this.program = program;
     }
 }
