@@ -6,17 +6,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.error.exception.NotFoundException;
-import tavebalak.OTTify.user.dto.Response.UserOttDTO;
+import tavebalak.OTTify.user.service.UserService;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
 import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
 import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
 import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
-import tavebalak.OTTify.user.service.UserService;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.review.dto.response.MyReviewDto;
 
 import java.util.List;
-import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
-import tavebalak.OTTify.user.service.UserServiceImpl;
 
 @RestController
 @RequiredArgsConstructor
@@ -62,5 +64,41 @@ public class UserController {
     public BaseResponse update2ndLikedGenre(@PathVariable("id") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDTO) {
         userService.update2ndGenre(userId, updateRequestDTO);
         return BaseResponse.success("성공적으로 2순위 장르가 업데이트 되었습니다.");
+    }
+
+    @GetMapping("/{id}/reviews")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyReviewDto>> getMyReview(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            sort = "createdAt",
+            direction = Sort.Direction.DESC,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getMyReview(userId, pageable));
+    }
+
+    @GetMapping("/{id}/likedReviews")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyReviewDto>> getLikedReview(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getLikedReview(userId, pageable));
+    }
+
+    @GetMapping("/{id}/discussion/hosting")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            sort = "createdAt",
+            direction = Sort.Direction.DESC,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getHostedDiscussion(userId, pageable));
+    }
+
+    @GetMapping("/{id}/discussion/participating")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PathVariable("id") Long userId, @PageableDefault(
+            size = 5,
+            page = 0) Pageable pageable) {
+        return BaseResponse.success(userService.getParticipatedDiscussion(userId, pageable));
     }
 }

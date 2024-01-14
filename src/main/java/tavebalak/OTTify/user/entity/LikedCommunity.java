@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.entity.Community;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -24,7 +25,6 @@ public class LikedCommunity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "liked_community_id")
     private Long id;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

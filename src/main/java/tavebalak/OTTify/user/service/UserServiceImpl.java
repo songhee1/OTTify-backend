@@ -2,37 +2,39 @@ package tavebalak.OTTify.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.community.entity.Community;
+import tavebalak.OTTify.community.repository.CommunityRepository;
+import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.dto.GenreDTO;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.genre.entity.UserGenre;
+import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
+import tavebalak.OTTify.review.dto.response.MyReviewDto;
+import tavebalak.OTTify.review.entity.Review;
+import tavebalak.OTTify.review.entity.ReviewTag;
 import tavebalak.OTTify.review.repository.ReviewRepository;
+import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
 import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
 import tavebalak.OTTify.user.dto.Response.*;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.entity.UserSubscribingOTT;
-import tavebalak.OTTify.user.repository.LikedProgramRepository;
-import tavebalak.OTTify.user.repository.UninterestedProgramRepository;
-import tavebalak.OTTify.user.repository.UserRepository;
-import tavebalak.OTTify.user.repository.UserSubscribingOttRepository;
+import tavebalak.OTTify.user.repository.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import tavebalak.OTTify.error.exception.NotFoundException;
-import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
-import tavebalak.OTTify.genre.entity.Genre;
-import tavebalak.OTTify.genre.entity.UserGenre;
-import tavebalak.OTTify.genre.repository.GenreRepository;
-import tavebalak.OTTify.genre.repository.UserGenreRepository;
-import tavebalak.OTTify.user.repository.UserRepository;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,9 +46,15 @@ public class UserServiceImpl implements UserService {
     private final UserSubscribingOttRepository userSubscribingOttRepository;
     private final OttRepository ottRepository;
     private final ReviewRepository reviewRepository;
+    private final ReviewReviewTagRepository reviewReviewTagRepository;
     private final LikedProgramRepository likedProgramRepository;
+    private final LikedReviewRepository likedReviewRepository;
+    private final LikedCommunityRepository likedCommunityRepository;
+    private final LikedReplyRepository likedReplyRepository;
     private final UninterestedProgramRepository uninterestedProgramRepository;
     private final GenreRepository genreRepository;
+    private final CommunityRepository communityRepository;
+    private final ReplyRepository replyRepository;
 
     @Override
     public UserProfileDTO getUserProfile(Long userId) {
@@ -177,6 +185,8 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    @Transactional
     public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
@@ -250,5 +260,115 @@ public class UserServiceImpl implements UserService {
         }
 
         return userId;
+    }
+
+    @Override
+    public List<MyReviewDto> getMyReview(Long userId, Pageable pageable) {
+        Slice<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable);
+
+        List<MyReviewDto> reviewDtoList = new ArrayList<>();
+        reviewList.stream()
+                .forEach(r -> {
+                    // 리뷰에 달린 reviewTags 가져오기
+                    List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(r.getId());
+
+                    reviewDtoList.add(
+                            MyReviewDto.builder()
+                                    .reviewId(r.getId())
+                                    .createdDate(r.getCreatedAt())
+                                    .userProfilePhoto(r.getUser().getProfilePhoto())
+                                    .userNickName(r.getUser().getNickName())
+                                    .programTitle(r.getProgram().getTitle())
+                                    .reviewRating(r.getRating())
+                                    .reviewTags(reviewTags)
+                                    .content(r.getContent())
+                                    .likeCnt(r.getLikeCounts())
+                                    .build()
+                    );
+                });
+
+        return reviewDtoList;
+    }
+
+    @Override
+    public List<MyReviewDto> getLikedReview(Long userId, Pageable pageable) {
+        Slice<Review> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable);
+
+        List<MyReviewDto> reviewDtoList = new ArrayList<>();
+        reviewList.stream()
+                .forEach(r -> {
+                    // 리뷰에 달린 reviewTags 가져오기
+                    List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(r.getId());
+
+                    reviewDtoList.add(
+                            MyReviewDto.builder()
+                                    .reviewId(r.getId())
+                                    .createdDate(r.getCreatedAt())
+                                    .userProfilePhoto(r.getUser().getProfilePhoto())
+                                    .userNickName(r.getUser().getNickName())
+                                    .programTitle(r.getProgram().getTitle())
+                                    .reviewRating(r.getRating())
+                                    .reviewTags(reviewTags)
+                                    .content(r.getContent())
+                                    .likeCnt(r.getLikeCounts())
+                                    .build()
+                    );
+                });
+
+        return reviewDtoList;
+    }
+
+    @Override
+    public List<MyDiscussionDto> getHostedDiscussion(Long userId, Pageable pageable) {
+        Slice<Community> discussionList = communityRepository.findByUserId(userId, pageable);
+
+        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
+        discussionList.stream()
+                .forEach(d -> {
+                    int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+                    int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+
+                    discussionDtoList.add(
+                            MyDiscussionDto.builder()
+                                    .discussionId(d.getId())
+                                    .createdDate(d.getCreatedAt())
+                                    .programTitle(d.getProgram().getTitle())
+                                    .discussionTitle(d.getTitle())
+                                    .content(d.getContent())
+                                    .img(d.getImageUrl())
+                                    .likeCnt(likeCnt)
+                                    .replyCnt(replyCnt)
+                                    .build()
+                    );
+                });
+
+        return discussionDtoList;
+    }
+
+    @Override
+    public List<MyDiscussionDto> getParticipatedDiscussion(Long userId, Pageable pageable) {
+        Slice<Community> discussionList = replyRepository.findAllCommunityByUserId(userId, pageable);
+
+        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
+        discussionList.stream()
+                .forEach(d -> {
+                    int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+                    int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+
+                    discussionDtoList.add(
+                            MyDiscussionDto.builder()
+                                    .discussionId(d.getId())
+                                    .createdDate(d.getCreatedAt())
+                                    .programTitle(d.getProgram().getTitle())
+                                    .discussionTitle(d.getTitle())
+                                    .content(d.getContent())
+                                    .img(d.getImageUrl())
+                                    .likeCnt(likeCnt)
+                                    .replyCnt(replyCnt)
+                                    .build()
+                    );
+                });
+
+        return discussionDtoList;
     }
 }
