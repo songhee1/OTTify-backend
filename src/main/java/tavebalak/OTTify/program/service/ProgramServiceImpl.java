@@ -111,7 +111,8 @@ public class ProgramServiceImpl implements ProgramService {
         Optional<Program> program = programRepository.findById(programList.get(idx).getId());
         program.ifPresent(recommendPrograms::add);
 
-        while (recommendPrograms.size() < 6) {
+        int size = recommendPrograms.size();
+        for (; size < 6; size++) {
             Long index = 1L + ((long) (new Random().nextDouble() * (50L - 1L)));
             Optional<Program> findProgram = programRepository.findById(index);
             findProgram.ifPresent(recommendPrograms::add);
