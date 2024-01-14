@@ -103,7 +103,7 @@ public class CommunityServiceImpl implements CommunityService {
 
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(
-            c.getSubjectName(), c.getContent(), program);
+            c.getSubjectName(), c.getContent());
         community.edit(communitySubjectEditorDTO);
     }
 
@@ -120,11 +120,9 @@ public class CommunityServiceImpl implements CommunityService {
 
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(
-            c.getSubjectName(), c.getContent(), program);
+            c.getSubjectName(), c.getContent());
 
         community.edit(communitySubjectEditorDTO);
-
-        community.setProgram(program);
 
         return community;
     }

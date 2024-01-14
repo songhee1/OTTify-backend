@@ -57,13 +57,12 @@ public class Community extends BaseEntity {
     }
 
     public CommunitySubjectEditorDTO toEditor() {
-        return new CommunitySubjectEditorDTO(title, content, program);
+        return new CommunitySubjectEditorDTO(title, content);
     }
 
     public void edit(CommunitySubjectEditorDTO communitySubjectEditorDTO) {
         this.title = communitySubjectEditorDTO.getTitle();
         this.content = communitySubjectEditorDTO.getContent();
-        this.program = communitySubjectEditorDTO.getProgram();
     }
 
     public void setUser(User user) {
@@ -71,7 +70,4 @@ public class Community extends BaseEntity {
     }
 
 
-    public void setProgram(Program program) {
-        this.program = program;
-    }
 }
