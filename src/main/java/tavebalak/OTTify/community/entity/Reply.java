@@ -31,6 +31,7 @@ public class Reply extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reply_id")
     private Long id;
+
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,7 +75,6 @@ public class Reply extends BaseEntity {
     public ReplyCommentEditorDTO toEditor() {
         return new ReplyCommentEditorDTO(content);
     }
-
 
     public void edit(ReplyCommentEditorDTO c) {
         this.content = c.getComment();
