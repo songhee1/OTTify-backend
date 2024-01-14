@@ -45,6 +45,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Double sumReviewRatingByGenreName(@Param("genre") String genreName,
         @Param("program") Program program);
 
-    List<Review> findByUserId(@Param("userId") Long userId);
+    List<Review> findByUserId(Long userId);
 
 }
