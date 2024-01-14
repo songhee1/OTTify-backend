@@ -111,10 +111,6 @@ public class CommunityServiceImpl implements CommunityService {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
-        if (!Objects.equals(community.getUser().getId(), user.getId())) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN);
-        }
-
         Program program = programRepository.findById(c.getProgramId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
 
