@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface LikedReplyRepository extends JpaRepository<LikedReply, Long> {
     Optional<LikedReply> findByUserIdAndReplyIdAndCommunityId(Long userId, Long replyId, Long communityId);
     List<LikedReply> findByCommunityIdAndReplyId(Long communityId, Long replyId);
+    int countByCommunityId(Long communityId);
 }
