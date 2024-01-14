@@ -68,7 +68,7 @@ class ReviewShowProgramDetailServiceImplTest {
 
         List<ReviewTagIdDto> reviewTagIdDtoList = makeReviewTag();
 
-        ReviewSaveDto reviewSaveDto1 = new ReviewSaveDto("아 진짜 꿀잼이였어요ㅠ", program.getId(), 3.8,
+        ReviewSaveDto reviewSaveDto1 = new ReviewSaveDto("아 진짜 꿀잼이였어요ㅠ", program.getId(), 3.5,
             reviewTagIdDtoList);
 
         reviewCUDService.saveReview(user, reviewSaveDto1);
@@ -78,12 +78,12 @@ class ReviewShowProgramDetailServiceImplTest {
         Assertions.assertThat(findReview.getContent()).isEqualTo("아 진짜 꿀잼이였어요ㅠ");
 
         Assertions.assertThat(program.getReviewCount()).isEqualTo(1);
-        Assertions.assertThat(program.getAverageRating()).isEqualTo(3.8);
+        Assertions.assertThat(program.getAverageRating()).isEqualTo(3.5);
 
         User user2 = makeUser2();
 
         ReviewSaveDto reviewSaveDto2 = new ReviewSaveDto("애니메이션 장르 좋아하는데 꿀잼이였어요~", program.getId(),
-            4.2, reviewTagIdDtoList);
+            4.5, reviewTagIdDtoList);
 
         reviewCUDService.saveReview(user2, reviewSaveDto2);
 
@@ -94,27 +94,33 @@ class ReviewShowProgramDetailServiceImplTest {
 
         User user3 = makeUser3();
 
-        ReviewSaveDto reviewSaveDto3 = new ReviewSaveDto("범죄인줄 알았는데 하 걍 아쉽다", program.getId(), 1,
+        ReviewSaveDto reviewSaveDto3 = new ReviewSaveDto("요즘 애니메이션에 빠져서 그런가 재밌네", program.getId(),
+            4,
             reviewTagIdDtoList);
 
         reviewCUDService.saveReview(user3, reviewSaveDto3);
 
+        Assertions.assertThat(program.getReviewCount()).isEqualTo(3);
+        Assertions.assertThat(program.getAverageRating()).isEqualTo(4);
+
         Review findReview3 = reviewRepository.findByProgramAndUser(program, user3).get();
 
-        Assertions.assertThat(program.getReviewCount()).isEqualTo(3);
-        Assertions.assertThat(program.getAverageRating()).isEqualTo(3);
+        User user4 = makeUser4();
+        ReviewSaveDto reviewSaveDto4 = new ReviewSaveDto("범죄물이 아니였어? 좀 노잼", program.getId(), 1.5,
+            reviewTagIdDtoList);
+        reviewCUDService.saveReview(user4, reviewSaveDto4);
 
         //user의 평균 별점 변화 확인
 
         Program program2 = makeProgram2();
 
-        ReviewSaveDto reviewSaveDto4 = new ReviewSaveDto("공포는 취향이 아니라서 ㅋ", program2.getId(), 2,
+        ReviewSaveDto reviewSaveDto5 = new ReviewSaveDto("공포는 취향이 아니라서 ㅋ", program2.getId(), 2,
             reviewTagIdDtoList);
 
-        reviewCUDService.saveReview(user, reviewSaveDto4);
+        reviewCUDService.saveReview(user, reviewSaveDto5);
 
         Assertions.assertThat(user.getUserReviewCounts()).isEqualTo(2);
-        Assertions.assertThat(user.getAverageRating()).isEqualTo(2.9);
+        Assertions.assertThat(user.getAverageRating()).isEqualTo(2.75);
 
         //좋아요 확인 기능
 
@@ -131,7 +137,7 @@ class ReviewShowProgramDetailServiceImplTest {
         Assertions.assertThat(findReview3.getLikeCounts()).isEqualTo(1);
 
         String avg = reviewShowProgramDetailService.showUserSpecificRating(user, program.getId());
-        Assertions.assertThat(avg).isEqualTo("3.00");
+        Assertions.assertThat(avg).isEqualTo("4.00");
 
 
     }
@@ -149,13 +155,13 @@ class ReviewShowProgramDetailServiceImplTest {
         user.addGenre(genre2, false);
         userRepository.save(user);
         return user;
-        //코미디를 firstGenre로 두고, 애니메이션을 후 순위로 둠
+        //애니메이션를 firstGenre로 두고, 애니메이션을 후 순위로 둠
     }
 
     @Transactional
     User makeUser2() {
         User user = User.builder()
-            .email("dionisos198@gmail.com")
+            .email("dionisos1988@gmail.com")
             .build();
 
         Genre genre1 = genreRepository.findByTmDbGenreId(16L).get();
@@ -174,14 +180,30 @@ class ReviewShowProgramDetailServiceImplTest {
             .email("dionisos198@daum.com")
             .build();
 
-        Genre genre = genreRepository.findByTmDbGenreId(16L).get();//범죄를 first Genre 로 둠
+        Genre genre = genreRepository.findByTmDbGenreId(16L).get();//애니메이션를 first Genre 로 둠
         Genre genre2 = genreRepository.findByTmDbGenreId(28L).get();//액션을 둘째 장르로 둠
 
         user.addGenre(genre, true);
         user.addGenre(genre, false);
         userRepository.save(user);
         return user;
-        //범죄를 첫번째 액션을 둘째 장르로 두었다.
+        //애니메이션를 첫번째 액션을 둘째 장르로 두었다.
+    }
+
+    @Transactional
+    User makeUser4() {
+        User user = User.builder()
+            .email("dionisos198888@daum.com")
+            .build();
+
+        Genre genre = genreRepository.findByTmDbGenreId(28L).get();//액션 first Genre 로 둠
+        Genre genre2 = genreRepository.findByTmDbGenreId(16L).get();//애니메이션을 둘째 장르로 둠
+
+        user.addGenre(genre, true);
+        user.addGenre(genre, false);
+        userRepository.save(user);
+        return user;
+        //애니메이션를 첫번째 액션을 둘째 장르로 두었다.
     }
 
     @Transactional
