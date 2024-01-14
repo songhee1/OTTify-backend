@@ -21,20 +21,11 @@ public class CommunitySubjectCreateDTO {
     @NotBlank
     @ApiParam(value = "토론 내용", required = true)
     private String content;
-    @NotBlank
-    @ApiParam(value = "프로그램 제목", required = true)
-    private String programTitle;
-    @NotBlank
-    @ApiParam(value = "프로그램 포스터 url", required = true)
-    private String posterPath;
 
     @Builder
-    public CommunitySubjectCreateDTO(Long programId, String subjectName, String content,
-        String programTitle, String posterPath) {
+    public CommunitySubjectCreateDTO(Long programId, String subjectName, String content) {
         this.programId = programId;
         this.subjectName = subjectName;
         this.content = content;
-        this.programTitle = programTitle;
-        this.posterPath = posterPath;
     }
 }

@@ -25,21 +25,13 @@ public class CommunitySubjectEditDTO {
     @NotNull
     @ApiModelProperty(value = "프로그램 id")
     private Long programId;
-    @NotBlank(message = "프로그램 제목이 비워져 있어서는 안됩니다.")
-    @ApiModelProperty(value = "프로그램 제목")
-    private String programTitle;
-    @NotBlank(message = "프로그램 포스터 url이 비워져 있어서는 안됩니다.")
-    @ApiModelProperty(value = "프로그램 url")
-    private String posterPath;
 
     @Builder
     public CommunitySubjectEditDTO(Long subjectId, String subjectName, String content,
-        Long programId, String programTitle, String posterPath) {
+        Long programId) {
         this.subjectId = subjectId;
         this.subjectName = subjectName;
         this.content = content;
         this.programId = programId;
-        this.programTitle = programTitle;
-        this.posterPath = posterPath;
     }
 }
