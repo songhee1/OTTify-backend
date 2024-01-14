@@ -303,7 +303,7 @@ public class CommunityServiceImpl implements CommunityService {
             .userId(getUser().getId())
             .likeCount(getLikeSum(community.getId()))
             .subjectId(community.getId())
-            .posterUrl(community.getProgram().getPosterPath())
+            .programTitle(community.getProgram().getTitle())
             .build();
     }
 
