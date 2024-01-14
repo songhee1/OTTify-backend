@@ -66,7 +66,7 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
         // 사용자에게 보내줄 DTO
         ProgramResponseDto programResponseDto = new ProgramResponseDto(programDetailResponse,
-            oaProgramCreditsDto, kr);
+            oaProgramCreditsDto, kr, program.getAverageRating());
         return programResponseDto;
 
     }
