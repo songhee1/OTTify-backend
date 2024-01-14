@@ -31,6 +31,8 @@ public class CommunityAriclesDTO {
     private int likeCount;
     @ApiModelProperty(value = "토론 주제 id")
     private Long subjectId;
+    @ApiModelProperty(value = "프로그램 포스터 url")
+    private String posterUrl;
     @ApiModelProperty(value = "댓글 리스트")
     private List<CommentListsDTO> commentListsDTOList;
 
@@ -44,7 +46,8 @@ public class CommunityAriclesDTO {
         int commentAmount,
         List<CommentListsDTO> commentListsDTOList,
         int likeCount,
-        Long subjectId
+        Long subjectId,
+        String posterUrl
     ) {
         this.title = title;
         this.writer = writer;
@@ -56,5 +59,6 @@ public class CommunityAriclesDTO {
         this.commentListsDTOList = commentListsDTOList;
         this.likeCount = likeCount;
         this.subjectId = subjectId;
+        this.posterUrl = posterUrl;
     }
 }

@@ -270,6 +270,7 @@ public class CommunityServiceImpl implements CommunityService {
 
         List<Reply> replyList = replyRepository.findByCommunityIdAndParentId(community.getId(),
             null);
+
         List<CommentListsDTO> commentListsDTOList = new ArrayList<>();
         for (Reply comment : replyList) {
             List<Reply> byCommunityIdAndParentId = replyRepository.findByCommunityIdAndParentId(
@@ -308,6 +309,7 @@ public class CommunityServiceImpl implements CommunityService {
             .userId(getUser().getId())
             .likeCount(getLikeSum(community.getId()))
             .subjectId(community.getId())
+            .posterUrl(community.getProgram().getPosterPath())
             .build();
     }
 
