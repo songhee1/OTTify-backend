@@ -13,13 +13,6 @@ import java.util.Optional;
 @Repository
 public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
     Optional<UserGenre> findByUserIdAndIsFirst(Long userId, boolean isFirst);
-    List<UserGenre> findByGenreId(Long genreId);
-
-    @Query("select ug from UserGenre ug where ug.user.id =:userId and ug.isFirst = true")
-    UserGenre find1stGenreByUserId(@Param("userId") Long userId);
-
-    @Query("select ug from UserGenre ug where ug.user.id =:userId and ug.isFirst = false")
-    List<UserGenre> find2ndGenreByUserId(@Param("userId") Long userId);
 
     @Query("select ug from UserGenre ug join fetch ug.genre where ug.user.id =:userId and ug.isFirst = true")
     Optional<UserGenre> find1stGenreByUserIdFetchJoin(@Param("userId") Long userId);
@@ -29,5 +22,5 @@ public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
 
     Optional<UserGenre> findByUserAndIsFirst(User user, boolean isFirst);
 
-    Optional<UserGenre> findByGenreIdAndUserIdAndIsFirst(@Param("genreId") Long genreId, @Param("userId") Long userId, boolean isFirst);
+    Optional<UserGenre> findByGenreIdAndUserIdAndIsFirst(Long genreId, @Param("userId") Long userId, boolean isFirst);
 }

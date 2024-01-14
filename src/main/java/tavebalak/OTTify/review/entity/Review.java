@@ -46,7 +46,6 @@ public class Review extends BaseEntity {
     @Column(name = "like_counts")
     private int likeCounts;
 
-
     @Builder
     public Review(String content, double rating, String genre, User user, Program program) {
         this.content = content;
@@ -77,11 +76,9 @@ public class Review extends BaseEntity {
     }
 
     //좋아요 수 취소
-
     public void cancelLikeNumber() {
         this.likeCounts--;
     }
-
 
     public void changeContentAndRatingReview(String content, double rating) {
         this.content = content;
