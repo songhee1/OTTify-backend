@@ -10,5 +10,5 @@ import javax.validation.constraints.NotNull;
 public class GenreUpdateDTO {
 
     @NotNull
-    private Long id;
+    private Long genreId;
 }
