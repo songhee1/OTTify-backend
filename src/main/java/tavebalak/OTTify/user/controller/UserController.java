@@ -35,7 +35,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<UserProfileDTO> getUserProfile(@PathVariable("userId") Long userId) {
-        return BaseResponse.success(userService.getUserProfile(userId));
+        return BaseResponse.success(userService.getUserProfile());
     }
 
     @ApiOperation(value = "구독 중인 OTT 조회 api", notes = "유저가 구독 중인 OTT를 조회합니다.")
@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/{userId}/otts")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<UserOttListDTO> getUserOTT(@PathVariable("userId") Long userId) {
-        return BaseResponse.success(userService.getUserOTT(userId));
+        return BaseResponse.success(userService.getUserOTT());
     }
 
     @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다.")
@@ -52,7 +52,7 @@ public class UserController {
     @PatchMapping("/{userId}/profile")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse updateUserProfile(@PathVariable("userId") Long userId, @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
-        userService.updateUserProfile(userId, updateRequestDTO);
+        userService.updateUserProfile(updateRequestDTO);
         return BaseResponse.success("성공적으로 프로필이 업데이트 되었습니다.");
     }
 
@@ -62,7 +62,7 @@ public class UserController {
     @PatchMapping("/{userId}/otts")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse updateUserOTT(@PathVariable("userId") Long userId, @RequestBody List<UserOttUpdateDTO> updateRequestDTO) {
-        userService.updateUserOTT(userId, updateRequestDTO);
+        userService.updateUserOTT(updateRequestDTO);
         return BaseResponse.success("성공적으로 구독 중인 OTT가 업데이트 되었습니다.");
     }
 
@@ -72,7 +72,7 @@ public class UserController {
     @PatchMapping("/{userId}/1stGenre")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse update1stLikedGenre(@PathVariable("userId") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDto) {
-        userService.update1stGenre(userId, updateRequestDto);
+        userService.update1stGenre(updateRequestDto);
         return BaseResponse.success("성공적으로 1순위 장르가 업데이트 되었습니다.");
     }
 
@@ -82,7 +82,7 @@ public class UserController {
     @PatchMapping("/{userId}/2ndGenre")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse update2ndLikedGenre(@PathVariable("userId") Long userId, @Validated @RequestBody GenreUpdateDTO updateRequestDTO) {
-        userService.update2ndGenre(userId, updateRequestDTO);
+        userService.update2ndGenre(updateRequestDTO);
         return BaseResponse.success("성공적으로 2순위 장르가 업데이트 되었습니다.");
     }
 
@@ -101,7 +101,7 @@ public class UserController {
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0) Pageable pageable) {
-        return BaseResponse.success(userService.getMyReview(userId, pageable));
+        return BaseResponse.success(userService.getMyReview(pageable));
     }
 
     @ApiOperation(value = "좋아요한 리뷰 조회 api", notes = "유저가 좋아요한 리뷰를 조회합니다.")
@@ -115,7 +115,7 @@ public class UserController {
     public BaseResponse<List<MyReviewDto>> getLikedReview(@PathVariable("userId") Long userId, @PageableDefault(
             size = 5,
             page = 0) Pageable pageable) {
-        return BaseResponse.success(userService.getLikedReview(userId, pageable));
+        return BaseResponse.success(userService.getLikedReview(pageable));
     }
 
     @ApiOperation(value = "주최한 토론 조회 api", notes = "유저가 주최한 토론을 조회합니다.")
@@ -133,7 +133,7 @@ public class UserController {
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0) Pageable pageable) {
-        return BaseResponse.success(userService.getHostedDiscussion(userId, pageable));
+        return BaseResponse.success(userService.getHostedDiscussion(pageable));
     }
 
     @ApiOperation(value = "참여한 토론 조회 api", notes = "유저가 참여한 토론을 조회합니다.")
@@ -147,6 +147,6 @@ public class UserController {
     public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PathVariable("userId") Long userId, @PageableDefault(
             size = 5,
             page = 0) Pageable pageable) {
-        return BaseResponse.success(userService.getParticipatedDiscussion(userId, pageable));
+        return BaseResponse.success(userService.getParticipatedDiscussion(pageable));
     }
 }

@@ -12,14 +12,14 @@ import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import java.util.List;
 
 public interface UserService {
-    UserProfileDTO getUserProfile(Long userId);
-    UserOttListDTO getUserOTT(Long userId);
-    void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO);
-    void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO);
-    Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO);
-    Long updateUserOTT(Long userId, List<UserOttUpdateDTO> updateRequestDTO);
-    List<MyReviewDto> getMyReview(Long userId, Pageable pageable);
-    List<MyReviewDto> getLikedReview(Long userId, Pageable pageable);
-    List<MyDiscussionDto> getHostedDiscussion(Long userId, Pageable pageable);
-    List<MyDiscussionDto> getParticipatedDiscussion(Long userId, Pageable pageable);
+    UserProfileDTO getUserProfile();
+    UserOttListDTO getUserOTT();
+    void update1stGenre(GenreUpdateDTO updateRequestDTO);
+    void update2ndGenre(GenreUpdateDTO updateRequestDTO);
+    Long updateUserProfile(UserProfileUpdateDTO updateRequestDTO);
+    Long updateUserOTT(List<UserOttUpdateDTO> updateRequestDTO);
+    List<MyReviewDto> getMyReview(Pageable pageable);
+    List<MyReviewDto> getLikedReview(Pageable pageable);
+    List<MyDiscussionDto> getHostedDiscussion(Pageable pageable);
+    List<MyDiscussionDto> getParticipatedDiscussion(Pageable pageable);
 }
