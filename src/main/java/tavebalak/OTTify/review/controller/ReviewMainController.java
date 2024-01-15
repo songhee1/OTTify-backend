@@ -5,11 +5,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
-import javax.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.review.dto.response.LatestReviewsDTO;
@@ -34,7 +34,7 @@ public class ReviewMainController {
     @ApiImplicitParam(name = "id", dataType = "long", value = "공감하려고 하는 리뷰의 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "id = ? 인 아이디 값을 가진 리뷰에 공감이 적용/해제되었습니다.")
     @PostMapping("/latestReviews/like")
-    public BaseResponse<String> likeReview(@PathParam("id") Long id) {
+    public BaseResponse<String> likeReview(@RequestParam("id") Long id) {
         boolean hasSaved = reviewService.likeReview(id);
         if (hasSaved) {
             return BaseResponse.success("id = " + id + "인 아이디 값을 가진 리뷰에 공감이 적용되었습니다.");
