@@ -196,7 +196,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long updateUserProfile(UserProfileUpdateDTO updateRequestDTO) {
+    public void updateUserProfile(UserProfileUpdateDTO updateRequestDTO) {
         User user = getUser();
 
         // 닉네임 중복 여부 검증
@@ -205,7 +205,7 @@ public class UserServiceImpl implements UserService {
         user.changeNickName(updateRequestDTO.getNickName());
         user.changeProfilePhoto(updateRequestDTO.getProfilePhoto());
 
-        return userRepository.save(user).getId();
+        userRepository.save(user);
     }
 
     public void checkNicknameDuplication(User user, UserProfileUpdateDTO updateRequestDTO) {
@@ -216,7 +216,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long updateUserOTT(List<UserOttUpdateDTO> updateRequestDTO) {
+    public void updateUserOTT(List<UserOttUpdateDTO> updateRequestDTO) {
         User user = getUser();
         Long userId = user.getId();
 
@@ -263,8 +263,6 @@ public class UserServiceImpl implements UserService {
                         userSubscribingOttRepository.save(subscribingOTT);
                     });
         }
-
-        return userId;
     }
 
     @Override

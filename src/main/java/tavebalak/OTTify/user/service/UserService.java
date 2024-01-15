@@ -16,8 +16,8 @@ public interface UserService {
     UserOttListDTO getUserOTT();
     void update1stGenre(GenreUpdateDTO updateRequestDTO);
     void update2ndGenre(GenreUpdateDTO updateRequestDTO);
-    Long updateUserProfile(UserProfileUpdateDTO updateRequestDTO);
-    Long updateUserOTT(List<UserOttUpdateDTO> updateRequestDTO);
+    void updateUserProfile(UserProfileUpdateDTO updateRequestDTO);
+    void updateUserOTT(List<UserOttUpdateDTO> updateRequestDTO);
     List<MyReviewDto> getMyReview(Pageable pageable);
     List<MyReviewDto> getLikedReview(Pageable pageable);
     List<MyDiscussionDto> getHostedDiscussion(Pageable pageable);
