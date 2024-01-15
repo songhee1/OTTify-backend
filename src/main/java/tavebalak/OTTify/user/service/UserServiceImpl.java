@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
         // 1순위 & 2순위 장르 가져오기
         UserGenre firstUserGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
         GenreDTO firstGenre = new GenreDTO(firstUserGenre);
 
         List<GenreDTO> secondGenre = userGenreRepository.find2ndGenreByUserIdFetchJoin(userId).stream()
@@ -165,12 +165,12 @@ public class UserServiceImpl implements UserService {
         User user = getUser();
         Long userId = user.getId();
 
-        UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+        UserGenre firstGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
         Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
-        userGenre.changeGenre(genre);
+        firstGenre.changeGenre(genre);
     }
 
     @Override
@@ -389,6 +389,6 @@ public class UserServiceImpl implements UserService {
 
     private User getUser() {
         return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }
