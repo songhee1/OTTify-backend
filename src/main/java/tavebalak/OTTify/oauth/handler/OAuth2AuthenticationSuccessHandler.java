@@ -9,7 +9,9 @@ import tavebalak.OTTify.common.constant.Role;
 import tavebalak.OTTify.oauth.CustomOAuth2User;
 import tavebalak.OTTify.oauth.jwt.JwtService;
 import tavebalak.OTTify.oauth.redis.RefreshTokenRepository;
+import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
+import tavebalak.OTTify.user.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,10 +37,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             if(oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
                 String refreshToken = jwtService.createRefreshToken();
+                Long userId = oAuth2User.getUserId();
 
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
                 response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
-                String url = generateUrl(accessToken, refreshToken);
+
+                String url = generateUrl(accessToken, refreshToken, userId);
 //                response.sendRedirect("oauth2/sign-up"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
                 jwtService.sendAccessAndRefreshToken(response, oAuth2User.getEmail(), accessToken, refreshToken);
@@ -62,10 +66,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
         String refreshToken = jwtService.createRefreshToken();
+        Long userId = oAuth2User.getUserId();
+
         response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
         response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
 
-        String url = generateUrl(accessToken, refreshToken);
+        String url = generateUrl(accessToken, refreshToken, userId);
         log.info("===redirect===");
 
         jwtService.sendAccessAndRefreshToken(response, oAuth2User.getEmail(), accessToken, refreshToken);
@@ -75,7 +81,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     }
 
-    private String generateUrl(final String accessToken, final String refreshToken) {
+    private String generateUrl(final String accessToken, final String refreshToken, final Long userId) {
         StringBuilder sb = new StringBuilder();
         StringBuilder url = sb.append("http://52.79.200.90:3000/login/oauth2/code")
                 .append("?")
@@ -83,7 +89,10 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .append(accessToken)
                 .append("&")
                 .append("refreshToken=")
-                .append(refreshToken);
+                .append(refreshToken)
+                .append("&")
+                .append("userId=")
+                .append(userId);
         return url.toString();
     }
 }
