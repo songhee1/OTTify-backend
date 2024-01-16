@@ -17,7 +17,7 @@ public interface UserService {
     void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO);
     void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO);
     Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO);
-    Long updateUserOTT(Long userId, List<UserOttUpdateDTO> updateRequestDTO);
+    Long updateUserOTT(Long userId, UserOttUpdateDTO updateRequestDTO);
     List<MyReviewDto> getMyReview(Long userId, Pageable pageable);
     List<MyReviewDto> getLikedReview(Long userId, Pageable pageable);
     List<MyDiscussionDto> getHostedDiscussion(Long userId, Pageable pageable);

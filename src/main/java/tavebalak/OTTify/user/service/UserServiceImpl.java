@@ -211,7 +211,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long updateUserOTT(Long userId, List<UserOttUpdateDTO> updateRequestDTO) {
+    public Long updateUserOTT(Long userId, UserOttUpdateDTO updateRequestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -221,9 +221,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
 
         // 현재 구독 중인 ott 리스트
-        List<Long> nowSubscribingOttList = updateRequestDTO.stream()
-                .map(UserOttUpdateDTO::getOttId)
-                .collect(Collectors.toList());
+        List<Long> nowSubscribingOttList = updateRequestDTO.getOttList();
 
         if (!preSubscribingOttList.isEmpty()) { // 이전 구독 중인 OTT가 있는 경우
             // 삭제 Otts - 이전 리스트에는 있는데 현재 리스트에는 없는 경우
