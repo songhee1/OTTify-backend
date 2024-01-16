@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
     public void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
         UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
-        Genre genre = genreRepository.findById(updateRequestDTO.getId())
+        Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
         userGenre.changeGenre(genre);
@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
         // req로 들어온 id 값이 유효한 장르 id인지 확인
-        Genre genre = genreRepository.findById(updateRequestDTO.getId())
+        Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
         // 조회된 UserGenre가 있을 경우 삭제 & 없을 경우 저장
@@ -222,7 +222,7 @@ public class UserServiceImpl implements UserService {
 
         // 현재 구독 중인 ott 리스트
         List<Long> nowSubscribingOttList = updateRequestDTO.stream()
-                .map(UserOttUpdateDTO::getId)
+                .map(UserOttUpdateDTO::getOttId)
                 .collect(Collectors.toList());
 
         if (!preSubscribingOttList.isEmpty()) { // 이전 구독 중인 OTT가 있는 경우
@@ -335,7 +335,7 @@ public class UserServiceImpl implements UserService {
                                     .programTitle(d.getProgram().getTitle())
                                     .discussionTitle(d.getTitle())
                                     .content(d.getContent())
-                                    .img(d.getImageUrl())
+                                    .imgUrl(d.getImageUrl())
                                     .likeCnt(likeCnt)
                                     .replyCnt(replyCnt)
                                     .build()
@@ -362,7 +362,7 @@ public class UserServiceImpl implements UserService {
                                     .programTitle(d.getProgram().getTitle())
                                     .discussionTitle(d.getTitle())
                                     .content(d.getContent())
-                                    .img(d.getImageUrl())
+                                    .imgUrl(d.getImageUrl())
                                     .likeCnt(likeCnt)
                                     .replyCnt(replyCnt)
                                     .build()

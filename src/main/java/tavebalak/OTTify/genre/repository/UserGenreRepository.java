@@ -24,6 +24,6 @@ public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
 
     Optional<UserGenre> findByUserAndIsFirst(User user, boolean isFirst);
 
-    Optional<UserGenre> findByGenreIdAndUserIdAndIsFirst(Long genreId, @Param("userId") Long userId,
+    Optional<UserGenre> findByGenreIdAndUserIdAndIsFirst(Long genreId, Long userId,
         boolean isFirst);
 }
