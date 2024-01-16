@@ -1,7 +1,6 @@
 package tavebalak.OTTify.review.controller;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.util.List;
@@ -31,7 +30,6 @@ public class ReviewMainController {
     }
 
     @ApiOperation(value = "최신리뷰 공감 적용/해제", notes = "회원이 작성한 리뷰에 대해 공감/해제한다.")
-    @ApiImplicitParam(name = "id", dataType = "long", value = "공감하려고 하는 리뷰의 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "id = ? 인 아이디 값을 가진 리뷰에 공감이 적용/해제되었습니다.")
     @PostMapping("/latestReviews/like")
     public BaseResponse<String> likeReview(@RequestParam("id") Long id) {
