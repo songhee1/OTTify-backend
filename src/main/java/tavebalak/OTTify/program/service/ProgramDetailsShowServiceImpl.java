@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -55,18 +56,25 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
         //API 요청 세번째: Provider 상세 정보
         OAProgramProviderDto oaProgramProviderDto = getProviderDto(program.getTmDbProgramId(),
             program.getType());
-        OACountryDetailsDto kr = oaProgramProviderDto.getResults().get("KR");
+        Optional<OACountryDetailsDto> kr = Optional.ofNullable(
+            oaProgramProviderDto.getResults().get("KR"));
 
-        //DTO 에 반환
-        int buySize = kr.getBuy() == null ? 0 : kr.getBuy().size();
-        int rentSize = kr.getRent() == null ? 0 : kr.getRent().size();
-        int flatrateSize = kr.getFlatrate() == null ? 0 : kr.getFlatrate().size();
+        //kr 이 NULL 이 아닌 경우 에는 OTT 의 rent,buy,스트리밍의 size를 정렬해준다.
 
-        kr.initSize(buySize, rentSize, flatrateSize);
+        kr.ifPresent(oaCountryDetailsDto -> {
+            int buySize =
+                oaCountryDetailsDto.getBuy() == null ? 0 : oaCountryDetailsDto.getBuy().size();
+            int rentSize =
+                oaCountryDetailsDto.getRent() == null ? 0 : oaCountryDetailsDto.getRent().size();
+            int flatrateSize = oaCountryDetailsDto.getFlatrate() == null ? 0
+                : oaCountryDetailsDto.getFlatrate().size();
+
+            oaCountryDetailsDto.initSize(buySize, rentSize, flatrateSize);
+        });
 
         // 사용자에게 보내줄 DTO
         ProgramResponseDto programResponseDto = new ProgramResponseDto(programDetailResponse,
-            oaProgramCreditsDto, kr, program.getAverageRating());
+            oaProgramCreditsDto, kr.orElse(null), program.getAverageRating());
         return programResponseDto;
 
     }
@@ -180,33 +188,30 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
     }
 
     private void changeActorAndDirectorToKorea(OAProgramCreditsDto oaProgramCreditsDto) {
-        Map<String, String> changeName = new HashMap<>();
-        changeName.put("Acting", "배우");
-        changeName.put("Directing", "감독");
+        Map<String, String> changeCastName = new HashMap<>();
+        changeCastName.put("Acting", "배우");
+        changeCastName.put("Directing", "감독");
 
-        //배우 또는 감독인 경우 한글 이름으로 변화 시킵니다.
-        oaProgramCreditsDto.getCast().stream().forEach(cast -> {
-            if (changeName.containsKey(cast.getKnownForDepartment())) {
-                cast.changeKnownForDepartMent(changeName.get(cast.getKnownForDepartment()));
-            }
-            if (changeName.containsKey(cast.getDepartment())) {
-                cast.changeDepartment(changeName.get(cast.getDepartment()));
-            }
+        //Acting 또는 Directing인 경우만 가져오도록 합니다.
+        List<Cast> castsDirectingAndActing = oaProgramCreditsDto.getCast().stream()
+            .filter(cast -> changeCastName.containsKey(cast.getKnownForDepartment()))
+            .collect(Collectors.toList());
+
+        //Acting 과 Directing 을 배우와 감독으로 한국이름으로 바꿉니다.
+        castsDirectingAndActing.stream().forEach(cast -> {
+            cast.changeKnownForDepartMent(changeCastName.get(cast.getKnownForDepartment()));
         });
 
-        //OpenApi 가 받아오는 것을 감독 -> 배우 -> 다른 것 순으로 받아옵니다.
-        List<Cast> casts = oaProgramCreditsDto.getCast().stream().sorted((e1, e2) -> {
+        // 감독 -> 배우 순으로 정렬합니다.
+        List<Cast> casts = castsDirectingAndActing.stream().sorted((e1, e2) -> {
             if (e1.getKnownForDepartment().equals("감독")) {
-                return -1;
-            } else if (e1.getKnownForDepartment().equals("배우")) {
-                if (e2.getKnownForDepartment().equals("감독")) {
-                    return 1;
-                } else {
+                if (e2.getKnownForDepartment().equals("배우")) {
                     return -1;
+                } else {
+                    return 0;
                 }
             } else {
-                if (e2.getKnownForDepartment().equals("배우") || e2.getKnownForDepartment()
-                    .equals("감독")) {
+                if (e2.getKnownForDepartment().equals("감독")) {
                     return 1;
                 } else {
                     return 0;
@@ -216,6 +221,23 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
         //DTO 순서를 바꾼 것으로 변화시킵니다.
         oaProgramCreditsDto.changeCast(casts);
+
+        //crew에서 Directing만 거릅니다.
+
+        Map<String, String> changeCrewName = new HashMap<>();
+        changeCrewName.put("Directing", "감독");
+
+        List<Cast> crewDirecting = oaProgramCreditsDto.getCrew().stream().filter(cast ->
+            changeCrewName.containsKey(cast.getKnownForDepartment())
+        ).collect(Collectors.toList());
+
+        crewDirecting.stream().forEach(cast -> {
+            cast.changeKnownForDepartMent(changeCrewName.get(cast.getKnownForDepartment()));
+        });
+
+        oaProgramCreditsDto.changeCrew(crewDirecting);
+
+
     }
 
     //프로그램의 Provider 가지고 오기
