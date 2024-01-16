@@ -62,8 +62,8 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "토론주제 삭제", notes = "회원이 작성한 토론주제를 삭제합니다.")
-    @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론 주제 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 삭제하였습니다.")
+    @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "path")
     @DeleteMapping("/subject/{subjectId}")
     public BaseResponse<String> deleteSubject(@PathVariable Long subjectId)
         throws NotFoundException {
@@ -72,8 +72,8 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "토론글 공감 및 해제", notes = "회원이 작성한 토론 주제에 대해 공감하고 해제합니다.")
-    @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론 주제 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 토론 게시글 공감 해제가 적용되었습니다.")
+    @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "query")
     @PostMapping("/like")
     public BaseResponse<String> likeSubject(@RequestParam("subjectId") Long subjectId) {
         boolean hasLiked = communityService.likeSubject(subjectId);
@@ -84,11 +84,11 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "토론댓글 공감 및 해제", notes = "회원이 작성한 토론 주제의 댓글에 대해 공감하고 해제합니다.")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론글의 id", required = true, paramType = "path"),
-        @ApiImplicitParam(name = "commentId", dataType = "long", value = "토론 댓글의 id", required = true, paramType = "path")
-    })
     @ApiResponse(code = 200, message = "성공적으로 토론 댓글 공감이 적용/해제되었습니다.")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "query"),
+        @ApiImplicitParam(name = "commentId", value = "토론 댓글의 id", required = true, paramType = "query")
+    })
     @PostMapping("/like/comment")
     public BaseResponse<String> likeComment(
         @RequestParam("subjectId") Long subjectId,
@@ -102,10 +102,10 @@ public class CommunityController {
 
     @ApiOperation(value = "토론 주제 조회", notes = "전체 프로그램에 대해 작성된 토론글을 조회합니다.")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+        @ApiImplicitParam(name = "page", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/total")
     public BaseResponse<CommunitySubjectsDTO> getTotalProgramsSubjects(
@@ -120,11 +120,11 @@ public class CommunityController {
 
     @ApiOperation(value = "프로그램별 토론주제 조회", notes = "특정 프로그램에 대해 작성된 토론글을 조회합니다.")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "programId", dataType = "long", value = "프로그램 id", required = true, paramType = "path")
+        @ApiImplicitParam(name = "page", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", value = "페이지당 아이템 갯수", paramType = "query"),
+        @ApiImplicitParam(name = "programId", value = "프로그램 id", required = true, paramType = "query")
     })
     @GetMapping("/program")
     public BaseResponse<CommunitySubjectsDTO> getTotalProgramSubjects(
@@ -178,11 +178,11 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "토론댓글 삭제", notes = "회원이 작성한 토론 주제의 댓글을 삭제한다.")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론글의 id", required = true, paramType = "path"),
-        @ApiImplicitParam(name = "commentId", dataType = "long", value = "토론 대댓글의 id", required = true, paramType = "path")
-    })
     @ApiResponse(code = 200, message = "성공적으로 토론 댓글을 삭제하였습니다.")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "path"),
+        @ApiImplicitParam(name = "commentId", value = "토론댓글의 id", required = true, paramType = "path")
+    })
     @DeleteMapping("/comment/{subjectId}/{commentId}")
     public BaseResponse<String> deleteComment(@PathVariable Long subjectId,
         @PathVariable Long commentId) throws NotFoundException {
@@ -191,12 +191,12 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "토론 대댓글 삭제", notes = "회원이 작성한 토론 주제의 대댓글을 삭제한다.")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론글의 id", required = true, paramType = "path"),
-        @ApiImplicitParam(name = "commentId", dataType = "long", value = "토론 댓글의 id", required = true, paramType = "path"),
-        @ApiImplicitParam(name = "recommentId", dataType = "long", value = "토론 대댓글의 id", required = true, paramType = "path")
-    })
     @ApiResponse(code = 200, message = "성공적으로 토론 대댓글을 삭제하였습니다.")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "path"),
+        @ApiImplicitParam(name = "commentId", value = "토론 댓글의 id", required = true, paramType = "path"),
+        @ApiImplicitParam(name = "recommentId", value = "토론 대댓글의 id", required = true, paramType = "path")
+    })
     @DeleteMapping("/recomment/{subjectId}/{commentId}/{recommentId}")
     public BaseResponse<String> deleteRecomment(
         @PathVariable Long subjectId,
@@ -207,8 +207,7 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "토론 게시글 조회", notes = "작성된 토론 게시글 하나를 조회한다.")
-    @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론글의 id", required = true, paramType = "path")
-    @ApiResponse(code = 200, message = "성공적으로 토론 대댓글을 삭제하였습니다.")
+    @ApiImplicitParam(name = "subjectId", value = "토론주제 ID 값", required = true, paramType = "path")
     @GetMapping("/{subjectId}")
     public BaseResponse<CommunityAriclesDTO> getArticle(@PathVariable Long subjectId)
         throws NotFoundException {

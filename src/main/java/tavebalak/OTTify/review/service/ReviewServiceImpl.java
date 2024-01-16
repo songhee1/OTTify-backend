@@ -112,6 +112,12 @@ public class ReviewServiceImpl implements ReviewService {
                 }
             );
 
+        if (flag.get()) {
+            review.addLikeNumber();
+        } else {
+            review.cancelLikeNumber();
+        }
+
         return flag.get();
     }
 }

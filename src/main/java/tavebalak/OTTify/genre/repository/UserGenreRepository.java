@@ -14,6 +14,8 @@ public interface UserGenreRepository extends JpaRepository<UserGenre, Long> {
 
     Optional<UserGenre> findByUserIdAndIsFirst(Long userId, boolean isFirst);
 
+    List<UserGenre> findAllByUserIdAndIsFirst(Long userId, boolean isFirst);
+
     @Query("select ug from UserGenre ug join fetch ug.genre where ug.user.id =:userId and ug.isFirst = true")
     Optional<UserGenre> find1stGenreByUserIdFetchJoin(@Param("userId") Long userId);
 
