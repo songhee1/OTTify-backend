@@ -69,21 +69,26 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         //2순위 장르 리스트 조회
-        Optional<UserGenre> byUserIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(
+        List<UserGenre> byUserIdAndIsFirst = userGenreRepository.findAllByUserIdAndIsFirst(
             savedUser.getId(), false);
-        if (byUserIdAndIsFirst.isPresent()) {
-            Genre userSecondGenre = genreRepository.findById(byUserIdAndIsFirst.get().getId())
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
-                );
 
-            List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
-                userSecondGenre.getId());
+        if (!byUserIdAndIsFirst.isEmpty()) {
+            byUserIdAndIsFirst.forEach(userGenre -> {
 
-            int idx = new Random().nextInt(programGenreList.size());
-            Optional<Program> program = programRepository.findById(
-                programGenreList.get(idx).getId());
-            program.ifPresent(recommendPrograms::add);
+                Genre userSecondGenre = genreRepository.findById(userGenre.getId())
+                    .orElseThrow(
+                        () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+                    );
+
+                List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
+                    userSecondGenre.getId());
+
+                int idx = new Random().nextInt(programGenreList.size());
+                Optional<Program> program = programRepository.findById(
+                    programGenreList.get(idx).getId());
+                program.ifPresent(recommendPrograms::add);
+
+            });
         }
 
         //찜 리스트 조회
