@@ -14,8 +14,6 @@ import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.review.dto.reviewrequest.ReviewSaveDto;
-import tavebalak.OTTify.review.dto.reviewrequest.ReviewTagIdDto;
-import tavebalak.OTTify.review.dto.reviewtagRequest.ReviewSaveTagDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewTagRepository;
@@ -66,7 +64,7 @@ class ReviewShowProgramDetailServiceImplTest {
         User user = makeUser();
         Program program = makeProgram();
 
-        List<ReviewTagIdDto> reviewTagIdDtoList = makeReviewTag();
+        List<Long> reviewTagIdDtoList = makeReviewTag();
 
         ReviewSaveDto reviewSaveDto1 = new ReviewSaveDto("아 진짜 꿀잼이였어요ㅠ", program.getId(), 3.5,
             reviewTagIdDtoList);
@@ -251,25 +249,12 @@ class ReviewShowProgramDetailServiceImplTest {
     }
 
     @Transactional
-    List<ReviewTagIdDto> makeReviewTag() {
-        ReviewSaveTagDto reviewSaveTagDto1 = new ReviewSaveTagDto("잠이와요");
+    List<Long> makeReviewTag() {
 
-        ReviewSaveTagDto reviewSaveTagDto2 = new ReviewSaveTagDto("재밌어요");
-
-        ReviewSaveTagDto reviewSaveTagDto3 = new ReviewSaveTagDto("팝콘먹고 싶다");
-
-        ReviewSaveTagDto reviewSaveTagDto4 = new ReviewSaveTagDto("보다가 쿵쿵쿵");
-
-        reviewTagService.saveReviewTag(reviewSaveTagDto1);
-        reviewTagService.saveReviewTag(reviewSaveTagDto2);
-        reviewTagService.saveReviewTag(reviewSaveTagDto3);
-        reviewTagService.saveReviewTag(reviewSaveTagDto4);
-
-        List<ReviewTagIdDto> reviewTagIdDtoList = new ArrayList<>();
+        List<Long> reviewTagIdDtoList = new ArrayList<>();
 
         reviewTagRepository.findAll().forEach(rt -> {
-            ReviewTagIdDto reviewTagIdDto = new ReviewTagIdDto(rt.getId());
-            reviewTagIdDtoList.add(reviewTagIdDto);
+            reviewTagIdDtoList.add(rt.getId());
         });
 
         return reviewTagIdDtoList;
