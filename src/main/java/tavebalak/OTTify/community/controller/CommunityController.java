@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import java.io.IOException;
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
@@ -75,7 +75,7 @@ public class CommunityController {
     @ApiImplicitParam(name = "subjectId", dataType = "long", value = "토론 주제 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 토론 게시글 공감 해제가 적용되었습니다.")
     @PostMapping("/like")
-    public BaseResponse<String> likeSubject(@PathParam("subjectId") Long subjectId) {
+    public BaseResponse<String> likeSubject(@RequestParam("subjectId") Long subjectId) {
         boolean hasLiked = communityService.likeSubject(subjectId);
         if (hasLiked) {
             return BaseResponse.success("성공적으로 토론 게시글 공감이 적용이 되었습니다.");
@@ -91,8 +91,8 @@ public class CommunityController {
     @ApiResponse(code = 200, message = "성공적으로 토론 댓글 공감이 적용/해제되었습니다.")
     @PostMapping("/like/comment")
     public BaseResponse<String> likeComment(
-        @PathParam("subjectId") Long subjectId,
-        @PathParam("commentId") Long commentId) {
+        @RequestParam("subjectId") Long subjectId,
+        @RequestParam("commentId") Long commentId) {
         boolean hasLiked = communityService.likeComment(subjectId, commentId);
         if (hasLiked) {
             return BaseResponse.success("성공적으로 토론 댓글 공감 적용이 되었습니다.");
@@ -123,7 +123,8 @@ public class CommunityController {
         @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
         @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
         @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path"),
+        @ApiImplicitParam(name = "programId", dataType = "long", value = "프로그램 id", required = true, paramType = "path")
     })
     @GetMapping("/program")
     public BaseResponse<CommunitySubjectsDTO> getTotalProgramSubjects(
@@ -131,7 +132,7 @@ public class CommunityController {
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0) Pageable pageable,
-        @PathParam("programId") Long programId) {
+        @RequestParam("programId") Long programId) {
 
         CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
         return BaseResponse.success(page);
