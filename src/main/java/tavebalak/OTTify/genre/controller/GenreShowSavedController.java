@@ -13,7 +13,7 @@ import tavebalak.OTTify.genre.service.GenreShowSavedService;
 
 @RestController
 @RequiredArgsConstructor
-@Api(tags = {"저장된 장르를 보여줍니다"})
+@Api(tags = {"저장된 장르를 보여주는 컨트롤러"})
 
 public class GenreShowSavedController {
 
