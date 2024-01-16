@@ -13,6 +13,7 @@ import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.genre.dto.GenreDTO;
 import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.genre.entity.UserGenre;
@@ -389,6 +390,6 @@ public class UserServiceImpl implements UserService {
 
     private User getUser() {
         return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED));
     }
 }
