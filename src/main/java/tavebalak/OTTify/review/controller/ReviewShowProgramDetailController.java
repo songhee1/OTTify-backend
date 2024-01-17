@@ -35,6 +35,17 @@ public class ReviewShowProgramDetailController {
     private final ReviewShowProgramDetailService reviewShowProgramDetailService;
     private final UserRepository userRepository;
 
+    @ApiOperation(value = "프로그램 페이지에서 나의 리뷰 보여주기", notes = "내가 이 프로그램에 대해 리뷰를 작성한 경우 그것을 보여줍니다.")
+    @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path")
+    @GetMapping("/myReview")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse<ReviewProgramResponseDto> showMyReview(
+        @PathVariable("programId") Long programId) {
+        User findUser = getUser();
+        return BaseResponse.success(
+            reviewShowProgramDetailService.showMyReview(findUser, programId));
+    }
+
 
     @ApiOperation(value = "프로그램 페이지의 초기 리뷰 보여주기", notes = "프로그램 페이지의 처음 4개의 리뷰를 보여줍니다")
     @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path")
