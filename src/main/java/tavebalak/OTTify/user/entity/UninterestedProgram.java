@@ -23,9 +23,11 @@ public class UninterestedProgram {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "uninterested_program_id")
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "program_id")
     private Program program;

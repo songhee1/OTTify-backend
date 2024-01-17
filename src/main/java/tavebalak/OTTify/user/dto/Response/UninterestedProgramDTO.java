@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UninterestedProgramDTO {
+
     @ApiModelProperty(value = "프로그램 id")
     private Long programId;
 

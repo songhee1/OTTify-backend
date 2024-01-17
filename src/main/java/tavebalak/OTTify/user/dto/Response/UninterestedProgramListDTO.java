@@ -1,13 +1,13 @@
 package tavebalak.OTTify.user.dto.Response;
 
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 public class UninterestedProgramListDTO {
+
     @ApiModelProperty(value = "관심없는 프로그램 수")
     private int totalCnt;
 
@@ -15,7 +15,8 @@ public class UninterestedProgramListDTO {
     private List<UninterestedProgramDTO> uninterestedProgramList;
 
     @Builder
-    public UninterestedProgramListDTO(int totalCnt, List<UninterestedProgramDTO> uninterestedProgramList) {
+    public UninterestedProgramListDTO(int totalCnt,
+        List<UninterestedProgramDTO> uninterestedProgramList) {
         this.totalCnt = totalCnt;
         this.uninterestedProgramList = uninterestedProgramList;
     }

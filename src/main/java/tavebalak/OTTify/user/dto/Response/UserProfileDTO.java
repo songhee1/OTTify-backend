@@ -1,21 +1,19 @@
 package tavebalak.OTTify.user.dto.Response;
 
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.constant.GradeType;
 import tavebalak.OTTify.genre.dto.GenreDTO;
-import tavebalak.OTTify.genre.dto.OpenApiGenreDto;
-import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
 public class UserProfileDTO {
+
     @ApiModelProperty(value = "프로필 사진")
     private String profilePhoto;
 
@@ -50,7 +48,10 @@ public class UserProfileDTO {
     private UninterestedProgramListDTO uninterestedProgram;
 
     @Builder
-    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email, double averageRating, UserReviewRatingListDTO ratingList, GenreDTO firstGenre, List<GenreDTO> secondGenre, UserOttListDTO ott, LikedProgramListDTO likedProgram, UninterestedProgramListDTO uninterestedProgram) {
+    public UserProfileDTO(String profilePhoto, String nickName, GradeType grade, String email,
+        double averageRating, UserReviewRatingListDTO ratingList, GenreDTO firstGenre,
+        List<GenreDTO> secondGenre, UserOttListDTO ott, LikedProgramListDTO likedProgram,
+        UninterestedProgramListDTO uninterestedProgram) {
         this.profilePhoto = profilePhoto;
         this.nickName = nickName;
         this.grade = grade;

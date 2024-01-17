@@ -9,6 +9,7 @@ import tavebalak.OTTify.user.entity.UserSubscribingOTT;
 @Getter
 @NoArgsConstructor
 public class UserOttDTO {
+
     @ApiModelProperty(value = "OTT id")
     private Long id;
 
