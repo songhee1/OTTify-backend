@@ -1,6 +1,8 @@
 package tavebalak.OTTify.program.controller;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +16,13 @@ import tavebalak.OTTify.program.service.OttService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/ott")
+@Api(tags = {"OTT 컨트롤러"})
 public class OttController {
 
     private final OttService ottService;
 
+    @ApiOperation(value = "모든 OTT 조회", notes = "모든 OTT의 아이디와 이름을 조회합니다.")
+    @ApiResponse(code = 200, message = "성공적으로 모든 OTT를 조회하였습니다.")
     @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<OttListDTO> getOttList() {
