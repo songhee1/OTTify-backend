@@ -54,7 +54,7 @@ public class ProgramServiceImpl implements ProgramService {
             //Genre 추출
             Genre userFirstGenre = genreRepository.findById(byGenreIdAndIsFirst.get().getId())
                 .orElseThrow(
-                    () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+                    () -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND)
                 );
 
             List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
@@ -77,7 +77,7 @@ public class ProgramServiceImpl implements ProgramService {
 
                 Genre userSecondGenre = genreRepository.findById(userGenre.getId())
                     .orElseThrow(
-                        () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+                        () -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND)
                     );
 
                 List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
