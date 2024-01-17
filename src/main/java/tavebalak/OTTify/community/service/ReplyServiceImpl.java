@@ -1,5 +1,8 @@
 package tavebalak.OTTify.community.service;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,51 +19,50 @@ import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.BadRequestException;
+import tavebalak.OTTify.error.exception.NoSuchElementException;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
-import tavebalak.OTTify.error.exception.NoSuchElementException;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 @Validated
-public class ReplyServiceImpl implements ReplyService{
+public class ReplyServiceImpl implements ReplyService {
 
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
+
     @Override
     public Reply saveComment(ReplyCommentCreateDTO c) throws NotFoundException {
         Community community = communityRepository.findById(c.getSubjectId()).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
 
         return replyRepository.save(Reply.builder()
-                .community(community)
-                .content(c.getComment())
-                .user(getUser())
-                .build());
+            .community(community)
+            .content(c.getComment())
+            .user(getUser())
+            .build());
     }
+
     @Override
     public void saveRecomment(ReplyRecommentCreateDTO c) {
 
         boolean hasParent = replyRepository.existsByIdAndParentId(c.getCommentId(), null);
-        if(!hasParent){
+        if (!hasParent) {
             throw new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND);
         }
 
         Reply reply = replyRepository.save(Reply.builder()
-                .community(communityRepository.findById(c.getSubjectId()).orElseThrow( () -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND)))
-                .content(c.getContent())
-                .user(getUser())
-                .build());
+            .community(communityRepository.findById(c.getSubjectId())
+                .orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND)))
+            .content(c.getContent())
+            .user(getUser())
+            .build());
 
         Reply parentReply = replyRepository.findById(c.getCommentId()).get();
         parentReply.addReply(reply);
@@ -69,14 +71,15 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public void modifyComment(ReplyCommentEditDTO c) throws NotFoundException {
         boolean present = communityRepository.findById(c.getSubjectId()).isPresent();
-        if(!present){
+        if (!present) {
             throw new NoSuchElementException(ErrorCode.BAD_REQUEST);
         }
 
-        Reply savedReply = replyRepository.findById(c.getCommentId()).orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
+        Reply savedReply = replyRepository.findById(c.getCommentId())
+            .orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
 
-        if(!Objects.equals(savedReply.getUser().getId(), getUser().getId())){
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
+            throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_REWRITE_REQUEST);
         }
 
         ReplyCommentEditorDTO replyCommentEditorDTOBuilder = savedReply.toEditor();
@@ -89,19 +92,19 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public void modifyRecomment(ReplyRecommentEditDTO c) throws NotFoundException {
 
-        if(!communityRepository.findById(c.getSubjectId()).isPresent()){
+        if (communityRepository.findById(c.getSubjectId()).isEmpty()) {
             throw new NoSuchElementException(ErrorCode.BAD_REQUEST);
         }
-        if(!replyRepository.findById(c.getCommentId()).isPresent()){
+        if (replyRepository.findById(c.getCommentId()).isEmpty()) {
             throw new NoSuchElementException(ErrorCode.BAD_REQUEST);
         }
 
         Reply savedReply = replyRepository.findById(c.getRecommentId()).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
 
-        if(!Objects.equals(savedReply.getUser().getId(), getUser().getId())){
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
+            throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_REWRITE_REQUEST);
         }
 
         ReplyCommentEditorDTO reReplyCommentEditorDTOBuilder = savedReply.toEditor();
@@ -113,15 +116,15 @@ public class ReplyServiceImpl implements ReplyService{
     @Override
     public void deleteComment(Long subjectId, Long commentId) throws NotFoundException {
         communityRepository.findById(subjectId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
 
         Reply savedReply = replyRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
 
-        if(!Objects.equals(savedReply.getUser().getId(), getUser().getId())){
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
+            throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
 
         replyRepository.delete(savedReply);
@@ -129,38 +132,40 @@ public class ReplyServiceImpl implements ReplyService{
     }
 
     @Override
-    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) throws NotFoundException {
+    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId)
+        throws NotFoundException {
         communityRepository.findById(subjectId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
         replyRepository.findById(commentId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
         Reply savedReply = replyRepository.findById(recommentId).orElseThrow(
-                () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
         );
 
-        if(!Objects.equals(savedReply.getUser().getId(), getUser().getId())){
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+        if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
+            throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
 
         replyRepository.delete(savedReply);
     }
 
     @Override
-    public List<CommentDTO> getComment(Long commentId){
+    public List<CommentDTO> getComment(Long commentId) {
         List<Reply> listComment = replyRepository.findByIdAndParentId(commentId, null);
-        return listComment.stream().map(comment->
-                CommentDTO.builder().commentId(comment.getId())
+        return listComment.stream().map(comment ->
+            CommentDTO.builder().commentId(comment.getId())
                 .content(comment.getContent())
                 .subjectId(comment.getCommunity().getId())
                 .build()).collect(Collectors.toList());
     }
 
-    public User getUser(){
+    public User getUser() {
         return userRepository.findByEmail(
-                SecurityUtil.getCurrentEmail().get()).orElseThrow(()-> new UnauthorizedException(ErrorCode.UNAUTHORIZED)
-        );
+                SecurityUtil.getCurrentEmail().get())
+            .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED)
+            );
     }
 
 }
