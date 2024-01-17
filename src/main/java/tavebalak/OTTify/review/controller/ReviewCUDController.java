@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.error.ErrorCode;
-import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.review.dto.reviewrequest.ReviewSaveDto;
 import tavebalak.OTTify.review.dto.reviewrequest.ReviewUpdateDto;
@@ -81,6 +81,6 @@ public class ReviewCUDController {
 
     private User getUser() {
         return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED));
     }
 }
