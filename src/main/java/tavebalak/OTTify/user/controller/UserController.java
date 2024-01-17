@@ -61,7 +61,7 @@ public class UserController {
     @ApiResponse(code = 200, message = "성공적으로 구독 중인 OTT가 업데이트 되었습니다.")
     @PatchMapping("/{userId}/otts")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse updateUserOTT(@PathVariable("userId") Long userId, @RequestBody List<UserOttUpdateDTO> updateRequestDTO) {
+    public BaseResponse updateUserOTT(@PathVariable("userId") Long userId, @RequestBody UserOttUpdateDTO updateRequestDTO) {
         userService.updateUserOTT(userId, updateRequestDTO);
         return BaseResponse.success("성공적으로 구독 중인 OTT가 업데이트 되었습니다.");
     }
