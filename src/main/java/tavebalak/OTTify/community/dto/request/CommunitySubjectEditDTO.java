@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@ApiModel(value = "CommunitySubjectEditDTO(토론주제 수정 정보)", description = "토론주제 id, 토론제목, 토론내용, 프로그램id, 프로그램 제목, 프로그램 url 내용을 가진 Domain Class")
+@ApiModel(value = "CommunitySubjectEditDTO(토론주제 수정 정보)", description = "토론주제 id, 토론제목, 토론내용을 가진 Domain Class")
 public class CommunitySubjectEditDTO {
 
     @NotNull
@@ -22,16 +22,11 @@ public class CommunitySubjectEditDTO {
     @NotBlank(message = "토론 주제 내용이 비워져 있어서는 안됩니다.")
     @ApiModelProperty(value = "토론 내용")
     private String content;
-    @NotNull
-    @ApiModelProperty(value = "프로그램 id")
-    private Long programId;
 
     @Builder
-    public CommunitySubjectEditDTO(Long subjectId, String subjectName, String content,
-        Long programId) {
+    public CommunitySubjectEditDTO(Long subjectId, String subjectName, String content) {
         this.subjectId = subjectId;
         this.subjectName = subjectName;
         this.content = content;
-        this.programId = programId;
     }
 }

@@ -254,7 +254,6 @@ class CommunityControllerTest {
             .subjectId(savedCommunity.getId())
             .content(savedCommunity.getContent())
             .subjectName(savedCommunity.getTitle())
-            .programId(savedCommunity.getProgram().getId())
             .build();
 
         //when

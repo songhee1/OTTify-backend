@@ -133,10 +133,19 @@ public class ProgramServiceImpl implements ProgramService {
                         .programId(pg.getId())
                         .title(pg.getTitle())
                         .posterPath(pg.getPosterPath())
-                        .averageRating(pg.getAverageRating())
                         .createdYear(pg.getCreatedYear())
+                        .genreNameList(findGenreList(pg))
                         .build()).collect(Collectors.toList())
             ).build();
+    }
+
+    private List<String> findGenreList(Program pg) {
+        return programGenreRepository.findByProgram(pg.getId())
+            .stream()
+            .map(programGenre -> genreRepository.findById(programGenre.getGenre().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND))
+                .getName())
+            .collect(Collectors.toList());
     }
 
     private User getUser() {

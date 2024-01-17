@@ -97,10 +97,6 @@ public class CommunityServiceImpl implements CommunityService {
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
         }
 
-        Program program = programRepository.findById(c.getProgramId())
-            .orElseThrow(() -> new NotFoundException(
-                ErrorCode.SAVED_PROGRAM_NOT_FOUND));
-
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
         CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(
             c.getSubjectName(), c.getContent());
@@ -110,9 +106,6 @@ public class CommunityServiceImpl implements CommunityService {
     public Community modify(CommunitySubjectEditDTO c, User user) throws NotFoundException {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
-
-        Program program = programRepository.findById(c.getProgramId())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
 
         if (!Objects.equals(community.getUser().getId(), user.getId())) {
             throw new BadRequestException(ErrorCode.BAD_REQUEST);
