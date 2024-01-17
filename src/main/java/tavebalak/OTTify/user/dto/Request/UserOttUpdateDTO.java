@@ -1,5 +1,6 @@
 package tavebalak.OTTify.user.dto.Request;
 
+import io.swagger.annotations.ApiParam;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
