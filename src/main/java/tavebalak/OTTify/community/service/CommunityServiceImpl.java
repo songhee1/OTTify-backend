@@ -91,10 +91,10 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public void modifySubject(CommunitySubjectEditDTO c) {
         Community community = communityRepository.findById(c.getSubjectId())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         if (!Objects.equals(community.getUser().getId(), getUser().getId())) {
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+            throw new BadRequestException(ErrorCode.CAN_NOT_UPDATE_OTHER_SUBJECT_REQUEST);
         }
 
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
@@ -108,7 +108,7 @@ public class CommunityServiceImpl implements CommunityService {
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         if (!Objects.equals(community.getUser().getId(), user.getId())) {
-            throw new BadRequestException(ErrorCode.BAD_REQUEST);
+            throw new BadRequestException(ErrorCode.CAN_NOT_UPDATE_OTHER_SUBJECT_REQUEST);
         }
 
         CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
@@ -125,7 +125,7 @@ public class CommunityServiceImpl implements CommunityService {
         Community community = communityRepository.findById(subjectId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
         if (!Objects.equals(community.getUser().getId(), getUser().getId())) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+            throw new ForbiddenException(ErrorCode.CAN_NOT_DELETE_OTHER_SUBJECT_REQUEST);
         }
         communityRepository.delete(community);
     }
@@ -134,7 +134,7 @@ public class CommunityServiceImpl implements CommunityService {
         Community community = communityRepository.findById(subjectId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
         if (!Objects.equals(community.getUser().getId(), user.getId())) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+            throw new ForbiddenException(ErrorCode.CAN_NOT_DELETE_OTHER_SUBJECT_REQUEST);
         }
         communityRepository.delete(community);
     }

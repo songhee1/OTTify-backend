@@ -16,6 +16,8 @@ public enum ErrorCode {
     CAN_NOT_SELF_LIKE_REVIEW_REQUEST("자신의 리뷰에는 추천할 수 없습니다"),
     CAN_NOT_ALREADY_LIKE_REVIEW_REQUEST("이미 좋아요한 리뷰에는 추천할 수 없습니다"),
     CAN_NOT_SAVE_REVIEW_IN_SAME_PROGRAM("같은 프로그램에는 리뷰를 남길 수 없습니다"),
+    CAN_NOT_UPDATE_OTHER_SUBJECT_REQUEST("다른 사람의 게시물을 수정할 수 없습니다."),
+    CAN_NOT_DELETE_OTHER_SUBJECT_REQUEST("다른 사람의 게시물을 삭제할 수 없습니다."),
     CAN_NOT_OTHER_COMMENT_REWRITE_REQUEST("다른 사람의 댓글을 수정할 수 없습니다."),
     CAN_NOT_OTHER_COMMENT_DELETE_REQUEST("다른 사람의 댓글을 삭제할 수 없습니다."),
 
