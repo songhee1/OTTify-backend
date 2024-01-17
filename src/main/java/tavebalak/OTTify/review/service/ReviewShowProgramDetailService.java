@@ -7,15 +7,19 @@ import tavebalak.OTTify.review.dto.reviewresponse.ReviewResponseDtoList;
 import tavebalak.OTTify.user.entity.User;
 
 public interface ReviewShowProgramDetailService {
+
+    ReviewProgramResponseDto showMyReview(User user, Long programId);
+
     ReviewResponseDtoList show4Review(Long programId);
 
     Slice<ReviewProgramResponseDto> showReviewList(Long programId, Pageable pageable);
 
     ReviewResponseDtoList show4UserSpecificReviewList(User user, Long programId);
 
-    Slice<ReviewProgramResponseDto> showUserSpecificReviewList(User user, Long programId, Pageable pageable);
+    Slice<ReviewProgramResponseDto> showUserSpecificReviewList(User user, Long programId,
+        Pageable pageable);
 
-    String showUserSpecificRating(User user,Long programId);
+    String showUserSpecificRating(User user, Long programId);
 
 
 }
