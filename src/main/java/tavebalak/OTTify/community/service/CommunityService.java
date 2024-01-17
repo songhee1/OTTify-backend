@@ -7,19 +7,18 @@ import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
 import tavebalak.OTTify.community.entity.Community;
-import tavebalak.OTTify.error.exception.NotFoundException;
 
 public interface CommunityService {
 
     Community saveSubject(CommunitySubjectCreateDTO c);
 
-    void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException;
+    void modifySubject(CommunitySubjectEditDTO c);
 
-    void deleteSubject(Long subjectId) throws NotFoundException;
+    void deleteSubject(Long subjectId);
 
     CommunitySubjectsDTO findAllSubjects(Pageable pageable);
 
-    CommunityAriclesDTO getArticleOfASubject(Long subjectId) throws NotFoundException;
+    CommunityAriclesDTO getArticleOfASubject(Long subjectId);
 
     CommunitySubjectDTO getSubject(Long subjectId);
 

@@ -89,7 +89,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException {
+    public void modifySubject(CommunitySubjectEditDTO c) {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -103,7 +103,7 @@ public class CommunityServiceImpl implements CommunityService {
         community.edit(communitySubjectEditorDTO);
     }
 
-    public Community modify(CommunitySubjectEditDTO c, User user) throws NotFoundException {
+    public Community modify(CommunitySubjectEditDTO c, User user) {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -121,7 +121,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public void deleteSubject(Long subjectId) throws NotFoundException {
+    public void deleteSubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
         if (!Objects.equals(community.getUser().getId(), getUser().getId())) {
@@ -130,9 +130,9 @@ public class CommunityServiceImpl implements CommunityService {
         communityRepository.delete(community);
     }
 
-    public void delete(Long subjectId, User user) throws NotFoundException {
+    public void delete(Long subjectId, User user) {
         Community community = communityRepository.findById(subjectId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
         if (!Objects.equals(community.getUser().getId(), user.getId())) {
             throw new ForbiddenException(ErrorCode.FORBIDDEN);
         }
@@ -250,7 +250,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public CommunityAriclesDTO getArticleOfASubject(Long subjectId) throws NotFoundException {
+    public CommunityAriclesDTO getArticleOfASubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId).orElseThrow(
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );

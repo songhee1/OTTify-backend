@@ -7,21 +7,20 @@ import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentEditDTO;
 import tavebalak.OTTify.community.dto.response.CommentDTO;
 import tavebalak.OTTify.community.entity.Reply;
-import tavebalak.OTTify.error.exception.NotFoundException;
 
 public interface ReplyService {
 
-    Reply saveComment(ReplyCommentCreateDTO c) throws NotFoundException;
+    Reply saveComment(ReplyCommentCreateDTO c);
 
     void saveRecomment(ReplyRecommentCreateDTO c);
 
-    void modifyComment(ReplyCommentEditDTO c) throws NotFoundException;
+    void modifyComment(ReplyCommentEditDTO c);
 
-    void modifyRecomment(ReplyRecommentEditDTO c) throws NotFoundException;
+    void modifyRecomment(ReplyRecommentEditDTO c);
 
-    void deleteComment(Long subjectId, Long commentId) throws NotFoundException;
+    void deleteComment(Long subjectId, Long commentId);
 
-    void deleteRecomment(Long subjectId, Long commentId, Long recommentId) throws NotFoundException;
+    void deleteRecomment(Long subjectId, Long commentId, Long recommentId);
 
     List<CommentDTO> getComment(Long commentId);
 }
