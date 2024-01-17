@@ -1,9 +1,7 @@
 package tavebalak.OTTify.review.service;
 
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.entity.Genre;
-import tavebalak.OTTify.genre.repository.ProgramGenreRepository;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
-import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.review.dto.reviewresponse.ReviewProgramResponseDto;
@@ -24,10 +20,7 @@ import tavebalak.OTTify.review.dto.reviewresponse.ReviewResponseDtoList;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
-import tavebalak.OTTify.review.repository.ReviewTagRepository;
 import tavebalak.OTTify.user.entity.User;
-import tavebalak.OTTify.user.repository.LikedReviewRepository;
-import tavebalak.OTTify.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +30,19 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
     private final ReviewRepository reviewRepository;
     private final ProgramRepository programRepository;
     private final UserGenreRepository userGenreRepository;
-    private final ReviewTagRepository reviewTagRepository;
     private final ReviewReviewTagRepository reviewReviewTagRepository;
-    private final ProgramGenreRepository programGenreRepository;
-    private final LikedReviewRepository likedReviewRepository;
-    private final UserRepository userRepository;
+
+
+    //내가 작성한 리뷰를 조회합니다.
+    @Override
+    public ReviewProgramResponseDto showMyReview(User user, Long programId) {
+        Program program = programRepository.findById(programId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
+
+        return reviewRepository.findByProgramAndUser(program, user).map(this::makeReviewDto)
+            .orElse(null);
+
+    }
 
     //상세페이지에서 4개의 장르 상관없는 좋아요 순 리뷰를 보여줍니다
 
@@ -51,32 +52,9 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
         Program program = programRepository.findById(programId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
-        List<ReviewProgramResponseDto> reviewProgramResponseDtoList = new ArrayList<>();
-
-        AtomicBoolean userHaveReview = new AtomicBoolean(false);
-
-        //로그인한 사용자가 만약 자신의 리뷰를 남겼다면 그 리뷰를 첫번째로 보여줍니다.
-
-        userRepository.findByEmail(SecurityUtil.getCurrentEmail().get()).ifPresent(user -> {
-            reviewRepository.findByProgramAndUser(program, user).ifPresent(review -> {
-                reviewProgramResponseDtoList.add(makeReviewDto(review));
-                userHaveReview.set(true);
-            });
-        });
-
-        //로그인한 사용자가 자신의 리뷰를 남겼을때는 3개를 추가하고
-        if (userHaveReview.get()) {
-            reviewRepository.findTop3ByProgramOrderByLikeCountsDesc(program).forEach(review -> {
-                reviewProgramResponseDtoList.add(makeReviewDto(review));
-            });
-        }
-
-        //그렇지 않으면 4개를 추가합니다.
-        else {
-            reviewRepository.findTop4ByProgramOrderByLikeCountsDesc(program).forEach(review -> {
-                reviewProgramResponseDtoList.add(makeReviewDto(review));
-            });
-        }
+        List<ReviewProgramResponseDto> reviewProgramResponseDtoList = reviewRepository.findTop4ByProgramOrderByLikeCountsDesc(
+            program).stream().map(this::makeReviewDto).collect(
+            Collectors.toList());
 
         return new ReviewResponseDtoList(reviewProgramResponseDtoList);
     }
