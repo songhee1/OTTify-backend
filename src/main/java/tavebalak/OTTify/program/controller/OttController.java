@@ -21,8 +21,8 @@ public class OttController {
 
     private final OttService ottService;
 
-    @ApiOperation(value = "모든 OTT 조회", notes = "모든 OTT의 아이디와 이름을 조회합니다.")
-    @ApiResponse(code = 200, message = "성공적으로 모든 OTT를 조회하였습니다.")
+    @ApiOperation(value = "저장된 OTT 리스트 조회", notes = "저장된 모든 OTT의 아이디와 이름을 조회합니다.")
+    @ApiResponse(code = 200, message = "성공적으로 저장된 OTT 리스트를 조회하였습니다.")
     @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<OttListDTO> getOttList() {
