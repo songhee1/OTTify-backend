@@ -89,10 +89,10 @@ public class UserController {
     @ApiOperation(value = "작성 리뷰 조회 api", notes = "유저가 작성한 리뷰를 조회합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path"),
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/{userId}/reviews")
     @ResponseStatus(HttpStatus.OK)
@@ -107,8 +107,8 @@ public class UserController {
     @ApiOperation(value = "좋아요한 리뷰 조회 api", notes = "유저가 좋아요한 리뷰를 조회합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path"),
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/{userId}/likedReviews")
     @ResponseStatus(HttpStatus.OK)
@@ -121,10 +121,10 @@ public class UserController {
     @ApiOperation(value = "주최한 토론 조회 api", notes = "유저가 주최한 토론을 조회합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path"),
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/{userId}/discussion/hosting")
     @ResponseStatus(HttpStatus.OK)
@@ -139,8 +139,8 @@ public class UserController {
     @ApiOperation(value = "참여한 토론 조회 api", notes = "유저가 참여한 토론을 조회합니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path"),
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/{userId}/discussion/participating")
     @ResponseStatus(HttpStatus.OK)
