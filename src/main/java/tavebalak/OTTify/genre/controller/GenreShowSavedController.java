@@ -19,12 +19,10 @@ public class GenreShowSavedController {
 
     private final GenreShowSavedService genreShowSavedService;
 
-    @ApiOperation(value = "저장된 장르 리스트들을 보여줍니다", notes = "장르 저장시 사용하면 됩니다")
+    @ApiOperation(value = "저장된 장르 리스트들을 보여줍니다", notes = "장르 조회 시 사용하시면 됩니다.")
     @GetMapping("/api/v1/show/saved/genre")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<GenreShowSavedListDto> showGenreSavedList() {
         return BaseResponse.success(genreShowSavedService.showGenreList());
     }
-
-
 }
