@@ -19,7 +19,6 @@ import tavebalak.OTTify.community.repository.CommunityRepository;
 import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.BadRequestException;
-import tavebalak.OTTify.error.exception.NoSuchElementException;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
@@ -37,9 +36,9 @@ public class ReplyServiceImpl implements ReplyService {
     private final UserRepository userRepository;
 
     @Override
-    public Reply saveComment(ReplyCommentCreateDTO c) throws NotFoundException {
+    public Reply saveComment(ReplyCommentCreateDTO c) {
         Community community = communityRepository.findById(c.getSubjectId()).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
         return replyRepository.save(Reply.builder()
@@ -54,12 +53,12 @@ public class ReplyServiceImpl implements ReplyService {
 
         boolean hasParent = replyRepository.existsByIdAndParentId(c.getCommentId(), null);
         if (!hasParent) {
-            throw new NoSuchElementException(ErrorCode.ENTITY_NOT_FOUND);
+            throw new NotFoundException(ErrorCode.REPLY_NOT_FOUND);
         }
 
         Reply reply = replyRepository.save(Reply.builder()
             .community(communityRepository.findById(c.getSubjectId())
-                .orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND)))
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)))
             .content(c.getContent())
             .user(getUser())
             .build());
@@ -69,14 +68,14 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public void modifyComment(ReplyCommentEditDTO c) throws NotFoundException {
+    public void modifyComment(ReplyCommentEditDTO c) {
         boolean present = communityRepository.findById(c.getSubjectId()).isPresent();
         if (!present) {
-            throw new NoSuchElementException(ErrorCode.BAD_REQUEST);
+            throw new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND);
         }
 
         Reply savedReply = replyRepository.findById(c.getCommentId())
-            .orElseThrow(() -> new BadRequestException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND));
 
         if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_REWRITE_REQUEST);
@@ -90,17 +89,17 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public void modifyRecomment(ReplyRecommentEditDTO c) throws NotFoundException {
+    public void modifyRecomment(ReplyRecommentEditDTO c) {
 
         if (communityRepository.findById(c.getSubjectId()).isEmpty()) {
-            throw new NoSuchElementException(ErrorCode.BAD_REQUEST);
+            throw new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND);
         }
         if (replyRepository.findById(c.getCommentId()).isEmpty()) {
-            throw new NoSuchElementException(ErrorCode.BAD_REQUEST);
+            throw new NotFoundException(ErrorCode.REPLY_NOT_FOUND);
         }
 
         Reply savedReply = replyRepository.findById(c.getRecommentId()).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND)
         );
 
         if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
@@ -114,13 +113,13 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public void deleteComment(Long subjectId, Long commentId) throws NotFoundException {
+    public void deleteComment(Long subjectId, Long commentId) {
         communityRepository.findById(subjectId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
         Reply savedReply = replyRepository.findById(commentId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND)
         );
 
         if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
@@ -132,16 +131,15 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
-    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId)
-        throws NotFoundException {
+    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) {
         communityRepository.findById(subjectId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
         replyRepository.findById(commentId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND)
         );
         Reply savedReply = replyRepository.findById(recommentId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+            () -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND)
         );
 
         if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
