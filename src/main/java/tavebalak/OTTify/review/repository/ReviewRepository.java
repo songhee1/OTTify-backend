@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
@@ -18,9 +18,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     boolean existsByProgramAndUser(Program program, User user);
 
     Optional<Review> findByProgramAndUser(Program program, User user);
-
-    //좋아요 많이 받은 순으로 3개 범위: 전체
-    List<Review> findTop3ByProgramOrderByLikeCountsDesc(Program program);
 
     List<Review> findTop4ByProgramOrderByLikeCountsDesc(Program program);
 
