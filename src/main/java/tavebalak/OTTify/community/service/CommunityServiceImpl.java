@@ -162,6 +162,9 @@ public class CommunityServiceImpl implements CommunityService {
             throw new ForbiddenException(ErrorCode.CAN_NOT_DELETE_OTHER_SUBJECT_REQUEST);
         }
         communityRepository.delete(community);
+        if (community.getImageUrl() != null) {
+            awss3Service.delete(community.getImageUrl());
+        }
     }
 
     public void delete(Long subjectId, User user) {
