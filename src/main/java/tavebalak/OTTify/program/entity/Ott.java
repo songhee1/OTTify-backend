@@ -23,6 +23,8 @@ public class Ott {
     private String name;
     private String logoPath;
 
+    private Long tmDbProviderId;
+
     @Builder
     public Ott(String name, String logoPath) {
         this.name = name;
