@@ -15,6 +15,7 @@ import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
+import tavebalak.OTTify.review.dto.reviewresponse.FourReviewResponseWithCounts;
 import tavebalak.OTTify.review.dto.reviewresponse.ReviewProgramResponseDto;
 import tavebalak.OTTify.review.dto.reviewresponse.ReviewResponseDtoList;
 import tavebalak.OTTify.review.entity.Review;
@@ -47,7 +48,7 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
     //상세페이지에서 4개의 장르 상관없는 좋아요 순 리뷰를 보여줍니다
 
     @Override
-    public ReviewResponseDtoList show4Review(Long programId) {
+    public FourReviewResponseWithCounts show4Review(Long programId) {
 
         Program program = programRepository.findById(programId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
@@ -56,7 +57,10 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
             program).stream().map(this::makeReviewDto).collect(
             Collectors.toList());
 
-        return new ReviewResponseDtoList(reviewProgramResponseDtoList);
+        int leftReviewCounts = program.getReviewCount() - 4 > 0 ? program.getReviewCount() - 4 : 0;
+
+        return new FourReviewResponseWithCounts(
+            new ReviewResponseDtoList(reviewProgramResponseDtoList), leftReviewCounts);
     }
 
     //모든 장르 상관 없는 리뷰 리스트를 Slice로  보여줍니다.
@@ -75,7 +79,7 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
 
     @Override
 
-    public ReviewResponseDtoList show4UserSpecificReviewList(User user, Long programId) {
+    public FourReviewResponseWithCounts show4UserSpecificReviewList(User user, Long programId) {
 
         Program program = programRepository.findById(programId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
@@ -88,7 +92,13 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
                 program, usersFirstGenre.getName(), PageRequest.of(0, 4)).stream()
             .map(r -> makeReviewDto(r)).collect(Collectors.toList());
 
-        return new ReviewResponseDtoList(reviewProgramResponseDtoList);
+        int userSpecificGenreCount = reviewRepository.countByMyGenreName(usersFirstGenre.getName(),
+            program);
+
+        int leftCount = userSpecificGenreCount - 4 > 0 ? userSpecificGenreCount - 4 : 0;
+
+        return new FourReviewResponseWithCounts(
+            new ReviewResponseDtoList(reviewProgramResponseDtoList), leftCount);
 
     }
 
@@ -110,38 +120,6 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
 
         return reviewSlice.map(r -> makeReviewDto(r));
 
-    }
-
-    //user 의 first genre 에 맞춘 평점을 보여줍니다. 지금 현재는 컨트롤러에서 사용하고 있지만 나중에 프로그램 상세 페이지에서 같이 넣으려고 합니다
-
-    @Override
-    public String showUserSpecificRating(User user, Long programId) {
-        Program program = programRepository.findById(programId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
-
-        Genre usersFirstGenre = userGenreRepository.findByUserAndIsFirst(user, true)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
-            .getGenre();
-
-        long userSpecificGenreCount = reviewRepository.countByMyGenreName(usersFirstGenre.getName(),
-            program);
-
-        Double sumRating = reviewRepository.sumReviewRatingByGenreName(usersFirstGenre.getName(),
-            program);
-
-        double userSpecificReviewRatingSum = (sumRating != null) ? sumRating : 0.0;
-
-        double avg;
-
-        if (userSpecificGenreCount == 0) {
-            avg = 0;
-        } else {
-            avg = userSpecificReviewRatingSum / userSpecificGenreCount;
-        }
-
-        String avgString = String.format("%.2f", avg);
-
-        return avgString;
     }
 
     //리뷰를 이용해 리뷰 DTO를 만듭니다
