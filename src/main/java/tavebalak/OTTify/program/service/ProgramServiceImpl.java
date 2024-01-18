@@ -75,7 +75,7 @@ public class ProgramServiceImpl implements ProgramService {
         if (!byUserIdAndIsFirst.isEmpty()) {
             byUserIdAndIsFirst.forEach(userGenre -> {
 
-                Genre userSecondGenre = genreRepository.findById(userGenre.getId())
+                Genre userSecondGenre = genreRepository.findById(userGenre.getGenre().getId())
                     .orElseThrow(
                         () -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND)
                     );
@@ -85,9 +85,8 @@ public class ProgramServiceImpl implements ProgramService {
 
                 int idx = new Random().nextInt(programGenreList.size());
                 Optional<Program> program = programRepository.findById(
-                    programGenreList.get(idx).getId());
+                    programGenreList.get(idx).getProgram().getId());
                 program.ifPresent(recommendPrograms::add);
-
             });
         }
 
