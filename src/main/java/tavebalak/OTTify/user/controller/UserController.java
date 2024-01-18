@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,10 +57,10 @@ public class UserController {
         return BaseResponse.success(userService.getUserOTT(userId));
     }
 
-    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다.")
+    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다. ⚠️ Content-Type를 multipart/form-data로 설정하고 파라미터 별로 MediaType을 설정해 주세요.")
     @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 프로필이 업데이트 되었습니다.")
-    @PatchMapping("/{userId}/profile")
+    @PatchMapping(value = "/{userId}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse updateUserProfile(@PathVariable("userId") Long userId,
         @Validated @ModelAttribute UserProfileUpdateDTO updateRequestDTO) {
