@@ -13,13 +13,11 @@ import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.user.entity.User;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-
-    Slice<Review> findByUserIdOrderByCreatedAt(@Param("userId") Long userId, Pageable pageable);
+    Slice<Review> findByUserIdOrderByCreatedAt(Long userId, Pageable pageable);
 
     boolean existsByProgramAndUser(Program program, User user);
 
     Optional<Review> findByProgramAndUser(Program program, User user);
-
 
     List<Review> findTop4ByProgramOrderByLikeCountsDesc(Program program);
 
