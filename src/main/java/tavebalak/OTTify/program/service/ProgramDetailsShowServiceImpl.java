@@ -15,6 +15,8 @@ import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.program.dto.programDetails.Response.ProgramDetailResponse;
+import tavebalak.OTTify.program.dto.programDetails.Response.ProgramProviderListResponseDto;
+import tavebalak.OTTify.program.dto.programDetails.Response.ProgramProviderResponseDto;
 import tavebalak.OTTify.program.dto.programDetails.Response.ProgramResponseDto;
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.personDetails.Cast;
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.personDetails.OAProgramCreditsDto;
@@ -23,8 +25,10 @@ import tavebalak.OTTify.program.dto.programDetails.openApiRequest.programDetailR
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.programDetailRequest.OATvDetailsDto;
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.providerDetails.OACountryDetailsDto;
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.providerDetails.OAProgramProviderDto;
+import tavebalak.OTTify.program.entity.Ott;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
+import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 
 @Service
@@ -35,6 +39,7 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
     private final WebClient webClient;
     private final GenreRepository genreRepository;
     private final ProgramRepository programRepository;
+    private final OttRepository ottRepository;
 
 
     @Override
@@ -59,22 +64,15 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
         Optional<OACountryDetailsDto> kr = Optional.ofNullable(
             oaProgramProviderDto.getResults().get("KR"));
 
-        //kr 이 NULL 이 아닌 경우 에는 OTT 의 rent,buy,스트리밍의 size를 정렬해준다.
-
-        kr.ifPresent(oaCountryDetailsDto -> {
-            int buySize =
-                oaCountryDetailsDto.getBuy() == null ? 0 : oaCountryDetailsDto.getBuy().size();
-            int rentSize =
-                oaCountryDetailsDto.getRent() == null ? 0 : oaCountryDetailsDto.getRent().size();
-            int flatrateSize = oaCountryDetailsDto.getFlatrate() == null ? 0
-                : oaCountryDetailsDto.getFlatrate().size();
-
-            oaCountryDetailsDto.initSize(buySize, rentSize, flatrateSize);
-        });
+        //사용자에게 보낼 DTO 를 만들고 OTT 의 이름을 한글로 변환시키는 작업을 수행합니다.
+        Optional<ProgramProviderListResponseDto> programProviderListResponseDto = kr.map(
+            oaCountryDetailsDto -> changeOTTtoKoreanAndMakeProviderResponseDto(
+                oaCountryDetailsDto));
 
         // 사용자에게 보내줄 DTO
         ProgramResponseDto programResponseDto = new ProgramResponseDto(programDetailResponse,
-            oaProgramCreditsDto, kr.orElse(null), program.getAverageRating());
+            oaProgramCreditsDto, programProviderListResponseDto.orElse(null),
+            program.getAverageRating());
         return programResponseDto;
 
     }
@@ -254,6 +252,57 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
             .retrieve()
             .bodyToMono(OAProgramProviderDto.class)
             .block();
+
+    }
+
+    private ProgramProviderListResponseDto changeOTTtoKoreanAndMakeProviderResponseDto(
+        OACountryDetailsDto oaCountryDetailsDto) {
+
+        List<ProgramProviderResponseDto> buy = new ArrayList<>();
+        List<ProgramProviderResponseDto> rent = new ArrayList<>();
+        List<ProgramProviderResponseDto> streaming = new ArrayList<>();
+
+        Optional.ofNullable(oaCountryDetailsDto.getBuy()).ifPresent(oaProviderDetailsDtos -> {
+            oaProviderDetailsDtos.stream().filter(oaProviderDetailsDto ->
+                ottRepository.existsByTmDbProviderId(oaProviderDetailsDto.getProvider_id())
+            ).forEach(oaProviderDetailsDto -> {
+                Optional<Ott> ott = ottRepository.findByTmDbProviderId(
+                    oaProviderDetailsDto.getProvider_id());
+                buy.add(new ProgramProviderResponseDto(oaProviderDetailsDto.getLogo_path(),
+                    ott.orElse(null).getName()));
+            });
+        });
+
+        Optional.ofNullable(oaCountryDetailsDto.getRent()).ifPresent(oaProviderDetailsDtos -> {
+            oaProviderDetailsDtos.stream().filter(oaProviderDetailsDto ->
+                ottRepository.existsByTmDbProviderId(oaProviderDetailsDto.getProvider_id())
+            ).forEach(oaProviderDetailsDto -> {
+                Optional<Ott> ott = ottRepository.findByTmDbProviderId(
+                    oaProviderDetailsDto.getProvider_id());
+                rent.add(new ProgramProviderResponseDto(oaProviderDetailsDto.getLogo_path(),
+                    ott.orElse(null).getName()));
+            });
+        });
+
+        Optional.ofNullable(oaCountryDetailsDto.getFlatrate()).ifPresent(oaProviderDetailsDtos -> {
+            oaProviderDetailsDtos.stream().filter(oaProviderDetailsDto ->
+                ottRepository.existsByTmDbProviderId(oaProviderDetailsDto.getProvider_id())
+            ).forEach(oaProviderDetailsDto -> {
+                Optional<Ott> ott = ottRepository.findByTmDbProviderId(
+                    oaProviderDetailsDto.getProvider_id());
+                streaming.add(new ProgramProviderResponseDto(oaProviderDetailsDto.getLogo_path(),
+                    ott.orElse(null).getName()));
+            });
+        });
+
+        return ProgramProviderListResponseDto.builder()
+            .buy(buy)
+            .rent(rent)
+            .streaming(streaming)
+            .buySize(buy.size())
+            .rentSize(rent.size())
+            .streamingSize(streaming.size())
+            .build();
 
     }
 }
