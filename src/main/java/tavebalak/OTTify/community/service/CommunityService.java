@@ -13,7 +13,7 @@ public interface CommunityService {
 
     Community saveSubject(CommunitySubjectCreateDTO c, MultipartFile image);
 
-    void modifySubject(CommunitySubjectEditDTO c);
+    void modifySubject(CommunitySubjectEditDTO c, MultipartFile image);
 
     void deleteSubject(Long subjectId);
 

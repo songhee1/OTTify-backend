@@ -100,7 +100,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public void modifySubject(CommunitySubjectEditDTO c) {
+    public void modifySubject(CommunitySubjectEditDTO c, MultipartFile image) {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -111,11 +111,11 @@ public class CommunityServiceImpl implements CommunityService {
         CommunitySubjectImageEditorDTO communitySubjectEditorDTOBuilder = community.toImageEdior();
 
         String imageUrl = null;
-        if (!c.getImage().isEmpty()) {
+        if (!image.isEmpty()) {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());
             }
-            imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+            imageUrl = awss3Service.upload(image, "discussion-image");
         } else {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());

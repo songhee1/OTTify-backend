@@ -65,7 +65,7 @@ public class CommunityController {
         @Valid @RequestPart(value = "dto") CommunitySubjectEditDTO c,
         @RequestPart(value = "file", required = false) MultipartFile image)
         throws NotFoundException {
-        communityService.modifySubject(c);
+        communityService.modifySubject(c, image);
         return BaseResponse.success("성공적으로 토론주제를 수정하였습니다.");
     }
 
