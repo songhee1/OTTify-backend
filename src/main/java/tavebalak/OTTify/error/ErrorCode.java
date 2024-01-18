@@ -65,7 +65,8 @@ public enum ErrorCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR("서버 내부 오류입니다."),
-    UPLOAD_FAILED("업로드에 실패하였습니다.");
+    UPLOAD_FAILED("업로드에 실패하였습니다."),
+    FILE_DELETE_FAILED("파일 삭제에 실패하였습니다.");
 
     private final String message;
 }

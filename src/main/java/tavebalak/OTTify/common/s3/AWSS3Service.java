@@ -24,6 +24,9 @@ public class AWSS3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.s3.url}")
+    private String url;
+
     private final AmazonS3Client amazonS3Client;
 
     public String upload(MultipartFile multipartFile, String dirName) {
@@ -49,4 +52,17 @@ public class AWSS3Service {
         return amazonS3Client.getUrl(bucket, fileName).toString();
     }
 
+    public void delete(String fileRoute) {
+        int index = fileRoute.indexOf(url);
+        String fileName = fileRoute.substring(index + url.length() + 1);
+
+        try {
+            boolean isObjectExist = amazonS3Client.doesObjectExist(bucket, fileName);
+            if (isObjectExist) {
+                amazonS3Client.deleteObject(bucket, fileName);
+            }
+        } catch (Exception e) {
+            throw new InternalServerErrorException(ErrorCode.FILE_DELETE_FAILED);
+        }
+    }
 }
