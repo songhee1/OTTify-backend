@@ -13,6 +13,7 @@ public enum ErrorCode {
      */
     BAD_REQUEST("잘못된 요청입니다."),
     EMAIL_ISNOT_EXIST("이메일이 없습니다."),
+    PROFILE_PHOTO_ISNOT_EXIST("프로필 사진이 없습니다."),
     CAN_NOT_SELF_LIKE_REVIEW_REQUEST("자신의 리뷰에는 추천할 수 없습니다"),
     CAN_NOT_ALREADY_LIKE_REVIEW_REQUEST("이미 좋아요한 리뷰에는 추천할 수 없습니다"),
     CAN_NOT_SAVE_REVIEW_IN_SAME_PROGRAM("같은 프로그램에는 리뷰를 남길 수 없습니다"),
@@ -48,6 +49,7 @@ public enum ErrorCode {
     SAVED_PROGRAM_NOT_FOUND("저장된 프로그램 정보를 찾을 수 없습니다."),
     COMMUNITY_NOT_FOUND("토론주제를 찾을 수 없습니다."),
     REPLY_NOT_FOUND("댓글을 찾을 수 없습니다."),
+
     /**
      * 405 Method Not Allowed
      */
@@ -62,7 +64,8 @@ public enum ErrorCode {
     /**
      * 500 Internal Server Error
      */
-    INTERNAL_SERVER_ERROR("서버 내부 오류입니다.");
+    INTERNAL_SERVER_ERROR("서버 내부 오류입니다."),
+    UPLOAD_FAILED("업로드에 실패하였습니다.");
 
     private final String message;
 }

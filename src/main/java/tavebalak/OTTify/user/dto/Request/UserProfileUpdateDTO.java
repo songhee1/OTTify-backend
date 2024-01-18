@@ -2,12 +2,13 @@ package tavebalak.OTTify.user.dto.Request;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class UserProfileUpdateDTO {
 
     @NotNull(message = "닉네임을 입력해주세요.")
@@ -16,5 +17,5 @@ public class UserProfileUpdateDTO {
     private String nickName;
 
     @NotNull(message = "사진을 업로드해주세요.")
-    private String profilePhoto;
+    private MultipartFile profilePhoto;
 }

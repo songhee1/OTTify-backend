@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.repository.CommunityRepository;
@@ -72,6 +73,7 @@ public class UserServiceImpl implements UserService {
     private final GenreRepository genreRepository;
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
+    private final AWSS3Service awss3Service;
 
     @Override
     public UserProfileDTO getUserProfile(Long userId) {
@@ -216,9 +218,10 @@ public class UserServiceImpl implements UserService {
 
         // 닉네임 중복 여부 검증
         checkNicknameDuplication(userId, updateRequestDTO);
-
         user.changeNickName(updateRequestDTO.getNickName());
-        user.changeProfilePhoto(updateRequestDTO.getProfilePhoto());
+
+        String newPhotoUrl = awss3Service.upload(updateRequestDTO.getProfilePhoto(), "profile-images");
+        user.changeProfilePhoto(newPhotoUrl);
 
         return userRepository.save(user).getId();
     }

@@ -1,25 +1,35 @@
 package tavebalak.OTTify.user.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.user.service.UserService;
-import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
-import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
-import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
-import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
-import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
-
-import java.util.List;
+import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
+import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
+import tavebalak.OTTify.user.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,7 +62,7 @@ public class UserController {
     @PatchMapping("/{userId}/profile")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse updateUserProfile(@PathVariable("userId") Long userId,
-        @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
+        @Validated @ModelAttribute UserProfileUpdateDTO updateRequestDTO) {
         userService.updateUserProfile(userId, updateRequestDTO);
         return BaseResponse.success("성공적으로 프로필이 업데이트 되었습니다.");
     }
