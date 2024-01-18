@@ -4,13 +4,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 @ApiModel(value = "CommunitySubjectEditDTO(토론주제 수정 정보)", description = "토론주제 id, 토론제목, 토론내용을 가진 Domain Class")
 public class CommunitySubjectEditDTO {
 
@@ -31,15 +31,6 @@ public class CommunitySubjectEditDTO {
         this.subjectId = subjectId;
         this.subjectName = subjectName;
         this.content = content;
-    }
-
-    @Builder(builderMethodName = "imageIncludeBuilder")
-    public CommunitySubjectEditDTO(Long subjectId, String subjectName, String content,
-        MultipartFile image) {
-        this.subjectId = subjectId;
-        this.subjectName = subjectName;
-        this.content = content;
-        this.image = image;
     }
 
 }

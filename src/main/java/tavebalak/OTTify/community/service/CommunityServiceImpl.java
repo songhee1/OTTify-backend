@@ -12,10 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
 import tavebalak.OTTify.community.dto.response.CommentListsDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
@@ -57,11 +57,11 @@ public class CommunityServiceImpl implements CommunityService {
     private final AWSS3Service awss3Service;
 
     @Override
-    public Community saveSubject(CommunitySubjectImageCreateDTO c) {
+    public Community saveSubject(CommunitySubjectCreateDTO c, MultipartFile image) {
 
         String imageUrl = null;
-        if (!c.getImage().isEmpty()) {
-            imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+        if (!image.isEmpty()) {
+            imageUrl = awss3Service.upload(image, "discussion-image");
         }
 
         Program program = isPresent(c);
@@ -78,7 +78,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     public Community save(CommunitySubjectCreateDTO c) {
-        Program program = isPresentNI(c);
+        Program program = isPresent(c);
 
         Community community = Community.builder()
             .title(c.getSubjectName())
@@ -89,16 +89,8 @@ public class CommunityServiceImpl implements CommunityService {
         return communityRepository.save(community);
     }
 
-    private Program isPresentNI(CommunitySubjectCreateDTO c) {
-        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
-        if (optionalProgram.isPresent()) {
-            return optionalProgram.get();
-        } else {
-            throw new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND);
-        }
-    }
 
-    private Program isPresent(CommunitySubjectImageCreateDTO c) {
+    private Program isPresent(CommunitySubjectCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
         if (optionalProgram.isPresent()) {
             return optionalProgram.get();
@@ -120,8 +112,14 @@ public class CommunityServiceImpl implements CommunityService {
 
         String imageUrl = null;
         if (!c.getImage().isEmpty()) {
-            awss3Service.delete(community.getImageUrl());
+            if (community.getImageUrl() != null) {
+                awss3Service.delete(community.getImageUrl());
+            }
             imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+        } else {
+            if (community.getImageUrl() != null) {
+                awss3Service.delete(community.getImageUrl());
+            }
         }
 
         CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgramImage(
