@@ -11,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,9 +47,9 @@ public class CommunityController {
 
     @ApiOperation(value = "토론주제 생성", notes = "회원이 작성한 토론내용을 기반으로 생성됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 생성하였습니다.")
-    @PostMapping(value = "/subject")
+    @PostMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> registerSubject(
-        @Valid @RequestBody CommunitySubjectCreateDTO c) throws IOException {
+        @Valid @ModelAttribute CommunitySubjectCreateDTO c) throws IOException {
         communityService.saveSubject(c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }
@@ -55,7 +57,7 @@ public class CommunityController {
     @ApiOperation(value = "토론주제 수정", notes = "회원이 작성한 토론내용을 기반으로 수정됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 수정하였습니다.")
     @PutMapping("/subject")
-    public BaseResponse<String> modifySubject(@Valid @RequestBody CommunitySubjectEditDTO c)
+    public BaseResponse<String> modifySubject(@Valid @ModelAttribute CommunitySubjectEditDTO c)
         throws NotFoundException {
         communityService.modifySubject(c);
         return BaseResponse.success("성공적으로 토론주제를 수정하였습니다.");

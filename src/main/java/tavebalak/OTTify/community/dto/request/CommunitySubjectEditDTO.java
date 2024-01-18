@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @NoArgsConstructor
@@ -22,6 +23,8 @@ public class CommunitySubjectEditDTO {
     @NotBlank(message = "토론 주제 내용이 비워져 있어서는 안됩니다.")
     @ApiModelProperty(value = "토론 내용")
     private String content;
+    @ApiModelProperty(value = "이미지 파일을 수정")
+    private MultipartFile image;
 
     @Builder
     public CommunitySubjectEditDTO(Long subjectId, String subjectName, String content) {
@@ -29,4 +32,14 @@ public class CommunitySubjectEditDTO {
         this.subjectName = subjectName;
         this.content = content;
     }
+
+    @Builder(builderMethodName = "imageIncludeBuilder")
+    public CommunitySubjectEditDTO(Long subjectId, String subjectName, String content,
+        MultipartFile image) {
+        this.subjectId = subjectId;
+        this.subjectName = subjectName;
+        this.content = content;
+        this.image = image;
+    }
+
 }

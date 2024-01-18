@@ -18,6 +18,7 @@ import tavebalak.OTTify.community.dto.response.CommentListsDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectEditorDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectImageEditorDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.dto.response.ReplyListsDTO;
@@ -51,9 +52,15 @@ public class CommunityServiceImpl implements CommunityService {
     private final UserRepository userRepository;
     private final LikedCommunityRepository likedCommunityRepository;
     private final LikedReplyRepository likedReplyRepository;
+    private final AWSS3Service awss3Service;
 
     @Override
     public Community saveSubject(CommunitySubjectCreateDTO c) {
+
+        String imageUrl = null;
+        if (!c.getImage().isEmpty()) {
+            imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+        }
 
         Program program = isPresent(c);
         Community community = Community.builder()
@@ -61,6 +68,7 @@ public class CommunityServiceImpl implements CommunityService {
             .content(c.getContent())
             .user(getUser())
             .program(program)
+            .imageUrl(imageUrl)
             .build();
 
         return communityRepository.save(community);
@@ -97,10 +105,17 @@ public class CommunityServiceImpl implements CommunityService {
             throw new BadRequestException(ErrorCode.CAN_NOT_UPDATE_OTHER_SUBJECT_REQUEST);
         }
 
-        CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
-        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(
-            c.getSubjectName(), c.getContent());
-        community.edit(communitySubjectEditorDTO);
+        CommunitySubjectImageEditorDTO communitySubjectEditorDTOBuilder = community.toImageEdior();
+
+        String imageUrl = null;
+        if (!c.getImage().isEmpty()) {
+            awss3Service.delete(community.getImageUrl());
+            imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+        }
+
+        CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgramImage(
+            c.getSubjectName(), c.getContent(), imageUrl);
+        community.editImage(communitySubjectImageEditorDTO);
     }
 
     public Community modify(CommunitySubjectEditDTO c, User user) {

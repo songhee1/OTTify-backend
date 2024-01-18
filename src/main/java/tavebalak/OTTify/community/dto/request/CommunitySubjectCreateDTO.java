@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
@@ -21,11 +22,16 @@ public class CommunitySubjectCreateDTO {
     @NotBlank
     @ApiParam(value = "토론 내용", required = true)
     private String content;
+    @ApiParam(value = "이미지", required = false)
+    private MultipartFile image;
 
     @Builder
-    public CommunitySubjectCreateDTO(Long programId, String subjectName, String content) {
+    public CommunitySubjectCreateDTO(Long programId, String subjectName, String content,
+        MultipartFile image
+    ) {
         this.programId = programId;
         this.subjectName = subjectName;
         this.content = content;
+        this.image = image;
     }
 }

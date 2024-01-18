@@ -15,6 +15,7 @@ public class CommunitySubjectEditorDTO {
         this.content = content;
     }
 
+
     public CommunitySubjectEditorDTO changeTitleContentProgram(String subjectName, String content) {
         this.title = subjectName;
         this.content = content;
