@@ -57,7 +57,7 @@ public class UserController {
         return BaseResponse.success(userService.getUserOTT(userId));
     }
 
-    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다. ⚠️ Content-Type를 multipart/form-data로 설정하고 파라미터 별로 MediaType을 설정해 주세요.")
+    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다. ⚠️ Content-Type를 multipart/form-data로 설정하고 파라미터 별로 MediaType을 설정해 주세요. 🚨 swagger 버전 문제로 swagger에서는 해당 api 테스트 불가합니다. postman으로 해주세요 !!! 🚨")
     @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 프로필이 업데이트 되었습니다.")
     @PatchMapping(value = "/{userId}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
