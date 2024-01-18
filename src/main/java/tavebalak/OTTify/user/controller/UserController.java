@@ -1,25 +1,36 @@
 package tavebalak.OTTify.user.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.user.service.UserService;
-import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
-import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
-import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
-import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
-import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
-
-import java.util.List;
+import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
+import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
+import tavebalak.OTTify.user.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,13 +57,13 @@ public class UserController {
         return BaseResponse.success(userService.getUserOTT(userId));
     }
 
-    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다.")
+    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다. ⚠️ Content-Type를 multipart/form-data로 설정하고 파라미터 별로 MediaType을 설정해 주세요. 🚨 swagger 버전 문제로 swagger에서는 해당 api 테스트 불가합니다. postman으로 해주세요 !!! 🚨")
     @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 프로필이 업데이트 되었습니다.")
-    @PatchMapping("/{userId}/profile")
+    @PatchMapping(value = "/{userId}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse updateUserProfile(@PathVariable("userId") Long userId,
-        @Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
+        @Validated @ModelAttribute UserProfileUpdateDTO updateRequestDTO) {
         userService.updateUserProfile(userId, updateRequestDTO);
         return BaseResponse.success("성공적으로 프로필이 업데이트 되었습니다.");
     }
