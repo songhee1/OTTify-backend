@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyCommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyCommentEditDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
@@ -49,7 +49,7 @@ public class CommunityController {
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 생성하였습니다.")
     @PostMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> registerSubject(
-        @Valid @ModelAttribute CommunitySubjectCreateDTO c) throws IOException {
+        @Valid @ModelAttribute CommunitySubjectImageCreateDTO c) throws IOException {
         communityService.saveSubject(c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }

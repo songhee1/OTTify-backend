@@ -3,14 +3,14 @@ package tavebalak.OTTify.community.dto.request;
 import io.swagger.annotations.ApiParam;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
-@NoArgsConstructor
-public class CommunitySubjectCreateDTO {
+@AllArgsConstructor
+public class CommunitySubjectImageCreateDTO {
 
     @NotNull
     @ApiParam(value = "프로그램 id", required = true)
@@ -21,12 +21,7 @@ public class CommunitySubjectCreateDTO {
     @NotBlank
     @ApiParam(value = "토론 내용", required = true)
     private String content;
+    @ApiParam(value = "이미지", required = false)
+    private MultipartFile image;
 
-    @Builder
-    public CommunitySubjectCreateDTO(Long programId, String subjectName, String content
-    ) {
-        this.programId = programId;
-        this.subjectName = subjectName;
-        this.content = content;
-    }
 }

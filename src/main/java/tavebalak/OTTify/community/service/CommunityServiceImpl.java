@@ -12,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
 import tavebalak.OTTify.community.dto.response.CommentListsDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
@@ -55,7 +57,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final AWSS3Service awss3Service;
 
     @Override
-    public Community saveSubject(CommunitySubjectCreateDTO c) {
+    public Community saveSubject(CommunitySubjectImageCreateDTO c) {
 
         String imageUrl = null;
         if (!c.getImage().isEmpty()) {
@@ -76,7 +78,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     public Community save(CommunitySubjectCreateDTO c) {
-        Program program = isPresent(c);
+        Program program = isPresentNI(c);
 
         Community community = Community.builder()
             .title(c.getSubjectName())
@@ -87,7 +89,16 @@ public class CommunityServiceImpl implements CommunityService {
         return communityRepository.save(community);
     }
 
-    private Program isPresent(CommunitySubjectCreateDTO c) {
+    private Program isPresentNI(CommunitySubjectCreateDTO c) {
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+        if (optionalProgram.isPresent()) {
+            return optionalProgram.get();
+        } else {
+            throw new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND);
+        }
+    }
+
+    private Program isPresent(CommunitySubjectImageCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
         if (optionalProgram.isPresent()) {
             return optionalProgram.get();
