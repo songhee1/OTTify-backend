@@ -58,10 +58,10 @@ public class ReviewShowProgramDetailController {
 
     @ApiOperation(value = "전체 리뷰 리스트를 보여주기", notes = "전체 리뷰 리스트를 보여줍니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", paramType = "query"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", defaultValue = "DESC", paramType = "query"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", defaultValue = "likeCounts", paramType = "query"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", paramType = "query")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/normals")
     @ResponseStatus(HttpStatus.OK)
@@ -89,10 +89,10 @@ public class ReviewShowProgramDetailController {
 
     @ApiOperation(value = "사용자의 취향에 맞는 전체 리뷰 리스트를 보여주기", notes = "자신의 취향에 맞는 리뷰 리스트를 보여줍니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", paramType = "query"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", defaultValue = "DESC", paramType = "query"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", defaultValue = "likeCounts", paramType = "query"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", paramType = "query")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/user/specifics")
     @ResponseStatus(HttpStatus.OK)
