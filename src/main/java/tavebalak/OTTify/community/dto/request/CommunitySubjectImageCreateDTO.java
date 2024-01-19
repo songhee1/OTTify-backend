@@ -1,7 +1,7 @@
 package tavebalak.OTTify.community.dto.request;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,18 +15,18 @@ import org.springframework.web.multipart.MultipartFile;
 public class CommunitySubjectImageCreateDTO {
 
     @NotNull
-    @ApiParam(value = "프로그램 id", required = true)
+    @ApiModelProperty(value = "프로그램 id", required = true)
     private Long programId;
 
     @NotBlank(message = "토론 주제 제목이 비워져 있어서는 안됩니다.")
-    @ApiParam(value = "토론 제목", required = true)
+    @ApiModelProperty(value = "토론 제목", required = true)
     private String subjectName;
 
     @NotBlank(message = "토론 내용이 비워져 있어서는 안됩니다.")
-    @ApiParam(value = "토론 내용", required = true)
+    @ApiModelProperty(value = "토론 내용", required = true)
     private String content;
-    
-    @ApiParam(value = "이미지")
+
+    @ApiModelProperty(value = "이미지")
     private MultipartFile image;
 
 }

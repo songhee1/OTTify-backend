@@ -5,7 +5,7 @@ import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
-import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 
 public interface CommunityService {
@@ -16,13 +16,13 @@ public interface CommunityService {
 
     void deleteSubject(Long subjectId);
 
-    CommunitySubjectsDTO findAllSubjects(Pageable pageable);
+    CommunitySubjectsListDTO findAllSubjects(Pageable pageable);
 
     CommunityAriclesDTO getArticleOfASubject(Long subjectId);
 
     CommunitySubjectDTO getSubject(Long subjectId);
 
-    CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId);
+    CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId);
 
     boolean likeSubject(Long subjectId);
 

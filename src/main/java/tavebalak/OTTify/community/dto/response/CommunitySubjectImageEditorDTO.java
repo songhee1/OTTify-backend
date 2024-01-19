@@ -18,7 +18,7 @@ public class CommunitySubjectImageEditorDTO {
     }
 
 
-    public CommunitySubjectImageEditorDTO changeTitleContentProgramImage(String subjectName,
+    public CommunitySubjectImageEditorDTO changeTitleContentImage(String subjectName,
         String content, String imageUrl) {
         this.title = subjectName;
         this.content = content;

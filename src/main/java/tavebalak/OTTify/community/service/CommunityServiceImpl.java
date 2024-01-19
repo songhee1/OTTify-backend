@@ -80,7 +80,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     public Community save(CommunitySubjectCreateDTO c) {
-        Program program = isPresentNI(c);
+        Program program = isPresentNotImage(c);
 
         Community community = Community.builder()
             .title(c.getSubjectName())
@@ -91,7 +91,7 @@ public class CommunityServiceImpl implements CommunityService {
         return communityRepository.save(community);
     }
 
-    private Program isPresentNI(CommunitySubjectCreateDTO c) {
+    private Program isPresentNotImage(CommunitySubjectCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
         return optionalProgram.orElseThrow(
             () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
@@ -120,14 +120,14 @@ public class CommunityServiceImpl implements CommunityService {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());
             }
-            imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+            imageUrl = awss3Service.upload(c.getImage(), "discussion-images");
         } else {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());
             }
         }
 
-        CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgramImage(
+        CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentImage(
             c.getSubjectName(), c.getContent(), imageUrl);
         community.editImage(communitySubjectImageEditorDTO);
     }
@@ -172,10 +172,10 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
+    public CommunitySubjectsListDTO findAllSubjects(Pageable pageable) {
         Slice<Community> communities = communityRepository.findCommunitiesBy(pageable);
-        List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
-            community -> CommunitySubjectsListDTO
+        List<CommunitySubjectsDTO> listDTO = communities.stream().map(
+            community -> CommunitySubjectsDTO
                 .builder()
                 .createdAt(community.getCreatedAt())
                 .updatedAt(community.getUpdatedAt())
@@ -187,16 +187,16 @@ public class CommunityServiceImpl implements CommunityService {
                 .imageUrl(community.getImageUrl())
                 .build()
         ).collect(Collectors.toList());
-        return CommunitySubjectsDTO.builder().subjectAmount(communities.getNumberOfElements())
+        return CommunitySubjectsListDTO.builder().subjectAmount(communities.getNumberOfElements())
             .list(listDTO).hasNext(communities.hasNext()).build();
     }
 
     @Override
-    public CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId) {
+    public CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId) {
         Slice<Community> communities = communityRepository.findCommunitiesByProgramId(pageable,
             programId);
-        List<CommunitySubjectsListDTO> list = communities.stream().map(
-            community -> CommunitySubjectsListDTO
+        List<CommunitySubjectsDTO> list = communities.stream().map(
+            community -> CommunitySubjectsDTO
                 .builder()
                 .createdAt(community.getCreatedAt())
                 .updatedAt(community.getUpdatedAt())
@@ -208,7 +208,7 @@ public class CommunityServiceImpl implements CommunityService {
                 .build()
         ).collect(Collectors.toList());
 
-        return CommunitySubjectsDTO.builder().subjectAmount(communities.getNumberOfElements())
+        return CommunitySubjectsListDTO.builder().subjectAmount(communities.getNumberOfElements())
             .list(list).hasNext(communities.hasNext()).build();
     }
 

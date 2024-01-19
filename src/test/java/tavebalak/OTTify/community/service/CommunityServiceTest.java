@@ -162,7 +162,7 @@ public class CommunityServiceTest {
             .build();
         communityService.save(other);
 
-        CommunitySubjectsListDTO build = CommunitySubjectsListDTO.builder()
+        CommunitySubjectsDTO build = CommunitySubjectsDTO.builder()
             .subjectId(1L)
             .programId(5L)
             .createdAt(LocalDateTime.now())
@@ -171,7 +171,7 @@ public class CommunityServiceTest {
             .title(requestDto.getSubjectName())
             .build();
 
-        CommunitySubjectsListDTO build2 = CommunitySubjectsListDTO.builder()
+        CommunitySubjectsDTO build2 = CommunitySubjectsDTO.builder()
             .subjectId(1L)
             .programId(10L)
             .createdAt(LocalDateTime.now())
@@ -188,7 +188,7 @@ public class CommunityServiceTest {
         when(communityRepository.findCommunitiesBy(pageRequest)).thenReturn(page);
 
         //when
-        CommunitySubjectsDTO allSubjects = communityService.findAllSubjects(pageRequest);
+        CommunitySubjectsListDTO allSubjects = communityService.findAllSubjects(pageRequest);
 
         //then
         assertThat(allSubjects).isNotNull();
@@ -213,7 +213,7 @@ public class CommunityServiceTest {
             .build();
         communityService.save(other);
 
-        CommunitySubjectsListDTO build = CommunitySubjectsListDTO.builder()
+        CommunitySubjectsDTO build = CommunitySubjectsDTO.builder()
             .subjectId(1L)
             .programId(5L)
             .createdAt(LocalDateTime.now())
@@ -228,7 +228,7 @@ public class CommunityServiceTest {
             pageRequest, 2);
         //when
         when(communityRepository.findCommunitiesByProgramId(pageRequest, 5L)).thenReturn(page);
-        CommunitySubjectsDTO singleProgramSubjects = communityService.findSingleProgramSubjects(
+        CommunitySubjectsListDTO singleProgramSubjects = communityService.findSingleProgramSubjects(
             pageRequest, 5L);
 
         //then

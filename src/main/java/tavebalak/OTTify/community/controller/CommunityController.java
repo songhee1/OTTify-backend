@@ -29,7 +29,7 @@ import tavebalak.OTTify.community.dto.request.ReplyCommentEditDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
-import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.error.exception.NotFoundException;
@@ -110,13 +110,13 @@ public class CommunityController {
         @ApiImplicitParam(name = "size", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/total")
-    public BaseResponse<CommunitySubjectsDTO> getTotalProgramsSubjects(
+    public BaseResponse<CommunitySubjectsListDTO> getTotalProgramsSubjects(
         @PageableDefault(size = 10,
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0
         ) Pageable pageable) {
-        CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
+        CommunitySubjectsListDTO page = communityService.findAllSubjects(pageable);
         return BaseResponse.success(page);
     }
 
@@ -129,14 +129,15 @@ public class CommunityController {
         @ApiImplicitParam(name = "programId", value = "프로그램 id", required = true, paramType = "query")
     })
     @GetMapping("/program")
-    public BaseResponse<CommunitySubjectsDTO> getTotalProgramSubjects(
+    public BaseResponse<CommunitySubjectsListDTO> getTotalProgramSubjects(
         @PageableDefault(size = 10,
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0) Pageable pageable,
         @RequestParam("programId") Long programId) {
 
-        CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
+        CommunitySubjectsListDTO page = communityService.findSingleProgramSubjects(pageable,
+            programId);
         return BaseResponse.success(page);
     }
 
