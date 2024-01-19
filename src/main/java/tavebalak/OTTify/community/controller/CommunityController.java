@@ -5,14 +5,15 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
-import java.io.IOException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,14 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
 import tavebalak.OTTify.community.dto.request.ReplyCommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyCommentEditDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
-import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.service.CommunityService;
 import tavebalak.OTTify.community.service.ReplyService;
 import tavebalak.OTTify.error.exception.NotFoundException;
@@ -45,9 +46,9 @@ public class CommunityController {
 
     @ApiOperation(value = "토론주제 생성", notes = "회원이 작성한 토론내용을 기반으로 생성됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 생성하였습니다.")
-    @PostMapping(value = "/subject")
+    @PostMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> registerSubject(
-        @Valid @RequestBody CommunitySubjectCreateDTO c) throws IOException {
+        @Valid @ModelAttribute CommunitySubjectImageCreateDTO c) {
         communityService.saveSubject(c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }
@@ -55,7 +56,8 @@ public class CommunityController {
     @ApiOperation(value = "토론주제 수정", notes = "회원이 작성한 토론내용을 기반으로 수정됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 수정하였습니다.")
     @PutMapping("/subject")
-    public BaseResponse<String> modifySubject(@Valid @RequestBody CommunitySubjectEditDTO c)
+    public BaseResponse<String> modifySubject(
+        @Valid @ModelAttribute CommunitySubjectImageEditDTO c)
         throws NotFoundException {
         communityService.modifySubject(c);
         return BaseResponse.success("성공적으로 토론주제를 수정하였습니다.");
@@ -108,13 +110,13 @@ public class CommunityController {
         @ApiImplicitParam(name = "size", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/total")
-    public BaseResponse<CommunitySubjectsDTO> getTotalProgramsSubjects(
+    public BaseResponse<CommunitySubjectsListDTO> getTotalProgramsSubjects(
         @PageableDefault(size = 10,
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0
         ) Pageable pageable) {
-        CommunitySubjectsDTO page = communityService.findAllSubjects(pageable);
+        CommunitySubjectsListDTO page = communityService.findAllSubjects(pageable);
         return BaseResponse.success(page);
     }
 
@@ -127,14 +129,15 @@ public class CommunityController {
         @ApiImplicitParam(name = "programId", value = "프로그램 id", required = true, paramType = "query")
     })
     @GetMapping("/program")
-    public BaseResponse<CommunitySubjectsDTO> getTotalProgramSubjects(
+    public BaseResponse<CommunitySubjectsListDTO> getTotalProgramSubjects(
         @PageableDefault(size = 10,
             sort = "createdAt",
             direction = Sort.Direction.DESC,
             page = 0) Pageable pageable,
         @RequestParam("programId") Long programId) {
 
-        CommunitySubjectsDTO page = communityService.findSingleProgramSubjects(pageable, programId);
+        CommunitySubjectsListDTO page = communityService.findSingleProgramSubjects(pageable,
+            programId);
         return BaseResponse.success(page);
     }
 

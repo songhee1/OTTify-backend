@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@ApiModel(value = "CommunityAriclesDTO(토론 주제글 조회)", description = "토론 주제, 글쓴이, 글쓴이 id, 내용, 작성일, 수정일, 댓글 수, 공감 수, 토론 주제 id, 댓글 리스트 내용을 가진 Domain Class")
+@ApiModel(value = "CommunityAriclesDTO(토론 주제글 조회)",
+    description = "토론 주제, 글쓴이, 글쓴이 id, 내용, 작성일, 수정일, 댓글 수, 공감 수, 토론 주제 id, 댓글 리스트, 이미지 url 내용을 가진 Domain Class")
 public class CommunityAriclesDTO {
 
     @ApiModelProperty(value = "토론 주제")
@@ -35,6 +36,8 @@ public class CommunityAriclesDTO {
     private String programTitle;
     @ApiModelProperty(value = "댓글 리스트")
     private List<CommentListsDTO> commentListsDTOList;
+    @ApiModelProperty(value = "이미지 url")
+    private String imageUrl;
 
     @Builder
     public CommunityAriclesDTO(String title,
@@ -47,7 +50,8 @@ public class CommunityAriclesDTO {
         List<CommentListsDTO> commentListsDTOList,
         int likeCount,
         Long subjectId,
-        String programTitle
+        String programTitle,
+        String imageUrl
     ) {
         this.title = title;
         this.writer = writer;
@@ -60,5 +64,6 @@ public class CommunityAriclesDTO {
         this.likeCount = likeCount;
         this.subjectId = subjectId;
         this.programTitle = programTitle;
+        this.imageUrl = imageUrl;
     }
 }

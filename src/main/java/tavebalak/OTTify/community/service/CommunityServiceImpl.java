@@ -8,16 +8,20 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
 import tavebalak.OTTify.community.dto.response.CommentListsDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectEditorDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectImageEditorDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.dto.response.ReplyListsDTO;
@@ -51,9 +55,17 @@ public class CommunityServiceImpl implements CommunityService {
     private final UserRepository userRepository;
     private final LikedCommunityRepository likedCommunityRepository;
     private final LikedReplyRepository likedReplyRepository;
+    private final AWSS3Service awss3Service;
+    private static final String AWS_S3_DISCUSSION_DIR_NAME = "discussion-images";
 
     @Override
-    public Community saveSubject(CommunitySubjectCreateDTO c) {
+    public Community saveSubject(CommunitySubjectImageCreateDTO c) {
+
+        String imageUrl = null;
+        System.out.println(c.getImage());
+        if (!c.getImage().isEmpty()) {
+            imageUrl = awss3Service.upload(c.getImage(), AWS_S3_DISCUSSION_DIR_NAME);
+        }
 
         Program program = isPresent(c);
         Community community = Community.builder()
@@ -61,6 +73,7 @@ public class CommunityServiceImpl implements CommunityService {
             .content(c.getContent())
             .user(getUser())
             .program(program)
+            .imageUrl(imageUrl)
             .build();
 
         return communityRepository.save(community);
@@ -68,7 +81,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     public Community save(CommunitySubjectCreateDTO c) {
-        Program program = isPresent(c);
+        Program program = isPresentNotImage(c);
 
         Community community = Community.builder()
             .title(c.getSubjectName())
@@ -79,17 +92,21 @@ public class CommunityServiceImpl implements CommunityService {
         return communityRepository.save(community);
     }
 
-    private Program isPresent(CommunitySubjectCreateDTO c) {
+    private Program isPresentNotImage(CommunitySubjectCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
-        if (optionalProgram.isPresent()) {
-            return optionalProgram.get();
-        } else {
-            throw new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND);
-        }
+        return optionalProgram.orElseThrow(
+            () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
+    }
+
+
+    private Program isPresent(CommunitySubjectImageCreateDTO c) {
+        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
+        return optionalProgram.orElseThrow(
+            () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
     }
 
     @Override
-    public void modifySubject(CommunitySubjectEditDTO c) {
+    public void modifySubject(CommunitySubjectImageEditDTO c) {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -97,10 +114,23 @@ public class CommunityServiceImpl implements CommunityService {
             throw new BadRequestException(ErrorCode.CAN_NOT_UPDATE_OTHER_SUBJECT_REQUEST);
         }
 
-        CommunitySubjectEditorDTO communitySubjectEditorDTOBuilder = community.toEditor();
-        CommunitySubjectEditorDTO communitySubjectEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentProgram(
-            c.getSubjectName(), c.getContent());
-        community.edit(communitySubjectEditorDTO);
+        CommunitySubjectImageEditorDTO communitySubjectEditorDTOBuilder = community.toImageEdior();
+
+        String imageUrl = null;
+        if (!c.getImage().isEmpty()) {
+            if (community.getImageUrl() != null) {
+                awss3Service.delete(community.getImageUrl());
+            }
+            imageUrl = awss3Service.upload(c.getImage(), AWS_S3_DISCUSSION_DIR_NAME);
+        } else {
+            if (community.getImageUrl() != null) {
+                awss3Service.delete(community.getImageUrl());
+            }
+        }
+
+        CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentImage(
+            c.getSubjectName(), c.getContent(), imageUrl);
+        community.editImage(communitySubjectImageEditorDTO);
     }
 
     public Community modify(CommunitySubjectEditDTO c, User user) {
@@ -128,6 +158,9 @@ public class CommunityServiceImpl implements CommunityService {
             throw new ForbiddenException(ErrorCode.CAN_NOT_DELETE_OTHER_SUBJECT_REQUEST);
         }
         communityRepository.delete(community);
+        if (community.getImageUrl() != null) {
+            awss3Service.delete(community.getImageUrl());
+        }
     }
 
     public void delete(Long subjectId, User user) {
@@ -140,10 +173,10 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
-        Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
-        List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
-            community -> CommunitySubjectsListDTO
+    public CommunitySubjectsListDTO findAllSubjects(Pageable pageable) {
+        Slice<Community> communities = communityRepository.findCommunitiesBy(pageable);
+        List<CommunitySubjectsDTO> listDTO = communities.stream().map(
+            community -> CommunitySubjectsDTO
                 .builder()
                 .createdAt(community.getCreatedAt())
                 .updatedAt(community.getUpdatedAt())
@@ -152,18 +185,19 @@ public class CommunityServiceImpl implements CommunityService {
                 .programId(community.getProgram().getId())
                 .subjectId(community.getId())
                 .likeCount(getLikeSum(community.getId()))
+                .imageUrl(community.getImageUrl())
                 .build()
         ).collect(Collectors.toList());
-        return CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements())
-            .list(listDTO).build();
+        return CommunitySubjectsListDTO.builder().subjectAmount(communities.getNumberOfElements())
+            .list(listDTO).hasNext(communities.hasNext()).build();
     }
 
     @Override
-    public CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId) {
-        Page<Community> communities = communityRepository.findCommunitiesByProgramId(pageable,
+    public CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId) {
+        Slice<Community> communities = communityRepository.findCommunitiesByProgramId(pageable,
             programId);
-        List<CommunitySubjectsListDTO> list = communities.stream().map(
-            community -> CommunitySubjectsListDTO
+        List<CommunitySubjectsDTO> list = communities.stream().map(
+            community -> CommunitySubjectsDTO
                 .builder()
                 .createdAt(community.getCreatedAt())
                 .updatedAt(community.getUpdatedAt())
@@ -171,11 +205,12 @@ public class CommunityServiceImpl implements CommunityService {
                 .nickName(community.getUser().getNickName())
                 .subjectId(community.getId())
                 .programId(programId)
+                .imageUrl(community.getImageUrl())
                 .build()
         ).collect(Collectors.toList());
 
-        return CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements())
-            .list(list).build();
+        return CommunitySubjectsListDTO.builder().subjectAmount(communities.getNumberOfElements())
+            .list(list).hasNext(communities.hasNext()).build();
     }
 
     @Override
@@ -297,6 +332,7 @@ public class CommunityServiceImpl implements CommunityService {
             .likeCount(getLikeSum(community.getId()))
             .subjectId(community.getId())
             .programTitle(community.getProgram().getTitle())
+            .imageUrl(community.getImageUrl())
             .build();
     }
 

@@ -1,28 +1,28 @@
 package tavebalak.OTTify.community.service;
 
 import org.springframework.data.domain.Pageable;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
-import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 
 public interface CommunityService {
 
-    Community saveSubject(CommunitySubjectCreateDTO c);
+    Community saveSubject(CommunitySubjectImageCreateDTO c);
 
-    void modifySubject(CommunitySubjectEditDTO c);
+    void modifySubject(CommunitySubjectImageEditDTO c);
 
     void deleteSubject(Long subjectId);
 
-    CommunitySubjectsDTO findAllSubjects(Pageable pageable);
+    CommunitySubjectsListDTO findAllSubjects(Pageable pageable);
 
     CommunityAriclesDTO getArticleOfASubject(Long subjectId);
 
     CommunitySubjectDTO getSubject(Long subjectId);
 
-    CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId);
+    CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId);
 
     boolean likeSubject(Long subjectId);
 

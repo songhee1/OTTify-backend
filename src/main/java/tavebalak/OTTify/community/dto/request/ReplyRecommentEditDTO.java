@@ -14,16 +14,19 @@ import lombok.NoArgsConstructor;
 public class ReplyRecommentEditDTO {
 
     @NotNull
-    @ApiModelProperty(value = "토론 주제 id")
+    @ApiModelProperty(value = "토론 주제 id", required = true)
     private Long subjectId;
+
     @NotNull
-    @ApiModelProperty(value = "토론 댓글 id")
+    @ApiModelProperty(value = "토론 댓글 id", required = true)
     private Long commentId;
+
     @NotNull
-    @ApiModelProperty(value = "토론 대댓글 id")
+    @ApiModelProperty(value = "토론 대댓글 id", required = true)
     private Long recommentId;
+
     @NotBlank(message = "대댓글 수정시 내용이 비워져있으면 안됩니다.")
-    @ApiModelProperty(value = "토론 대댓글 내용")
+    @ApiModelProperty(value = "토론 대댓글 내용", required = true)
     private String content;
 
     @Builder

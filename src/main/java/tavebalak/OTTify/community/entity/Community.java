@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectEditorDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectImageEditorDTO;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.user.entity.User;
 
@@ -48,21 +49,33 @@ public class Community extends BaseEntity {
     private String imageUrl;
 
     @Builder
-    public Community(Long id, String title, String content, Program program, User user) {
+    public Community(Long id, String title, String content, Program program, User user,
+        String imageUrl) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.program = program;
         this.user = user;
+        this.imageUrl = imageUrl;
     }
 
     public CommunitySubjectEditorDTO toEditor() {
         return new CommunitySubjectEditorDTO(title, content);
     }
 
+    public CommunitySubjectImageEditorDTO toImageEdior() {
+        return new CommunitySubjectImageEditorDTO(title, content, imageUrl);
+    }
+
     public void edit(CommunitySubjectEditorDTO communitySubjectEditorDTO) {
         this.title = communitySubjectEditorDTO.getTitle();
         this.content = communitySubjectEditorDTO.getContent();
+    }
+
+    public void editImage(CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO) {
+        this.title = communitySubjectImageEditorDTO.getTitle();
+        this.content = communitySubjectImageEditorDTO.getContent();
+        this.imageUrl = communitySubjectImageEditorDTO.getImageUrl();
     }
 
     public void setUser(User user) {
