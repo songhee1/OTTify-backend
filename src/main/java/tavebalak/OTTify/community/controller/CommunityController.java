@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -46,7 +45,7 @@ public class CommunityController {
 
     @ApiOperation(value = "토론주제 생성", notes = "회원이 작성한 토론내용을 기반으로 생성됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 생성하였습니다.")
-    @PostMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/subject", consumes = {"multipart/form-data"})
     public BaseResponse<String> registerSubject(
         @Valid @ModelAttribute CommunitySubjectImageCreateDTO c) {
         communityService.saveSubject(c);
@@ -55,7 +54,7 @@ public class CommunityController {
 
     @ApiOperation(value = "토론주제 수정", notes = "회원이 작성한 토론내용을 기반으로 수정됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 수정하였습니다.")
-    @PutMapping("/subject")
+    @PutMapping(value = "/subject", consumes = {"multipart/form-data"})
     public BaseResponse<String> modifySubject(
         @Valid @ModelAttribute CommunitySubjectImageEditDTO c)
         throws NotFoundException {
