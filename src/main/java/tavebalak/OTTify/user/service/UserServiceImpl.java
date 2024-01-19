@@ -220,8 +220,8 @@ public class UserServiceImpl implements UserService {
         checkNicknameDuplication(userId, updateRequestDTO);
         user.changeNickName(updateRequestDTO.getNickName());
 
-        // 프로필 사진이 존재하는 경우 프로필 사진 변경
-        if (!updateRequestDTO.getProfilePhoto().isEmpty()) {
+        // 프로필 사진이 존재하고 유효한 사진인 경우 프로필 사진 변경
+        if (updateRequestDTO.getProfilePhoto() != null && !updateRequestDTO.getProfilePhoto().isEmpty()) {
             // 이전 프로필 사진 S3에서 삭제
             awss3Service.delete(user.getProfilePhoto());
 
