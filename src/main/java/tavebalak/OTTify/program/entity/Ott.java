@@ -6,7 +6,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,12 +21,7 @@ public class Ott {
 
     private String name;
     private String logoPath;
+    private String subscribeLogoPath;
 
     private Long tmDbProviderId;
-
-    @Builder
-    public Ott(String name, String logoPath) {
-        this.name = name;
-        this.logoPath = logoPath;
-    }
 }
