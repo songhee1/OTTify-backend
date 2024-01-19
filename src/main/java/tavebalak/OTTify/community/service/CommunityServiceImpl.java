@@ -56,6 +56,7 @@ public class CommunityServiceImpl implements CommunityService {
     private final LikedCommunityRepository likedCommunityRepository;
     private final LikedReplyRepository likedReplyRepository;
     private final AWSS3Service awss3Service;
+    private static final String AWS_S3_DISCUSSION_DIR_NAME = "discussion-images";
 
     @Override
     public Community saveSubject(CommunitySubjectImageCreateDTO c) {
@@ -63,7 +64,7 @@ public class CommunityServiceImpl implements CommunityService {
         String imageUrl = null;
         System.out.println(c.getImage());
         if (!c.getImage().isEmpty()) {
-            imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
+            imageUrl = awss3Service.upload(c.getImage(), AWS_S3_DISCUSSION_DIR_NAME);
         }
 
         Program program = isPresent(c);
@@ -120,7 +121,7 @@ public class CommunityServiceImpl implements CommunityService {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());
             }
-            imageUrl = awss3Service.upload(c.getImage(), "discussion-images");
+            imageUrl = awss3Service.upload(c.getImage(), AWS_S3_DISCUSSION_DIR_NAME);
         } else {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());
