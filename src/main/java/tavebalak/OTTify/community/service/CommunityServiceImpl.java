@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.common.s3.AWSS3Service;
@@ -173,7 +173,7 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public CommunitySubjectsDTO findAllSubjects(Pageable pageable) {
-        Page<Community> communities = communityRepository.findCommunitiesBy(pageable);
+        Slice<Community> communities = communityRepository.findCommunitiesBy(pageable);
         List<CommunitySubjectsListDTO> listDTO = communities.stream().map(
             community -> CommunitySubjectsListDTO
                 .builder()
@@ -187,13 +187,13 @@ public class CommunityServiceImpl implements CommunityService {
                 .imageUrl(community.getImageUrl())
                 .build()
         ).collect(Collectors.toList());
-        return CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements())
-            .list(listDTO).build();
+        return CommunitySubjectsDTO.builder().subjectAmount(communities.getNumberOfElements())
+            .list(listDTO).hasNext(communities.hasNext()).build();
     }
 
     @Override
     public CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId) {
-        Page<Community> communities = communityRepository.findCommunitiesByProgramId(pageable,
+        Slice<Community> communities = communityRepository.findCommunitiesByProgramId(pageable,
             programId);
         List<CommunitySubjectsListDTO> list = communities.stream().map(
             community -> CommunitySubjectsListDTO
@@ -208,8 +208,8 @@ public class CommunityServiceImpl implements CommunityService {
                 .build()
         ).collect(Collectors.toList());
 
-        return CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements())
-            .list(list).build();
+        return CommunitySubjectsDTO.builder().subjectAmount(communities.getNumberOfElements())
+            .list(list).hasNext(communities.hasNext()).build();
     }
 
     @Override

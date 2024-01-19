@@ -16,10 +16,14 @@ public class CommunitySubjectsDTO {
     private int subjectAmount;
     @ApiModelProperty(value = "토론 주제 리스트")
     private List<CommunitySubjectsListDTO> list;
+    @ApiModelProperty(value = "다음 페이지 여부")
+    private boolean hasNext;
 
     @Builder
-    public CommunitySubjectsDTO(int subjectAmount, List<CommunitySubjectsListDTO> list) {
+    public CommunitySubjectsDTO(int subjectAmount, List<CommunitySubjectsListDTO> list,
+        boolean hasNext) {
         this.subjectAmount = subjectAmount;
         this.list = list;
+        this.hasNext = hasNext;
     }
 }
