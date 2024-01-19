@@ -2,7 +2,6 @@ package tavebalak.OTTify.community.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -26,6 +25,6 @@ public class CommunitySubjectImageEditDTO {
     @ApiModelProperty(value = "토론 내용", required = true)
     private String content;
 
-    @ApiParam(value = "이미지")
+    @ApiModelProperty(value = "이미지")
     private MultipartFile image;
 }
