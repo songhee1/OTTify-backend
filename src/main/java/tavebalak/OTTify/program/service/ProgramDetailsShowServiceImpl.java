@@ -13,7 +13,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.program.dto.programDetails.Response.ProgramDetailResponse;
 import tavebalak.OTTify.program.dto.programDetails.Response.ProgramProviderListResponseDto;
 import tavebalak.OTTify.program.dto.programDetails.Response.ProgramProviderResponseDto;
@@ -25,11 +27,14 @@ import tavebalak.OTTify.program.dto.programDetails.openApiRequest.programDetailR
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.programDetailRequest.OATvDetailsDto;
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.providerDetails.OACountryDetailsDto;
 import tavebalak.OTTify.program.dto.programDetails.openApiRequest.providerDetails.OAProgramProviderDto;
+import tavebalak.OTTify.program.dto.response.UserSpecificRatingResponseDto;
 import tavebalak.OTTify.program.entity.Ott;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.program.repository.ProgramRepository;
+import tavebalak.OTTify.review.repository.ReviewRepository;
+import tavebalak.OTTify.user.entity.User;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,6 +45,8 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
     private final GenreRepository genreRepository;
     private final ProgramRepository programRepository;
     private final OttRepository ottRepository;
+    private final UserGenreRepository userGenreRepository;
+    private final ReviewRepository reviewRepository;
 
 
     @Override
@@ -304,5 +311,30 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
             .streamingSize(streaming.size())
             .build();
 
+    }
+
+    //user 의 first genre 에 맞춘 평점과 User 의 first Genre name을 함꼐 반환합니다.
+
+    @Override
+    public UserSpecificRatingResponseDto showUserSpecificRating(User user, Long programId) {
+        Program program = programRepository.findById(programId)
+            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
+
+        Genre usersFirstGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(user.getId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
+            .getGenre();
+
+        int userSpecificGenreCount = reviewRepository.countByGenreName(usersFirstGenre.getName(),
+            program);
+
+        Double sumRating = reviewRepository.sumReviewRatingByGenreName(usersFirstGenre.getName(),
+            program);
+
+        double userSpecificReviewRatingSum = (sumRating != null) ? sumRating : 0.0;
+
+        double avg =
+            userSpecificGenreCount == 0 ? 0 : userSpecificReviewRatingSum / userSpecificGenreCount;
+
+        return new UserSpecificRatingResponseDto(usersFirstGenre.getName(), avg);
     }
 }

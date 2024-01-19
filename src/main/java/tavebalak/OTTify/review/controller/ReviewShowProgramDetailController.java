@@ -19,16 +19,16 @@ import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
+import tavebalak.OTTify.review.dto.reviewresponse.FourReviewResponseWithCounts;
 import tavebalak.OTTify.review.dto.reviewresponse.ReviewProgramResponseDto;
-import tavebalak.OTTify.review.dto.reviewresponse.ReviewResponseDtoList;
 import tavebalak.OTTify.review.service.ReviewShowProgramDetailService;
 import tavebalak.OTTify.user.entity.User;
 import tavebalak.OTTify.user.repository.UserRepository;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/{programId}")
-@Api(tags = {"프로그램 상세 페이지에서 리뷰 보여주기"})
+@RequestMapping("/api/v1/reviews/{programId}")
+@Api(tags = {"프로그램 상세 페이지에서 리뷰 보여주는 컨트롤러"})
 
 public class ReviewShowProgramDetailController {
 
@@ -49,21 +49,21 @@ public class ReviewShowProgramDetailController {
 
     @ApiOperation(value = "프로그램 페이지의 초기 리뷰 보여주기", notes = "프로그램 페이지의 처음 4개의 리뷰를 보여줍니다")
     @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path")
-    @GetMapping("/normal/reviews/count/4")
+    @GetMapping("/normal/count/4")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<ReviewResponseDtoList> show4ReviewList(
+    public BaseResponse<FourReviewResponseWithCounts> show4ReviewList(
         @PathVariable("programId") Long programId) {
         return BaseResponse.success(reviewShowProgramDetailService.show4Review(programId));
     }
 
     @ApiOperation(value = "전체 리뷰 리스트를 보여주기", notes = "전체 리뷰 리스트를 보여줍니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", required = false, paramType = "query", example = "1"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, defaultValue = "DESC", paramType = "query", example = "Desc"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", required = false, defaultValue = "likeCounts", paramType = "query", example = "createdAt"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", required = false, paramType = "query", example = "5")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
-    @GetMapping("/normal/reviews")
+    @GetMapping("/normals")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<Slice<ReviewProgramResponseDto>> showReviewListALL(
         @PathVariable("programId") Long programId,
@@ -75,11 +75,11 @@ public class ReviewShowProgramDetailController {
             reviewShowProgramDetailService.showReviewList(programId, pageable));
     }
 
-    @ApiOperation(value = "프로그램 페이지의 자신의 취향에 맞는 장르 보여주기", notes = "자신의 취향에 맞는 좋아요 순  처음 4개의 리뷰를 보여줍니다")
+    @ApiOperation(value = "프로그램 페이지의 자신의 취향에 맞는 리뷰 4개 보여주기", notes = "자신의 취향에 맞는 좋아요 순  처음 4개의 리뷰를 보여줍니다")
     @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path", example = "1")
-    @GetMapping("/user/specific/reviews/count/4")
+    @GetMapping("/user/specific/count/4")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<ReviewResponseDtoList> show4UserSpecificReviewList(
+    public BaseResponse<FourReviewResponseWithCounts> show4UserSpecificReviewList(
         @PathVariable("programId") Long programId) {
         User findUser = getUser();
         return BaseResponse.success(
@@ -87,14 +87,14 @@ public class ReviewShowProgramDetailController {
     }
 
 
-    @ApiOperation(value = "사용자의 취향에 맞는 전체 장르 리스트를 보여주기", notes = "전체 장르 리스트를 보여줍니다")
+    @ApiOperation(value = "사용자의 취향에 맞는 전체 리뷰 리스트를 보여주기", notes = "자신의 취향에 맞는 리뷰 리스트를 보여줍니다")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", defaultValue = "0", required = false, paramType = "query", example = "1"),
-        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, defaultValue = "DESC", paramType = "query", example = "Desc"),
-        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", required = false, defaultValue = "likeCounts", paramType = "query", example = "createdAt"),
-        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", defaultValue = "10", required = false, paramType = "query", example = "5")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(likeCounts,createdAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
-    @GetMapping("/user/specific/reviews")
+    @GetMapping("/user/specifics")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<Slice<ReviewProgramResponseDto>> showUserSpecificReviewListALL(
         @PathVariable("programId") Long programId,
@@ -108,17 +108,6 @@ public class ReviewShowProgramDetailController {
                 pageable));
     }
 
-
-    @ApiOperation(value = "자신의 취향에 맞는 사람들의 리뷰의 평균 별점 보여주기", notes = "자신의 취향에 맞는 사람들의 리뷰의 평균 별점 보여줍니다")
-    @ApiImplicitParam(name = "programId", dataType = "long", value = "현재 프로그램의 ID", required = true, paramType = "path")
-    @GetMapping("/user/specific/review/rating")
-    @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<String> showUserSpecificReviewRating(
-        @PathVariable("programId") Long programId) {
-        User findUser = getUser();
-        return BaseResponse.success(
-            reviewShowProgramDetailService.showUserSpecificRating(findUser, programId));
-    }
 
     private User getUser() {
         return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())

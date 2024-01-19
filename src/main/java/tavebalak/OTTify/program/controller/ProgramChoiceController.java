@@ -20,7 +20,7 @@ import tavebalak.OTTify.user.repository.UserRepository;
 
 @RestController
 @RequiredArgsConstructor
-@Api(tags = {"프로그램 좋아요 및 관심없어요 지정"})
+@Api(tags = {"프로그램 좋아요 및 관심없어요 지정 컨트롤러"})
 
 public class ProgramChoiceController {
 

@@ -10,9 +10,11 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.program.dto.response.UserSpecificRatingResponseDto;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.ProgramRepository;
+import tavebalak.OTTify.program.service.ProgramDetailsShowService;
 import tavebalak.OTTify.review.dto.reviewrequest.ReviewSaveDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
@@ -54,11 +56,14 @@ class ReviewShowProgramDetailServiceImplTest {
     @Autowired
     ReviewShowProgramDetailService reviewShowProgramDetailService;
 
+    @Autowired
+    ProgramDetailsShowService programDetailsShowService;
+
     //프로그램 별 장르 별점의 변화와 전체 장르 별점의 변화를 테스트하고
     //user 의 평균 별점 변화를 테스트 합니다.
 
     @Test
-    @Rollback(value = false)
+    @Rollback(value = true)
     @Transactional
     void saveReview() {
         User user = makeUser();
@@ -134,8 +139,10 @@ class ReviewShowProgramDetailServiceImplTest {
 
         Assertions.assertThat(findReview3.getLikeCounts()).isEqualTo(1);
 
-        String avg = reviewShowProgramDetailService.showUserSpecificRating(user, program.getId());
-        Assertions.assertThat(avg).isEqualTo("4.00");
+        UserSpecificRatingResponseDto userSpecificRatingResponseDto = programDetailsShowService.showUserSpecificRating(
+            user, program.getId());
+        Assertions.assertThat(userSpecificRatingResponseDto.getUsersFirstGenreProgramRating())
+            .isEqualTo("4.0");
 
 
     }
