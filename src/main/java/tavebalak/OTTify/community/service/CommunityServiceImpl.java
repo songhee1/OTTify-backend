@@ -93,21 +93,15 @@ public class CommunityServiceImpl implements CommunityService {
 
     private Program isPresentNI(CommunitySubjectCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
-        if (optionalProgram.isPresent()) {
-            return optionalProgram.get();
-        } else {
-            throw new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND);
-        }
+        return optionalProgram.orElseThrow(
+            () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
     }
 
 
     private Program isPresent(CommunitySubjectImageCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
-        if (optionalProgram.isPresent()) {
-            return optionalProgram.get();
-        } else {
-            throw new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND);
-        }
+        return optionalProgram.orElseThrow(
+            () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
     }
 
     @Override
