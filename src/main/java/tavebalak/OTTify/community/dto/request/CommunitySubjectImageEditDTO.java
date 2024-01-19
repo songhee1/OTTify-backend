@@ -11,18 +11,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor
-@ApiModel(value = "CommunitySubjectImageEditDTO(토론주제 수정 정보)", description = "토론주제 id, 토론제목, 토론내용을 가진 Domain Class")
+@ApiModel(value = "CommunitySubjectImageEditDTO(토론주제 수정 정보)", description = "토론주제 id, 토론제목, 토론내용, 이미지 파일 내용을 가진 Domain Class")
 public class CommunitySubjectImageEditDTO {
 
     @NotNull
-    @ApiModelProperty(value = "토론 주제 id")
+    @ApiModelProperty(value = "토론 주제 id", required = true)
     private Long subjectId;
+
     @NotBlank(message = "토론 주제 제목이 비워져 있어서는 안됩니다.")
-    @ApiModelProperty(value = "토론 주제")
+    @ApiModelProperty(value = "토론 주제", required = true)
     private String subjectName;
-    @NotBlank(message = "토론 주제 내용이 비워져 있어서는 안됩니다.")
-    @ApiModelProperty(value = "토론 내용")
+
+    @NotBlank(message = "토론 내용이 비워져 있어서는 안됩니다.")
+    @ApiModelProperty(value = "토론 내용", required = true)
     private String content;
-    @ApiParam(value = "이미지", required = false)
+
+    @ApiParam(value = "이미지")
     private MultipartFile image;
 }
