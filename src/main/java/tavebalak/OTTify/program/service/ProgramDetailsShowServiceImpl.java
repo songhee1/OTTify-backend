@@ -313,7 +313,7 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
     }
 
-    //user 의 first genre 에 맞춘 평점을 보여줍니다. 지금 현재는 컨트롤러에서 사용하고 있지만 나중에 프로그램 상세 페이지에서 같이 넣으려고 합니다
+    //user 의 first genre 에 맞춘 평점과 User 의 first Genre name을 함꼐 반환합니다.
 
     @Override
     public UserSpecificRatingResponseDto showUserSpecificRating(User user, Long programId) {
