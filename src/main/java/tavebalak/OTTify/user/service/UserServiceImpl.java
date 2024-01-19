@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
 import tavebalak.OTTify.community.entity.Community;
@@ -35,7 +36,6 @@ import tavebalak.OTTify.review.entity.ReviewTag;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
-import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
 import tavebalak.OTTify.user.dto.Response.LikedProgramDTO;
 import tavebalak.OTTify.user.dto.Response.LikedProgramListDTO;
 import tavebalak.OTTify.user.dto.Response.UninterestedProgramDTO;
@@ -212,32 +212,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long updateUserProfile(Long userId, UserProfileUpdateDTO updateRequestDTO) {
+    public Long updateUserProfile(Long userId, String nickName, MultipartFile profilePhoto) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
 
-        // 닉네임 중복 여부 검증
-        checkNicknameDuplication(userId, updateRequestDTO);
-        user.changeNickName(updateRequestDTO.getNickName());
+        if (nickName != null) {
+            checkNicknameDuplication(user, nickName);
+            user.changeNickName(nickName);
+        }
 
         // 프로필 사진이 존재하고 유효한 사진인 경우 프로필 사진 변경
-        if (updateRequestDTO.getProfilePhoto() != null && !updateRequestDTO.getProfilePhoto().isEmpty()) {
-            // 이전 프로필 사진 S3에서 삭제
+        if (profilePhoto != null && !profilePhoto.isEmpty()) {
+            // 이전 프로필 사진이 S3에 존재한다면 S3에서 삭제
             awss3Service.delete(user.getProfilePhoto());
 
-            String newPhotoUrl = awss3Service.upload(updateRequestDTO.getProfilePhoto(), "profile-images");
+            String newPhotoUrl = awss3Service.upload(profilePhoto, "profile-images");
             user.changeProfilePhoto(newPhotoUrl);
         }
 
         return userRepository.save(user).getId();
     }
 
-    public void checkNicknameDuplication(Long userId, UserProfileUpdateDTO updateRequestDTO) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
-
-        if (userRepository.existsByNickName(updateRequestDTO.getNickName()) && !Objects.equals(
-            user.getNickName(), updateRequestDTO.getNickName())) {
+    public void checkNicknameDuplication(User user, String nickName) {
+        if (userRepository.existsByNickName(nickName) && !Objects.equals(user.getNickName(), nickName)) {
             throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
