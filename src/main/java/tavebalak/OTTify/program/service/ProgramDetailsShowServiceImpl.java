@@ -320,11 +320,11 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
         Program program = programRepository.findById(programId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
-        Genre usersFirstGenre = userGenreRepository.findByUserAndIsFirst(user, true)
+        Genre usersFirstGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(user.getId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
             .getGenre();
 
-        int userSpecificGenreCount = reviewRepository.countByMyGenreName(usersFirstGenre.getName(),
+        int userSpecificGenreCount = reviewRepository.countByGenreName(usersFirstGenre.getName(),
             program);
 
         Double sumRating = reviewRepository.sumReviewRatingByGenreName(usersFirstGenre.getName(),
