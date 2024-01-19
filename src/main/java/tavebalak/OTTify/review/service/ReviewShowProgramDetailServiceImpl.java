@@ -92,7 +92,7 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
                 program, usersFirstGenre.getName(), PageRequest.of(0, 4)).stream()
             .map(r -> makeReviewDto(r)).collect(Collectors.toList());
 
-        int userSpecificGenreCount = reviewRepository.countByMyGenreName(usersFirstGenre.getName(),
+        int userSpecificGenreCount = reviewRepository.countByGenreName(usersFirstGenre.getName(),
             program);
 
         int leftCount = userSpecificGenreCount - 4 > 0 ? userSpecificGenreCount - 4 : 0;
