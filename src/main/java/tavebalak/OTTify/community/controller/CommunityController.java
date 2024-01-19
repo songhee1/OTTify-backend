@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
-import java.io.IOException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -49,8 +48,7 @@ public class CommunityController {
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 생성하였습니다.")
     @PostMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> registerSubject(
-        @Valid @ModelAttribute CommunitySubjectImageCreateDTO c)
-        throws IOException {
+        @Valid @ModelAttribute CommunitySubjectImageCreateDTO c) {
         communityService.saveSubject(c);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }

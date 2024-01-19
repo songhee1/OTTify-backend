@@ -61,6 +61,7 @@ public class CommunityServiceImpl implements CommunityService {
     public Community saveSubject(CommunitySubjectImageCreateDTO c) {
 
         String imageUrl = null;
+        System.out.println(c.getImage());
         if (!c.getImage().isEmpty()) {
             imageUrl = awss3Service.upload(c.getImage(), "discussion-image");
         }
@@ -189,6 +190,7 @@ public class CommunityServiceImpl implements CommunityService {
                 .programId(community.getProgram().getId())
                 .subjectId(community.getId())
                 .likeCount(getLikeSum(community.getId()))
+                .imageUrl(community.getImageUrl())
                 .build()
         ).collect(Collectors.toList());
         return CommunitySubjectsDTO.builder().subjectAmount((int) communities.getTotalElements())
@@ -208,6 +210,7 @@ public class CommunityServiceImpl implements CommunityService {
                 .nickName(community.getUser().getNickName())
                 .subjectId(community.getId())
                 .programId(programId)
+                .imageUrl(community.getImageUrl())
                 .build()
         ).collect(Collectors.toList());
 
@@ -334,6 +337,7 @@ public class CommunityServiceImpl implements CommunityService {
             .likeCount(getLikeSum(community.getId()))
             .subjectId(community.getId())
             .programTitle(community.getProgram().getTitle())
+            .imageUrl(community.getImageUrl())
             .build();
     }
 

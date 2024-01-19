@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode
-@ApiModel(value = "CommunitySubjectsListDTO(토론주제글 구성 정보)", description = "생성일, 수정일, 토론주제, 글쓴이, 프로그램 id, 토론주제 id, 공감 수 내용을 가진 Domain Class")
+@ApiModel(value = "CommunitySubjectsListDTO(토론주제글 구성 정보)", description = "생성일, 수정일, 토론주제, 글쓴이, 프로그램 id, 토론주제 id, 공감 수, 이미지 url 내용을 가진 Domain Class")
 public class CommunitySubjectsListDTO {
 
     @ApiModelProperty(value = "글 생성일")
@@ -28,6 +28,8 @@ public class CommunitySubjectsListDTO {
     private Long subjectId;
     @ApiModelProperty(value = "공감 수")
     private int likeCount;
+    @ApiModelProperty(value = "이미지 url")
+    private String imageUrl;
 
     @Builder
     public CommunitySubjectsListDTO(LocalDateTime createdAt,
@@ -36,7 +38,8 @@ public class CommunitySubjectsListDTO {
         String nickName,
         Long programId,
         Long subjectId,
-        int likeCount
+        int likeCount,
+        String imageUrl
     ) {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -45,5 +48,6 @@ public class CommunitySubjectsListDTO {
         this.programId = programId;
         this.subjectId = subjectId;
         this.likeCount = likeCount;
+        this.imageUrl = imageUrl;
     }
 }

@@ -21,7 +21,7 @@ public class CommunitySubjectImageCreateDTO {
     @NotBlank
     @ApiParam(value = "토론 내용", required = true)
     private String content;
-    @ApiParam(value = "이미지", required = false)
+    @ApiParam(value = "이미지", required = true)
     private MultipartFile image;
 
 }
