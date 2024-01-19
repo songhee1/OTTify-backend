@@ -37,7 +37,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         @Param("genre") String genre, Pageable pageable);
 
     @Query("select count(r) from Review r where r.genre=:genre and r.program=:program")
-    int countByMyGenreName(@Param("genre") String genre, @Param("program") Program program);
+    int countByGenreName(@Param("genre") String genre, @Param("program") Program program);
 
     @Query("select sum(r.rating) from Review r where r.genre=:genre and r.program=:program")
     Double sumReviewRatingByGenreName(@Param("genre") String genreName,
