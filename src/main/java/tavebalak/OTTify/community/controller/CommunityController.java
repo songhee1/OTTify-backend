@@ -10,19 +10,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.request.ReplyCommentCreateDTO;
 import tavebalak.OTTify.community.dto.request.ReplyCommentEditDTO;
 import tavebalak.OTTify.community.dto.request.ReplyRecommentCreateDTO;
@@ -45,20 +47,22 @@ public class CommunityController {
 
     @ApiOperation(value = "토론주제 생성", notes = "회원이 작성한 토론내용을 기반으로 생성됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 생성하였습니다.")
-    @PostMapping(value = "/subject", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> registerSubject(
-        @Valid @ModelAttribute CommunitySubjectImageCreateDTO c) {
-        communityService.saveSubject(c);
+        @Valid @RequestPart(value = "dto") CommunitySubjectCreateDTO c,
+        @RequestPart(value = "file", required = false) MultipartFile image) {
+        communityService.saveSubject(c, image);
         return BaseResponse.success("성공적으로 토론주제를 생성하였습니다.");
     }
 
     @ApiOperation(value = "토론주제 수정", notes = "회원이 작성한 토론내용을 기반으로 수정됩니다.")
     @ApiResponse(code = 200, message = "성공적으로 토론주제를 수정하였습니다.")
-    @PutMapping(value = "/subject", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/subject", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> modifySubject(
-        @Valid @ModelAttribute CommunitySubjectImageEditDTO c)
+        @Valid @RequestPart(value = "dto") CommunitySubjectEditDTO c,
+        @RequestPart(value = "file", required = false) MultipartFile image)
         throws NotFoundException {
-        communityService.modifySubject(c);
+        communityService.modifySubject(c, image);
         return BaseResponse.success("성공적으로 토론주제를 수정하였습니다.");
     }
 

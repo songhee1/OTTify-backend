@@ -74,8 +74,6 @@ public class CommunityServiceTest {
             .programId(1L)
             .subjectName("사랑과 우정의 따뜻한 이야기 '응답하라 1988'")
             .content("'응답하라 1988'은 사랑과 우정의 따뜻한 이야기를 그려냈습니다. 이 드라마가 많은 사랑을 받은 이유에 대해 토론해보세요!")
-            .programTitle("스쿼드 게임")
-            .posterPath("https://image.tmdb.org/t/p/w500/8Pjd1MiCbY8s9Zrxbb8SvCpY7s7.jpg")
             .build();
     }
 
@@ -85,8 +83,6 @@ public class CommunityServiceTest {
             .id(1L)
             .title(dto.getSubjectName())
             .program(Program.testBuilder().id(dto.getProgramId())
-                .posterPath(dto.getPosterPath())
-                .title(dto.getProgramTitle())
                 .build())
             .content(dto.getContent())
             .build();
@@ -119,9 +115,6 @@ public class CommunityServiceTest {
             .subjectId(1L)
             .subjectName("test-subject")
             .content("test-content")
-            .programId(5L)
-            .programTitle("test-program-title")
-            .posterPath("test-poster")
             .build();
     }
 
