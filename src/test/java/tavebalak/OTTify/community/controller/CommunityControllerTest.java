@@ -248,7 +248,7 @@ class CommunityControllerTest {
         when(communityService.save(any())).thenReturn(response);
         Community savedCommunity = communityService.save(registerSubjectRequest());
 
-        doNothing().when(communityService).modifySubject(any());
+        doNothing().when(communityService).modifySubject(any(), any());
 
         CommunitySubjectEditDTO editDTO = CommunitySubjectEditDTO.builder()
             .subjectId(savedCommunity.getId())

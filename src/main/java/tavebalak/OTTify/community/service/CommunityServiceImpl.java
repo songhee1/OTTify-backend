@@ -12,11 +12,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
 import tavebalak.OTTify.community.dto.response.CommentListsDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
@@ -59,12 +58,11 @@ public class CommunityServiceImpl implements CommunityService {
     private static final String AWS_S3_DISCUSSION_DIR_NAME = "discussion-images";
 
     @Override
-    public Community saveSubject(CommunitySubjectImageCreateDTO c) {
+    public Community saveSubject(CommunitySubjectCreateDTO c, MultipartFile image) {
 
         String imageUrl = null;
-        System.out.println(c.getImage());
-        if (!c.getImage().isEmpty()) {
-            imageUrl = awss3Service.upload(c.getImage(), AWS_S3_DISCUSSION_DIR_NAME);
+        if (image != null) {
+            imageUrl = awss3Service.upload(image, AWS_S3_DISCUSSION_DIR_NAME);
         }
 
         Program program = isPresent(c);
@@ -81,7 +79,7 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     public Community save(CommunitySubjectCreateDTO c) {
-        Program program = isPresentNotImage(c);
+        Program program = isPresent(c);
 
         Community community = Community.builder()
             .title(c.getSubjectName())
@@ -92,21 +90,15 @@ public class CommunityServiceImpl implements CommunityService {
         return communityRepository.save(community);
     }
 
-    private Program isPresentNotImage(CommunitySubjectCreateDTO c) {
+    private Program isPresent(CommunitySubjectCreateDTO c) {
         Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
         return optionalProgram.orElseThrow(
             () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
     }
 
-
-    private Program isPresent(CommunitySubjectImageCreateDTO c) {
-        Optional<Program> optionalProgram = programRepository.findById(c.getProgramId());
-        return optionalProgram.orElseThrow(
-            () -> new NotFoundException(ErrorCode.SAVED_PROGRAM_NOT_FOUND));
-    }
 
     @Override
-    public void modifySubject(CommunitySubjectImageEditDTO c) {
+    public void modifySubject(CommunitySubjectEditDTO c, MultipartFile image) {
         Community community = communityRepository.findById(c.getSubjectId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
@@ -117,11 +109,11 @@ public class CommunityServiceImpl implements CommunityService {
         CommunitySubjectImageEditorDTO communitySubjectEditorDTOBuilder = community.toImageEdior();
 
         String imageUrl = null;
-        if (!c.getImage().isEmpty()) {
+        if (image != null) {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());
             }
-            imageUrl = awss3Service.upload(c.getImage(), AWS_S3_DISCUSSION_DIR_NAME);
+            imageUrl = awss3Service.upload(image, AWS_S3_DISCUSSION_DIR_NAME);
         } else {
             if (community.getImageUrl() != null) {
                 awss3Service.delete(community.getImageUrl());

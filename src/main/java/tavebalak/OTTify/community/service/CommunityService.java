@@ -1,8 +1,9 @@
 package tavebalak.OTTify.community.service;
 
 import org.springframework.data.domain.Pageable;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageCreateDTO;
-import tavebalak.OTTify.community.dto.request.CommunitySubjectImageEditDTO;
+import org.springframework.web.multipart.MultipartFile;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
+import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
@@ -10,9 +11,9 @@ import tavebalak.OTTify.community.entity.Community;
 
 public interface CommunityService {
 
-    Community saveSubject(CommunitySubjectImageCreateDTO c);
+    Community saveSubject(CommunitySubjectCreateDTO c, MultipartFile image);
 
-    void modifySubject(CommunitySubjectImageEditDTO c);
+    void modifySubject(CommunitySubjectEditDTO c, MultipartFile image);
 
     void deleteSubject(Long subjectId);
 
