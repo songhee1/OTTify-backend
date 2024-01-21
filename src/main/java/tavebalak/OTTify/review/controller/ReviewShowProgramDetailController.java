@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,7 @@ import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.review.dto.reviewresponse.FourReviewResponseWithCounts;
+import tavebalak.OTTify.review.dto.reviewresponse.ReviewListWithSliceInfoDto;
 import tavebalak.OTTify.review.dto.reviewresponse.ReviewProgramResponseDto;
 import tavebalak.OTTify.review.service.ReviewShowProgramDetailService;
 import tavebalak.OTTify.user.entity.User;
@@ -65,7 +65,7 @@ public class ReviewShowProgramDetailController {
     })
     @GetMapping("/normals")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Slice<ReviewProgramResponseDto>> showReviewListALL(
+    public BaseResponse<ReviewListWithSliceInfoDto> showReviewListALL(
         @PathVariable("programId") Long programId,
         @PageableDefault(size = 10,
             sort = "likeCounts",
@@ -96,7 +96,7 @@ public class ReviewShowProgramDetailController {
     })
     @GetMapping("/user/specifics")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<Slice<ReviewProgramResponseDto>> showUserSpecificReviewListALL(
+    public BaseResponse<ReviewListWithSliceInfoDto> showUserSpecificReviewListALL(
         @PathVariable("programId") Long programId,
         @PageableDefault(size = 10,
             sort = "likeCounts",
