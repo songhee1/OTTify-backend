@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class FourReviewResponseWithCounts {
 
-    List<ReviewProgramResponseDto> reviewProgramResponseDtoList = new ArrayList<>();
+    private List<ReviewProgramResponseDto> reviewProgramResponseDtoList = new ArrayList<>();
     private int leftReviewCounts;
 
     public FourReviewResponseWithCounts(List<ReviewProgramResponseDto> reviewProgramResponseDtoList,
