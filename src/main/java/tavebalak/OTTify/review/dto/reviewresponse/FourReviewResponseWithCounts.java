@@ -1,16 +1,18 @@
 package tavebalak.OTTify.review.dto.reviewresponse;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 
 @Getter
 public class FourReviewResponseWithCounts {
 
-    private ReviewResponseDtoList reviewResponseDtoList;
+    List<ReviewProgramResponseDto> reviewProgramResponseDtoList = new ArrayList<>();
     private int leftReviewCounts;
 
-    public FourReviewResponseWithCounts(ReviewResponseDtoList reviewResponseDtoList,
+    public FourReviewResponseWithCounts(List<ReviewProgramResponseDto> reviewProgramResponseDtoList,
         int leftReviewCounts) {
-        this.reviewResponseDtoList = reviewResponseDtoList;
+        this.reviewProgramResponseDtoList = reviewProgramResponseDtoList;
         this.leftReviewCounts = leftReviewCounts;
     }
 }
