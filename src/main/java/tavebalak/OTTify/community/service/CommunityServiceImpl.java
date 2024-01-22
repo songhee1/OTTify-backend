@@ -178,10 +178,17 @@ public class CommunityServiceImpl implements CommunityService {
                 .subjectId(community.getId())
                 .likeCount(getLikeSum(community.getId()))
                 .imageUrl(community.getImageUrl())
+                .programName(community.getProgram().getTitle())
+                .content(community.getContent())
+                .commentCount(findCountOfComments(community.getId()))
                 .build()
         ).collect(Collectors.toList());
         return CommunitySubjectsListDTO.builder().subjectAmount(communities.getNumberOfElements())
             .list(listDTO).hasNext(communities.hasNext()).build();
+    }
+
+    private int findCountOfComments(Long communityId) {
+        return replyRepository.findByCommunityId(communityId).size();
     }
 
     @Override
@@ -198,6 +205,9 @@ public class CommunityServiceImpl implements CommunityService {
                 .subjectId(community.getId())
                 .programId(programId)
                 .imageUrl(community.getImageUrl())
+                .programName(community.getProgram().getTitle())
+                .content(community.getContent())
+                .commentCount(findCountOfComments(community.getId()))
                 .build()
         ).collect(Collectors.toList());
 
@@ -284,11 +294,12 @@ public class CommunityServiceImpl implements CommunityService {
 
         List<Reply> replyList = replyRepository.findByCommunityIdAndParentId(community.getId(),
             null);
-
+        int totalReplyCount = replyList.size();
         List<CommentListsDTO> commentListsDTOList = new ArrayList<>();
         for (Reply comment : replyList) {
             List<Reply> byCommunityIdAndParentId = replyRepository.findByCommunityIdAndParentId(
                 community.getId(), comment.getId());
+            totalReplyCount += byCommunityIdAndParentId.size();
             List<ReplyListsDTO> collect = byCommunityIdAndParentId.stream().map(listone ->
                 ReplyListsDTO.builder()
                     .recommentId(listone.getId())
@@ -318,7 +329,7 @@ public class CommunityServiceImpl implements CommunityService {
             .content(community.getContent())
             .createdAt(community.getCreatedAt())
             .updatedAt(community.getUpdatedAt())
-            .commentAmount(replyList.size())
+            .commentAmount(totalReplyCount)
             .commentListsDTOList(commentListsDTOList)
             .userId(getUser().getId())
             .likeCount(getLikeSum(community.getId()))
