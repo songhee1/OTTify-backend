@@ -22,7 +22,7 @@ public class LatestReviewsDTO {
     @ApiModelProperty(value = "프로그램 제목")
     private String programTitle;
     @ApiModelProperty(value = "글쓴이 평균 별점")
-    private double userRating;
+    private double reviewRating;
     @ApiModelProperty(value = "프로필 사진")
     private String profilePhoto;
     @ApiModelProperty(value = "공감 수")
@@ -30,12 +30,12 @@ public class LatestReviewsDTO {
 
     @Builder
     public LatestReviewsDTO(Long reviewId, String nickName, String content, String programTitle,
-        double userRating, String profilePhoto, int likeCount) {
+        double reviewRating, String profilePhoto, int likeCount) {
         this.reviewId = reviewId;
         this.nickName = nickName;
         this.content = content;
         this.programTitle = programTitle;
-        this.userRating = userRating;
+        this.reviewRating = reviewRating;
         this.profilePhoto = profilePhoto;
         this.likeCount = likeCount;
     }
