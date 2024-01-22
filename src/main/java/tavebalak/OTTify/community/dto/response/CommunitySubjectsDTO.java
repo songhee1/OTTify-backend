@@ -30,6 +30,12 @@ public class CommunitySubjectsDTO {
     private int likeCount;
     @ApiModelProperty(value = "이미지 url")
     private String imageUrl;
+    @ApiModelProperty(value = "해당 영화 이름")
+    private String programName;
+    @ApiModelProperty(value = "토론 내용")
+    private String content;
+    @ApiModelProperty(value = "댓글 수")
+    private int commentCount;
 
     @Builder
     public CommunitySubjectsDTO(LocalDateTime createdAt,
@@ -39,7 +45,10 @@ public class CommunitySubjectsDTO {
         Long programId,
         Long subjectId,
         int likeCount,
-        String imageUrl
+        String imageUrl,
+        String programName,
+        String content,
+        int commentCount
     ) {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -49,5 +58,8 @@ public class CommunitySubjectsDTO {
         this.subjectId = subjectId;
         this.likeCount = likeCount;
         this.imageUrl = imageUrl;
+        this.programName = programName;
+        this.content = content;
+        this.commentCount = commentCount;
     }
 }
