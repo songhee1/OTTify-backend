@@ -16,8 +16,8 @@ import tavebalak.OTTify.genre.repository.UserGenreRepository;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
 import tavebalak.OTTify.review.dto.reviewresponse.FourReviewResponseWithCounts;
+import tavebalak.OTTify.review.dto.reviewresponse.ReviewListWithSliceInfoDto;
 import tavebalak.OTTify.review.dto.reviewresponse.ReviewProgramResponseDto;
-import tavebalak.OTTify.review.dto.reviewresponse.ReviewResponseDtoList;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
@@ -60,19 +60,21 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
         int leftReviewCounts = program.getReviewCount() - 4 > 0 ? program.getReviewCount() - 4 : 0;
 
         return new FourReviewResponseWithCounts(
-            new ReviewResponseDtoList(reviewProgramResponseDtoList), leftReviewCounts);
+            reviewProgramResponseDtoList, leftReviewCounts);
     }
 
     //모든 장르 상관 없는 리뷰 리스트를 Slice로  보여줍니다.
 
     @Override
-    public Slice<ReviewProgramResponseDto> showReviewList(Long programId, Pageable pageable) {
+    public ReviewListWithSliceInfoDto showReviewList(Long programId, Pageable pageable) {
         Program program = programRepository.findById(programId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
-        Slice<Review> reviewSlice = reviewRepository.findByProgram(program, pageable);
+        Slice<ReviewProgramResponseDto> reviewProgramResponseDtoSlice = reviewRepository.findByProgram(
+            program, pageable).map(r -> makeReviewDto(r));
 
-        return reviewSlice.map(r -> makeReviewDto(r));
+        return new ReviewListWithSliceInfoDto(reviewProgramResponseDtoSlice.getContent(),
+            reviewProgramResponseDtoSlice.hasNext());
     }
 
     //상세페이지에서 4개의 장르 상관있는 User 에 특화된 좋아요 순 리뷰를 보여줍니다.
@@ -98,14 +100,14 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
         int leftCount = userSpecificGenreCount - 4 > 0 ? userSpecificGenreCount - 4 : 0;
 
         return new FourReviewResponseWithCounts(
-            new ReviewResponseDtoList(reviewProgramResponseDtoList), leftCount);
+            reviewProgramResponseDtoList, leftCount);
 
     }
 
     // 유저의 first genre 를 기반으로 리뷰리스트를 slice로 보여줍니다
 
     @Override
-    public Slice<ReviewProgramResponseDto> showUserSpecificReviewList(User user, Long programId,
+    public ReviewListWithSliceInfoDto showUserSpecificReviewList(User user, Long programId,
         Pageable pageable) {
 
         Program program = programRepository.findById(programId)
@@ -115,10 +117,12 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
             .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
             .getGenre();
 
-        Slice<Review> reviewSlice = reviewRepository.findUserSpecificByProgramAndGenre(program,
-            usersFirstGenre.getName(), pageable);
+        Slice<ReviewProgramResponseDto> reviewProgramResponseDtoSlice = reviewRepository.findUserSpecificByProgramAndGenre(
+            program,
+            usersFirstGenre.getName(), pageable).map(r -> makeReviewDto(r));
 
-        return reviewSlice.map(r -> makeReviewDto(r));
+        return new ReviewListWithSliceInfoDto(reviewProgramResponseDtoSlice.getContent(),
+            reviewProgramResponseDtoSlice.hasNext());
 
     }
 

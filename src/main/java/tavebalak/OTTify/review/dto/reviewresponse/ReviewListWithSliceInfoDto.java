@@ -5,14 +5,15 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class FourReviewResponseWithCounts {
+public class ReviewListWithSliceInfoDto {
 
     private List<ReviewProgramResponseDto> reviewProgramResponseDtoList = new ArrayList<>();
-    private int leftReviewCounts;
+    private boolean hasNextPage;
 
-    public FourReviewResponseWithCounts(List<ReviewProgramResponseDto> reviewProgramResponseDtoList,
-        int leftReviewCounts) {
+
+    public ReviewListWithSliceInfoDto(List<ReviewProgramResponseDto> reviewProgramResponseDtoList,
+        boolean hasNextPage) {
         this.reviewProgramResponseDtoList = reviewProgramResponseDtoList;
-        this.leftReviewCounts = leftReviewCounts;
+        this.hasNextPage = hasNextPage;
     }
 }
