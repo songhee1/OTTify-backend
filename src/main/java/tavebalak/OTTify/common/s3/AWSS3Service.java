@@ -43,8 +43,9 @@ public class AWSS3Service {
             objectMetadata.setContentLength(bytes.length);
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
 
-            amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, byteArrayInputStream, objectMetadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+            amazonS3Client.putObject(
+                new PutObjectRequest(bucket, fileName, byteArrayInputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
         } catch (IOException e) {
             throw new InternalServerErrorException(ErrorCode.UPLOAD_FAILED);
         }
@@ -64,5 +65,17 @@ public class AWSS3Service {
         } catch (Exception e) {
             throw new InternalServerErrorException(ErrorCode.FILE_DELETE_FAILED);
         }
+    }
+
+    public boolean isExist(String fileRoute) {
+        boolean isObjectExist = false;
+        int index = fileRoute.indexOf(url);
+        String fileName = fileRoute.substring(index + url.length() + 1);
+        try {
+            isObjectExist = amazonS3Client.doesObjectExist(bucket, fileName);
+        } catch (Exception e) {
+            throw new InternalServerErrorException(ErrorCode.FILE_NOT_FOUND);
+        }
+        return isObjectExist;
     }
 }

@@ -108,21 +108,31 @@ public class CommunityServiceImpl implements CommunityService {
 
         CommunitySubjectImageEditorDTO communitySubjectEditorDTOBuilder = community.toImageEdior();
 
-        String imageUrl = null;
-        if (image != null) {
-            if (community.getImageUrl() != null) {
-                awss3Service.delete(community.getImageUrl());
+        String communityImgUrl = null;
+        String imgPath = c.getImageUrl();
+
+        if (!"".equals(imgPath) && imgPath != null) {
+            if (awss3Service.isExist(imgPath)) {
+                communityImgUrl = imgPath;
             }
-            imageUrl = awss3Service.upload(image, AWS_S3_DISCUSSION_DIR_NAME);
         } else {
-            if (community.getImageUrl() != null) {
-                awss3Service.delete(community.getImageUrl());
+            if (image != null && !image.isEmpty()) {
+                deleteCommunityS3Image(community);
+                communityImgUrl = awss3Service.upload(image, AWS_S3_DISCUSSION_DIR_NAME);
+            } else {
+                deleteCommunityS3Image(community);
             }
         }
 
         CommunitySubjectImageEditorDTO communitySubjectImageEditorDTO = communitySubjectEditorDTOBuilder.changeTitleContentImage(
-            c.getSubjectName(), c.getContent(), imageUrl);
+            c.getSubjectName(), c.getContent(), communityImgUrl);
         community.editImage(communitySubjectImageEditorDTO);
+    }
+
+    public void deleteCommunityS3Image(Community community) {
+        if (community.getImageUrl() != null) {
+            awss3Service.delete(community.getImageUrl());
+        }
     }
 
     public Community modify(CommunitySubjectEditDTO c, User user) {
