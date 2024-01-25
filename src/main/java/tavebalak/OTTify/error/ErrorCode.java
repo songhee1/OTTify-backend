@@ -49,6 +49,7 @@ public enum ErrorCode {
     SAVED_PROGRAM_NOT_FOUND("저장된 프로그램 정보를 찾을 수 없습니다."),
     COMMUNITY_NOT_FOUND("토론주제를 찾을 수 없습니다."),
     REPLY_NOT_FOUND("댓글을 찾을 수 없습니다."),
+    FILE_NOT_FOUND("이미지 파일을 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed
