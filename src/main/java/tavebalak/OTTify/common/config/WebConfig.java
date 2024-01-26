@@ -13,6 +13,9 @@ public class WebConfig implements WebMvcConfigurer {
             .allowedOrigins("http://ottify.kro.kr:3000", "http://ottify.kro.kr",
                 "http://localhost:3000") // cors를 허용할 도메인. 제한을 모두 해제하려면 "**"
             .allowedMethods("GET", "POST", "PUT", "PATCH",
-                "DELETE", "OPTIONS"); // cors를 허용할 method + DELETE 추가
+                "DELETE", "OPTIONS") // cors를 허용할 method + DELETE 추가
+            .allowedHeaders("Content-Type", "Authorization")
+            .allowCredentials(true);
+
     }
 }
