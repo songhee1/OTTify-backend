@@ -19,6 +19,8 @@ public class CommentListsDTO {
     private String content;
     @ApiModelProperty(value = "글쓴이")
     private String nickName;
+    @ApiModelProperty(value = "프로필 사진")
+    private String profileUrl;
     @ApiModelProperty(value = "작성일")
     private LocalDateTime createdAt;
     @ApiModelProperty(value = "글쓴이 id")
@@ -31,6 +33,7 @@ public class CommentListsDTO {
     @Builder
     public CommentListsDTO(String content,
         String nickName,
+        String profileUrl,
         LocalDateTime createdAt,
         Long userId,
         List<ReplyListsDTO> replyListsDTOList,
@@ -39,6 +42,7 @@ public class CommentListsDTO {
     ) {
         this.content = content;
         this.nickName = nickName;
+        this.profileUrl = profileUrl;
         this.createdAt = createdAt;
         this.userId = userId;
         this.replyListsDTOList = replyListsDTOList;
