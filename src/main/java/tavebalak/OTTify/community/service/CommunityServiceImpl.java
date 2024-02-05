@@ -324,6 +324,7 @@ public class CommunityServiceImpl implements CommunityService {
             CommentListsDTO build = CommentListsDTO.builder()
                 .content(comment.getContent())
                 .nickName(comment.getUser().getNickName())
+                .profileUrl(comment.getUser().getProfilePhoto())
                 .createdAt(comment.getCreatedAt())
                 .userId(comment.getUser().getId())
                 .replyListsDTOList(collect)
