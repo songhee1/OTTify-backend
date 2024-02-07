@@ -154,8 +154,8 @@ public class CommunityServiceImpl implements CommunityService {
         return community;
     }
 
-    @CacheEvict(cacheNames = "discussionSubject", key = "#subjectId")
     @Override
+    @CacheEvict(cacheNames = "discussionSubject", key = "#subjectId")
     public void deleteSubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
@@ -299,8 +299,8 @@ public class CommunityServiceImpl implements CommunityService {
         return flag.get();
     }
 
-    @Cacheable(cacheNames = "discussionSubject", key = "#subjectId")
     @Override
+    @Cacheable(cacheNames = "discussionSubject", key = "#subjectId")
     public CommunityAriclesDTO getArticleOfASubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId).orElseThrow(
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
