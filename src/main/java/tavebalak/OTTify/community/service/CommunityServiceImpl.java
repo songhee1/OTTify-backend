@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -152,6 +154,7 @@ public class CommunityServiceImpl implements CommunityService {
         return community;
     }
 
+    @CacheEvict(cacheNames = "discussionSubject", key = "#subjectId")
     @Override
     public void deleteSubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId)
@@ -296,6 +299,7 @@ public class CommunityServiceImpl implements CommunityService {
         return flag.get();
     }
 
+    @Cacheable(cacheNames = "discussionSubject", key = "#subjectId")
     @Override
     public CommunityAriclesDTO getArticleOfASubject(Long subjectId) {
         Community community = communityRepository.findById(subjectId).orElseThrow(
