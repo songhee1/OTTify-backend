@@ -317,18 +317,16 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
     @Override
     public UserSpecificRatingResponseDto showUserSpecificRating(User user, Long programId) {
-        Program program = programRepository.findById(programId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
         Genre usersFirstGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(user.getId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
             .getGenre();
 
         int userSpecificGenreCount = reviewRepository.countByGenreName(usersFirstGenre.getName(),
-            program);
+            programId);
 
         Double sumRating = reviewRepository.sumReviewRatingByGenreName(usersFirstGenre.getName(),
-            program);
+            programId);
 
         double userSpecificReviewRatingSum = (sumRating != null) ? sumRating : 0.0;
 
