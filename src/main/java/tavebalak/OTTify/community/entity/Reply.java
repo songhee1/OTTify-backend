@@ -90,6 +90,8 @@ public class Reply extends BaseEntity {
     }
 
     public void decreaseLikeCount() {
-        this.likeCount--;
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
     }
 }

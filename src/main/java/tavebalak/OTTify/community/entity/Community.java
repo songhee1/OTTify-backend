@@ -95,7 +95,9 @@ public class Community extends BaseEntity {
     }
 
     public void decreaseLikeCount() {
-        this.likeCount--;
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
     }
 
     public void increaseCommentCount() {
@@ -103,6 +105,8 @@ public class Community extends BaseEntity {
     }
 
     public void decreaseCommentCount() {
-        this.commentCount--;
+        if (this.commentCount > 0) {
+            this.commentCount--;
+        }
     }
 }
