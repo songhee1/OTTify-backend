@@ -32,7 +32,6 @@ import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
 import tavebalak.OTTify.review.entity.Review;
-import tavebalak.OTTify.review.entity.ReviewTag;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
@@ -299,8 +298,9 @@ public class UserServiceImpl implements UserService {
         reviewList.stream()
             .forEach(r -> {
                 // 리뷰에 달린 reviewTags 가져오기
-                List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(
-                    r.getId());
+                List<String> reviewTagNames = r.getReviewReviewTags().stream()
+                    .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
+                    .collect(Collectors.toList());
 
                 reviewDtoList.add(
                     MyReviewDto.builder()
@@ -310,7 +310,7 @@ public class UserServiceImpl implements UserService {
                         .userNickName(r.getUser().getNickName())
                         .programTitle(r.getProgram().getTitle())
                         .reviewRating(r.getRating())
-                        .reviewTags(reviewTags)
+                        .reviewTagNames(reviewTagNames)
                         .content(r.getContent())
                         .likeCnt(r.getLikeCounts())
                         .build()
@@ -328,8 +328,9 @@ public class UserServiceImpl implements UserService {
         reviewList.stream()
             .forEach(r -> {
                 // 리뷰에 달린 reviewTags 가져오기
-                List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(
-                    r.getId());
+                List<String> reviewTagNames = r.getReviewReviewTags().stream()
+                    .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
+                    .collect(Collectors.toList());
 
                 reviewDtoList.add(
                     MyReviewDto.builder()
@@ -339,7 +340,7 @@ public class UserServiceImpl implements UserService {
                         .userNickName(r.getUser().getNickName())
                         .programTitle(r.getProgram().getTitle())
                         .reviewRating(r.getRating())
-                        .reviewTags(reviewTags)
+                        .reviewTagNames(reviewTagNames)
                         .content(r.getContent())
                         .likeCnt(r.getLikeCounts())
                         .build()
