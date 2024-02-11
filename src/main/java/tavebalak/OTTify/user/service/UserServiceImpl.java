@@ -22,12 +22,14 @@ import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.genre.dto.GenreDTO;
 import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
@@ -86,13 +88,14 @@ public class UserServiceImpl implements UserService {
     private static final double RATING_FIVE = 5.0;
 
     @Override
-    public UserProfileDTO getUserProfile(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+    public UserProfileDTO getUserProfile() {
+        User user = getUser();
+        Long userId = user.getId();
 
         // 1순위 & 2순위 장르 가져오기
         UserGenre firstUserGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
+
         GenreDTO firstGenre = new GenreDTO(firstUserGenre);
 
         List<GenreDTO> secondGenre = userGenreRepository.find2ndGenreByUserIdFetchJoin(userId)
@@ -178,9 +181,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserOttListDTO getUserOTT(Long userId) {
-        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId)
-            .stream()
+    public UserOttListDTO getUserOTT() {
+        User user = getUser();
+        Long userId = user.getId();
+
+        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
             .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
             .collect(Collectors.toList());
         return UserOttListDTO.builder()
@@ -191,9 +196,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+    public void update1stGenre(GenreUpdateDTO updateRequestDTO) {
+        User user = getUser();
+        Long userId = user.getId();
+
         UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
+
         Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
@@ -202,7 +211,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+    public void update2ndGenre(GenreUpdateDTO updateRequestDTO) {
+        User user = getUser();
+        Long userId = user.getId();
+
         // req로 들어온 id 값이 유효한 장르 id인지 확인
         Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
@@ -214,17 +226,16 @@ public class UserServiceImpl implements UserService {
                 () -> userGenreRepository.save(
                     UserGenre.builder()
                         .genre(genre)
-                        .user(userRepository.findById(userId)
-                            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)))
+                        .user(user)
                         .build())
             );
     }
 
     @Override
     @Transactional
-    public Long updateUserProfile(Long userId, String nickName, MultipartFile profilePhoto) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+    public void updateUserProfile(String nickName, MultipartFile profilePhoto) {
+        User user = getUser();
 
         if (nickName != null) {
             checkNicknameDuplication(user, nickName);
@@ -240,7 +251,7 @@ public class UserServiceImpl implements UserService {
             user.changeProfilePhoto(newPhotoUrl);
         }
 
-        return userRepository.save(user).getId();
+        userRepository.save(user);
     }
 
     public void checkNicknameDuplication(User user, String nickName) {
@@ -251,9 +262,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long updateUserOTT(Long userId, UserOttUpdateDTO updateRequestDTO) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+    public void updateUserOTT(UserOttUpdateDTO updateRequestDTO) {
+        User user = getUser();
+        Long userId = user.getId();
 
         // 이전에 구독 중이던 ott 리스트
         List<Long> preSubscribingOttList = userSubscribingOttRepository.findByUserIdFetchJoin(
@@ -297,12 +308,13 @@ public class UserServiceImpl implements UserService {
                     userSubscribingOttRepository.save(subscribingOTT);
                 });
         }
-
-        return userId;
     }
 
     @Override
-    public List<MyReviewDto> getMyReview(Long userId, Pageable pageable) {
+    public List<MyReviewDto> getMyReview(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
+
         Slice<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable);
 
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
@@ -332,7 +344,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<MyReviewDto> getLikedReview(Long userId, Pageable pageable) {
+    public List<MyReviewDto> getLikedReview(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
+
         Slice<Review> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable);
 
         List<MyReviewDto> reviewDtoList = new ArrayList<>();
@@ -362,7 +377,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<MyDiscussionDto> getHostedDiscussion(Long userId, Pageable pageable) {
+    public List<MyDiscussionDto> getHostedDiscussion(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
+
         Slice<Community> discussionList = communityRepository.findByUserId(userId, pageable);
 
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
@@ -389,9 +407,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<MyDiscussionDto> getParticipatedDiscussion(Long userId, Pageable pageable) {
-        Slice<Community> discussionList = replyRepository.findAllCommunityByUserId(userId,
-            pageable);
+    public List<MyDiscussionDto> getParticipatedDiscussion(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
+
+        Slice<Community> discussionList = replyRepository.findAllCommunityByUserId(userId, pageable);
 
         List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
         discussionList.stream()
@@ -414,5 +434,10 @@ public class UserServiceImpl implements UserService {
             });
 
         return discussionDtoList;
+    }
+
+    private User getUser() {
+        return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())
+            .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED));
     }
 }
