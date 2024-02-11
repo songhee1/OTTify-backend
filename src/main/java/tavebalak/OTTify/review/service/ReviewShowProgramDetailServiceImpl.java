@@ -37,10 +37,9 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
     //내가 작성한 리뷰를 조회합니다.
     @Override
     public ReviewProgramResponseDto showMyReview(User user, Long programId) {
-        Program program = programRepository.findById(programId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
-        return reviewRepository.findByProgramAndUser(program, user).map(this::makeReviewDto)
+        return reviewRepository.findByProgramIdAndUserId(programId, user.getId())
+            .map(this::makeReviewDto)
             .orElse(null);
 
     }
@@ -53,8 +52,8 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
         Program program = programRepository.findById(programId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
-        List<ReviewProgramResponseDto> reviewProgramResponseDtoList = reviewRepository.findTop4ByProgramOrderByLikeCountsDesc(
-            program).stream().map(this::makeReviewDto).collect(
+        List<ReviewProgramResponseDto> reviewProgramResponseDtoList = reviewRepository.findTop4ByProgramOrderByLikeCountsDescWithFetchUser(
+            programId, PageRequest.of(0, 4)).stream().map(this::makeReviewDto).collect(
             Collectors.toList());
 
         int leftReviewCounts = program.getReviewCount() - 4 > 0 ? program.getReviewCount() - 4 : 0;
@@ -67,11 +66,9 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
 
     @Override
     public ReviewListWithSliceInfoDto showReviewList(Long programId, Pageable pageable) {
-        Program program = programRepository.findById(programId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
-        Slice<ReviewProgramResponseDto> reviewProgramResponseDtoSlice = reviewRepository.findByProgram(
-            program, pageable).map(r -> makeReviewDto(r));
+        Slice<ReviewProgramResponseDto> reviewProgramResponseDtoSlice = reviewRepository.findByProgramWithFetchUser(
+            programId, pageable).map(r -> makeReviewDto(r));
 
         return new ReviewListWithSliceInfoDto(reviewProgramResponseDtoSlice.getContent(),
             reviewProgramResponseDtoSlice.hasNext());
@@ -83,19 +80,16 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
 
     public FourReviewResponseWithCounts show4UserSpecificReviewList(User user, Long programId) {
 
-        Program program = programRepository.findById(programId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
-
-        Genre usersFirstGenre = userGenreRepository.findByUserAndIsFirst(user, true)
+        Genre usersFirstGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(user.getId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
             .getGenre();
 
-        List<ReviewProgramResponseDto> reviewProgramResponseDtoList = reviewRepository.findUserSpecific4ByProgramAndGenreOrderByLikeNumberDesc(
-                program, usersFirstGenre.getName(), PageRequest.of(0, 4)).stream()
+        List<ReviewProgramResponseDto> reviewProgramResponseDtoList = reviewRepository.findUserSpecific4ByProgramAndGenreOrderByLikeNumberDescWithFetchUser(
+                programId, usersFirstGenre.getName(), PageRequest.of(0, 4)).stream()
             .map(r -> makeReviewDto(r)).collect(Collectors.toList());
 
         int userSpecificGenreCount = reviewRepository.countByGenreName(usersFirstGenre.getName(),
-            program);
+            programId);
 
         int leftCount = userSpecificGenreCount - 4 > 0 ? userSpecificGenreCount - 4 : 0;
 
@@ -110,15 +104,12 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
     public ReviewListWithSliceInfoDto showUserSpecificReviewList(User user, Long programId,
         Pageable pageable) {
 
-        Program program = programRepository.findById(programId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
-
-        Genre usersFirstGenre = userGenreRepository.findByUserAndIsFirst(user, true)
+        Genre usersFirstGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(user.getId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND))
             .getGenre();
 
-        Slice<ReviewProgramResponseDto> reviewProgramResponseDtoSlice = reviewRepository.findUserSpecificByProgramAndGenre(
-            program,
+        Slice<ReviewProgramResponseDto> reviewProgramResponseDtoSlice = reviewRepository.findUserSpecificByProgramAndGenreWithFetchUser(
+            programId,
             usersFirstGenre.getName(), pageable).map(r -> makeReviewDto(r));
 
         return new ReviewListWithSliceInfoDto(reviewProgramResponseDtoSlice.getContent(),
@@ -130,10 +121,9 @@ public class ReviewShowProgramDetailServiceImpl implements ReviewShowProgramDeta
 
     private ReviewProgramResponseDto makeReviewDto(Review review) {
 
-        List<String> reviewTagNames = reviewReviewTagRepository.findByReviewWithReviewTagFetch(
-                review.getId())
-            .stream().map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
-            .collect(Collectors.toList());
+        List<String> reviewTagNames = review.getReviewReviewTags().stream()
+            .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName()).collect(
+                Collectors.toList());
 
         ReviewProgramResponseDto reviewProgramResponseDto = ReviewProgramResponseDto.builder()
             .reviewTagNames(reviewTagNames)
