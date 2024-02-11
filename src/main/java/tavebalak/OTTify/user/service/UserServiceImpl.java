@@ -75,6 +75,17 @@ public class UserServiceImpl implements UserService {
     private final ReplyRepository replyRepository;
     private final AWSS3Service awss3Service;
 
+    private static final double RATING_ZERO_DOT_FIVE = 0.5;
+    private static final double RATING_ONE = 1.0;
+    private static final double RATING_ONE_DOT_FIVE = 1.5;
+    private static final double RATING_TWO = 2.0;
+    private static final double RATING_TWO_DOT_FIVE = 2.5;
+    private static final double RATING_THREE = 3.0;
+    private static final double RATING_THREE_DOT_FIVE = 3.5;
+    private static final double RATING_FOUR = 4.0;
+    private static final double RATING_FOUR_DOT_FIVE = 4.5;
+    private static final double RATING_FIVE = 5.0;
+
     @Override
     public UserProfileDTO getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -93,7 +104,7 @@ public class UserServiceImpl implements UserService {
         // 별점 리스트 가져오기
         HashMap<Double, Integer> ratingList = new HashMap<Double, Integer>();
         ArrayList<Double> ratingSet = new ArrayList<>(
-            Arrays.asList(0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0));
+            Arrays.asList(RATING_ZERO_DOT_FIVE, RATING_ONE, RATING_ONE_DOT_FIVE, RATING_TWO, RATING_TWO_DOT_FIVE, RATING_THREE, RATING_THREE_DOT_FIVE, RATING_FOUR, RATING_FOUR_DOT_FIVE, RATING_FIVE));
 
         List<Double> reviewRatingList = new ArrayList<>();
         reviewRepository.findByUserId(userId).stream()
@@ -110,16 +121,16 @@ public class UserServiceImpl implements UserService {
 
         UserReviewRatingListDTO userReviewRatingListDTO = UserReviewRatingListDTO.builder()
             .totalCnt(reviewRatingList.size())
-            .pointFiveCnt(ratingList.get(0.5))
-            .oneCnt(ratingList.get(1.0))
-            .oneDotFiveCnt(ratingList.get(1.5))
-            .twoCnt(ratingList.get(2.0))
-            .twoDotFiveCnt(ratingList.get(2.5))
-            .threeCnt(ratingList.get(3.0))
-            .threeDotFiveCnt(ratingList.get(3.5))
-            .fourCnt(ratingList.get(4.0))
-            .fourDotFiveCnt(ratingList.get(4.5))
-            .fiveCnt(ratingList.get(5.0))
+            .pointFiveCnt(ratingList.get(RATING_ZERO_DOT_FIVE))
+            .oneCnt(ratingList.get(RATING_ONE))
+            .oneDotFiveCnt(ratingList.get(RATING_ONE_DOT_FIVE))
+            .twoCnt(ratingList.get(RATING_TWO))
+            .twoDotFiveCnt(ratingList.get(RATING_TWO_DOT_FIVE))
+            .threeCnt(ratingList.get(RATING_THREE))
+            .threeDotFiveCnt(ratingList.get(RATING_THREE_DOT_FIVE))
+            .fourCnt(ratingList.get(RATING_FOUR))
+            .fourDotFiveCnt(ratingList.get(RATING_FOUR_DOT_FIVE))
+            .fiveCnt(ratingList.get(RATING_FIVE))
             .build();
 
         // OTT 리스트 가져오기
