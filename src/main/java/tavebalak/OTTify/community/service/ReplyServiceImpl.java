@@ -23,6 +23,7 @@ import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.user.entity.User;
+import tavebalak.OTTify.user.repository.LikedReplyRepository;
 import tavebalak.OTTify.user.repository.UserRepository;
 
 @Service
@@ -34,6 +35,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final CommunityRepository communityRepository;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
+    private final LikedReplyRepository likedReplyRepository;
 
     @Override
     public Reply saveComment(ReplyCommentCreateDTO c) {
@@ -125,19 +127,14 @@ public class ReplyServiceImpl implements ReplyService {
         if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
-
+        likedReplyRepository.deleteAllByReply(savedReply);
         replyRepository.delete(savedReply);
 
     }
 
     @Override
-    public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) {
-        communityRepository.findById(subjectId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
-        );
-        replyRepository.findById(commentId).orElseThrow(
-            () -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND)
-        );
+    public void deleteRecomment(Long recommentId) {
+
         Reply savedReply = replyRepository.findById(recommentId).orElseThrow(
             () -> new NotFoundException(ErrorCode.REPLY_NOT_FOUND)
         );
@@ -145,7 +142,7 @@ public class ReplyServiceImpl implements ReplyService {
         if (!Objects.equals(savedReply.getUser().getId(), getUser().getId())) {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
-
+        likedReplyRepository.deleteAllByReply(savedReply);
         replyRepository.delete(savedReply);
     }
 
