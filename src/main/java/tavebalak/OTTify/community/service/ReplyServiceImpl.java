@@ -41,6 +41,8 @@ public class ReplyServiceImpl implements ReplyService {
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
+        community.increaseCommentCount();
+
         return replyRepository.save(Reply.builder()
             .community(community)
             .content(c.getComment())
@@ -56,15 +58,19 @@ public class ReplyServiceImpl implements ReplyService {
             throw new NotFoundException(ErrorCode.REPLY_NOT_FOUND);
         }
 
+        Community community = communityRepository.findById(c.getSubjectId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
         Reply reply = replyRepository.save(Reply.builder()
-            .community(communityRepository.findById(c.getSubjectId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)))
+            .community(community)
             .content(c.getContent())
             .user(getUser())
             .build());
 
         Reply parentReply = replyRepository.findById(c.getCommentId()).get();
         parentReply.addReply(reply);
+
+        community.increaseCommentCount();
     }
 
     @Override
@@ -114,7 +120,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     @Override
     public void deleteComment(Long subjectId, Long commentId) {
-        communityRepository.findById(subjectId).orElseThrow(
+        Community community = communityRepository.findById(subjectId).orElseThrow(
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
@@ -127,12 +133,12 @@ public class ReplyServiceImpl implements ReplyService {
         }
 
         replyRepository.delete(savedReply);
-
+        community.decreaseCommentCount();
     }
 
     @Override
     public void deleteRecomment(Long subjectId, Long commentId, Long recommentId) {
-        communityRepository.findById(subjectId).orElseThrow(
+        Community community = communityRepository.findById(subjectId).orElseThrow(
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
         replyRepository.findById(commentId).orElseThrow(
@@ -147,6 +153,7 @@ public class ReplyServiceImpl implements ReplyService {
         }
 
         replyRepository.delete(savedReply);
+        community.decreaseCommentCount();
     }
 
     @Override
