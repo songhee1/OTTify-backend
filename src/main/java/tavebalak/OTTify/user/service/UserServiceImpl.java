@@ -315,32 +315,10 @@ public class UserServiceImpl implements UserService {
         User user = getUser();
         Long userId = user.getId();
 
-        Slice<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable);
+        Slice<MyReviewDto> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable)
+            .map(r -> createReviewDto(r));
 
-        List<MyReviewDto> reviewDtoList = new ArrayList<>();
-        reviewList.stream()
-            .forEach(r -> {
-                // 리뷰에 달린 reviewTags 가져오기
-                List<String> reviewTagNames = r.getReviewReviewTags().stream()
-                    .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
-                    .collect(Collectors.toList());
-
-                reviewDtoList.add(
-                    MyReviewDto.builder()
-                        .reviewId(r.getId())
-                        .createdDate(r.getCreatedAt())
-                        .userProfilePhoto(r.getUser().getProfilePhoto())
-                        .userNickName(r.getUser().getNickName())
-                        .programTitle(r.getProgram().getTitle())
-                        .reviewRating(r.getRating())
-                        .reviewTagNames(reviewTagNames)
-                        .content(r.getContent())
-                        .likeCnt(r.getLikeCounts())
-                        .build()
-                );
-            });
-
-        return new ReviewListWithSliceInfoDTO(reviewDtoList, reviewList.isLast());
+        return new ReviewListWithSliceInfoDTO(reviewList.getContent(), reviewList.isLast());
     }
 
     @Override
@@ -348,32 +326,10 @@ public class UserServiceImpl implements UserService {
         User user = getUser();
         Long userId = user.getId();
 
-        Slice<Review> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable);
+        Slice<MyReviewDto> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable)
+            .map(r -> createReviewDto(r));
 
-        List<MyReviewDto> reviewDtoList = new ArrayList<>();
-        reviewList.stream()
-            .forEach(r -> {
-                // 리뷰에 달린 reviewTags 가져오기
-                List<String> reviewTagNames = r.getReviewReviewTags().stream()
-                    .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
-                    .collect(Collectors.toList());
-
-                reviewDtoList.add(
-                    MyReviewDto.builder()
-                        .reviewId(r.getId())
-                        .createdDate(r.getCreatedAt())
-                        .userProfilePhoto(r.getUser().getProfilePhoto())
-                        .userNickName(r.getUser().getNickName())
-                        .programTitle(r.getProgram().getTitle())
-                        .reviewRating(r.getRating())
-                        .reviewTagNames(reviewTagNames)
-                        .content(r.getContent())
-                        .likeCnt(r.getLikeCounts())
-                        .build()
-                );
-            });
-
-        return new ReviewListWithSliceInfoDTO(reviewDtoList, reviewList.isLast());
+        return new ReviewListWithSliceInfoDTO(reviewList.getContent(), reviewList.isLast());
     }
 
     @Override
@@ -381,29 +337,10 @@ public class UserServiceImpl implements UserService {
         User user = getUser();
         Long userId = user.getId();
 
-        Slice<Community> discussionList = communityRepository.findByUserId(userId, pageable);
+        Slice<MyDiscussionDto> discussionList = communityRepository.findByUserId(userId, pageable)
+            .map(d -> createDiscussionDto(d));
 
-        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
-        discussionList.stream()
-            .forEach(d -> {
-                int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
-                int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
-
-                discussionDtoList.add(
-                    MyDiscussionDto.builder()
-                        .discussionId(d.getId())
-                        .createdDate(d.getCreatedAt())
-                        .programTitle(d.getProgram().getTitle())
-                        .discussionTitle(d.getTitle())
-                        .content(d.getContent())
-                        .imgUrl(d.getImageUrl())
-                        .likeCnt(likeCnt)
-                        .replyCnt(replyCnt)
-                        .build()
-                );
-            });
-
-        return new CommunityListWithSliceInfoDTO(discussionDtoList, discussionList.isLast());
+        return new CommunityListWithSliceInfoDTO(discussionList.getContent(), discussionList.isLast());
     }
 
     @Override
@@ -411,29 +348,45 @@ public class UserServiceImpl implements UserService {
         User user = getUser();
         Long userId = user.getId();
 
-        Slice<Community> discussionList = replyRepository.findAllCommunityByUserId(userId, pageable);
+        Slice<MyDiscussionDto> discussionList = replyRepository.findAllCommunityByUserId(userId, pageable)
+            .map(d -> createDiscussionDto(d));
 
-        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
-        discussionList.stream()
-            .forEach(d -> {
-                int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
-                int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+        return new CommunityListWithSliceInfoDTO(discussionList.getContent(), discussionList.isLast());
+    }
 
-                discussionDtoList.add(
-                    MyDiscussionDto.builder()
-                        .discussionId(d.getId())
-                        .createdDate(d.getCreatedAt())
-                        .programTitle(d.getProgram().getTitle())
-                        .discussionTitle(d.getTitle())
-                        .content(d.getContent())
-                        .imgUrl(d.getImageUrl())
-                        .likeCnt(likeCnt)
-                        .replyCnt(replyCnt)
-                        .build()
-                );
-            });
+    private MyDiscussionDto createDiscussionDto(Community d) {
+        int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+        int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
 
-        return new CommunityListWithSliceInfoDTO(discussionDtoList, discussionList.isLast());
+        return MyDiscussionDto.builder()
+            .discussionId(d.getId())
+            .createdDate(d.getCreatedAt())
+            .programTitle(d.getProgram().getTitle())
+            .discussionTitle(d.getTitle())
+            .content(d.getContent())
+            .imgUrl(d.getImageUrl())
+            .likeCnt(likeCnt)
+            .replyCnt(replyCnt)
+            .build();
+    }
+
+    private MyReviewDto createReviewDto(Review r) {
+        // 리뷰에 달린 reviewTags 가져오기
+        List<String> reviewTagNames = r.getReviewReviewTags().stream()
+            .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
+            .collect(Collectors.toList());
+
+        return MyReviewDto.builder()
+            .reviewId(r.getId())
+            .createdDate(r.getCreatedAt())
+            .userProfilePhoto(r.getUser().getProfilePhoto())
+            .userNickName(r.getUser().getNickName())
+            .programTitle(r.getProgram().getTitle())
+            .reviewRating(r.getRating())
+            .reviewTagNames(reviewTagNames)
+            .content(r.getContent())
+            .likeCnt(r.getLikeCounts())
+            .build();
     }
 
     private User getUser() {
