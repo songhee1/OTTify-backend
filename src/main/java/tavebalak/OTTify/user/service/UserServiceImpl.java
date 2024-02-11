@@ -35,10 +35,11 @@ import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
-import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.CommunityListWithSliceInfoDTO;
 import tavebalak.OTTify.user.dto.Response.LikedProgramDTO;
 import tavebalak.OTTify.user.dto.Response.LikedProgramListDTO;
+import tavebalak.OTTify.user.dto.Response.ReviewListWithSliceInfoDTO;
 import tavebalak.OTTify.user.dto.Response.UninterestedProgramDTO;
 import tavebalak.OTTify.user.dto.Response.UninterestedProgramListDTO;
 import tavebalak.OTTify.user.dto.Response.UserOttDTO;
@@ -65,7 +66,6 @@ public class UserServiceImpl implements UserService {
     private final UserSubscribingOttRepository userSubscribingOttRepository;
     private final OttRepository ottRepository;
     private final ReviewRepository reviewRepository;
-    private final ReviewReviewTagRepository reviewReviewTagRepository;
     private final LikedProgramRepository likedProgramRepository;
     private final LikedReviewRepository likedReviewRepository;
     private final LikedCommunityRepository likedCommunityRepository;
@@ -311,7 +311,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<MyReviewDto> getMyReview(Pageable pageable) {
+    public ReviewListWithSliceInfoDTO getMyReview(Pageable pageable) {
         User user = getUser();
         Long userId = user.getId();
 
@@ -340,11 +340,11 @@ public class UserServiceImpl implements UserService {
                 );
             });
 
-        return reviewDtoList;
+        return new ReviewListWithSliceInfoDTO(reviewDtoList, reviewList.isLast());
     }
 
     @Override
-    public List<MyReviewDto> getLikedReview(Pageable pageable) {
+    public ReviewListWithSliceInfoDTO getLikedReview(Pageable pageable) {
         User user = getUser();
         Long userId = user.getId();
 
@@ -373,11 +373,11 @@ public class UserServiceImpl implements UserService {
                 );
             });
 
-        return reviewDtoList;
+        return new ReviewListWithSliceInfoDTO(reviewDtoList, reviewList.isLast());
     }
 
     @Override
-    public List<MyDiscussionDto> getHostedDiscussion(Pageable pageable) {
+    public CommunityListWithSliceInfoDTO getHostedDiscussion(Pageable pageable) {
         User user = getUser();
         Long userId = user.getId();
 
@@ -403,11 +403,11 @@ public class UserServiceImpl implements UserService {
                 );
             });
 
-        return discussionDtoList;
+        return new CommunityListWithSliceInfoDTO(discussionDtoList, discussionList.isLast());
     }
 
     @Override
-    public List<MyDiscussionDto> getParticipatedDiscussion(Pageable pageable) {
+    public CommunityListWithSliceInfoDTO getParticipatedDiscussion(Pageable pageable) {
         User user = getUser();
         Long userId = user.getId();
 
@@ -433,7 +433,7 @@ public class UserServiceImpl implements UserService {
                 );
             });
 
-        return discussionDtoList;
+        return new CommunityListWithSliceInfoDTO(discussionDtoList, discussionList.isLast());
     }
 
     private User getUser() {
