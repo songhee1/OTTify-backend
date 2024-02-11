@@ -100,7 +100,7 @@ public class UserController {
     @GetMapping("/reviews")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<ReviewListWithSliceInfoDTO> getMyReview(@PageableDefault(
-        size = 5,
+        size = 10,
         sort = "createdAt",
         direction = Sort.Direction.DESC,
         page = 0) Pageable pageable) {
@@ -115,7 +115,7 @@ public class UserController {
     @GetMapping("/likedReviews")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<ReviewListWithSliceInfoDTO> getLikedReview(@PageableDefault(
-        size = 5,
+        size = 10,
         page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getLikedReview(pageable));
     }
@@ -130,7 +130,7 @@ public class UserController {
     @GetMapping("/discussion/hosting")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<CommunityListWithSliceInfoDTO> getHostedDiscussion(@PageableDefault(
-        size = 5,
+        size = 10,
         sort = "createdAt",
         direction = Sort.Direction.DESC,
         page = 0) Pageable pageable) {
@@ -145,7 +145,7 @@ public class UserController {
     @GetMapping("/discussion/participating")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<CommunityListWithSliceInfoDTO> getParticipatedDiscussion(@PageableDefault(
-        size = 5,
+        size = 10,
         page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getParticipatedDiscussion(pageable));
     }
