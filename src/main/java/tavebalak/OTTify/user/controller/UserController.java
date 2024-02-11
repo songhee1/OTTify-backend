@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,7 +42,7 @@ public class UserController {
     private final UserService userService;
 
     @ApiOperation(value = "프로필 조회 api", notes = "유저 프로필(닉네임, 프로필 사진)을 조회합니다.")
-    @GetMapping("/")
+    @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<UserProfileDTO> getUserProfile() {
         return BaseResponse.success(userService.getUserProfile());
@@ -57,14 +56,11 @@ public class UserController {
     }
 
     @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다. ⚠️ Content-Type를 multipart/form-data로 설정하고 파라미터 별로 MediaType을 설정해 주세요.")
-    @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 프로필이 업데이트 되었습니다.")
     @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse updateUserProfile(@PathVariable("userId") Long userId,
-        @RequestParam(required = false) final String nickName,
-        @RequestPart(required = false) final MultipartFile profilePhoto) {
-        userService.updateUserProfile(userId, nickName, profilePhoto);
+    public BaseResponse updateUserProfile(@RequestParam(required = false) final String nickName, @RequestPart(required = false) final MultipartFile profilePhoto) {
+        userService.updateUserProfile(nickName, profilePhoto);
         return BaseResponse.success("성공적으로 프로필이 업데이트 되었습니다.");
     }
 
@@ -97,18 +93,18 @@ public class UserController {
 
     @ApiOperation(value = "작성 리뷰 조회 api", notes = "유저가 작성한 리뷰를 조회합니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
-            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
-            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/reviews")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<List<MyReviewDto>> getMyReview(@PageableDefault(
-            size = 5,
-            sort = "createdAt",
-            direction = Sort.Direction.DESC,
-            page = 0) Pageable pageable) {
+        size = 5,
+        sort = "createdAt",
+        direction = Sort.Direction.DESC,
+        page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getMyReview(pageable));
     }
 
@@ -120,8 +116,8 @@ public class UserController {
     @GetMapping("/likedReviews")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<List<MyReviewDto>> getLikedReview(@PageableDefault(
-            size = 5,
-            page = 0) Pageable pageable) {
+        size = 5,
+        page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getLikedReview(pageable));
     }
 
@@ -135,10 +131,10 @@ public class UserController {
     @GetMapping("/discussion/hosting")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PageableDefault(
-            size = 5,
-            sort = "createdAt",
-            direction = Sort.Direction.DESC,
-            page = 0) Pageable pageable) {
+        size = 5,
+        sort = "createdAt",
+        direction = Sort.Direction.DESC,
+        page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getHostedDiscussion(pageable));
     }
 
@@ -150,8 +146,8 @@ public class UserController {
     @GetMapping("/discussion/participating")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PageableDefault(
-            size = 5,
-            page = 0) Pageable pageable) {
+        size = 5,
+        page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getParticipatedDiscussion(pageable));
     }
 }

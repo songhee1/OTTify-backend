@@ -28,8 +28,8 @@ import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
-import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
         // 1순위 & 2순위 장르 가져오기
         UserGenre firstUserGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
 
         GenreDTO firstGenre = new GenreDTO(firstUserGenre);
 
@@ -186,8 +186,8 @@ public class UserServiceImpl implements UserService {
         Long userId = user.getId();
 
         List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
-                .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
-                .collect(Collectors.toList());
+            .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
+            .collect(Collectors.toList());
         return UserOttListDTO.builder()
             .totalCnt(userOttDTOList.size())
             .ottList(userOttDTOList)
@@ -201,7 +201,7 @@ public class UserServiceImpl implements UserService {
         Long userId = user.getId();
 
         UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
 
         Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
@@ -224,17 +224,17 @@ public class UserServiceImpl implements UserService {
             .ifPresentOrElse(
                 ug -> userGenreRepository.delete(ug),
                 () -> userGenreRepository.save(
-                        UserGenre.builder()
-                                .genre(genre)
-                                .user(user)
-                                .build())
-        );
+                    UserGenre.builder()
+                        .genre(genre)
+                        .user(user)
+                        .build())
+            );
     }
 
     @Override
     @Transactional
 
-    public Long updateUserProfile(String nickName, MultipartFile profilePhoto) {
+    public void updateUserProfile(String nickName, MultipartFile profilePhoto) {
         User user = getUser();
 
         if (nickName != null) {
@@ -262,7 +262,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUserOTT(List<UserOttUpdateDTO> updateRequestDTO) {
+    public void updateUserOTT(UserOttUpdateDTO updateRequestDTO) {
         User user = getUser();
         Long userId = user.getId();
 
@@ -438,6 +438,6 @@ public class UserServiceImpl implements UserService {
 
     private User getUser() {
         return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())
-                .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED));
+            .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED));
     }
 }
