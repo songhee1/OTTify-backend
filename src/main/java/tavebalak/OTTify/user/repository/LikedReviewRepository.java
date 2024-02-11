@@ -19,6 +19,6 @@ public interface LikedReviewRepository extends JpaRepository<LikedReview, Long> 
     boolean existsByUserIdAndReviewId(Long userId, Long reviewId);
 //    List<LikedReview> findByReviewId(Long reviewId);
 
-    @Query("select lr.review from LikedReview lr where lr.user.id =:userId order by lr.review.createdAt")
+    @Query("select lr.review from LikedReview lr join fetch lr.review.program where lr.user.id =:userId order by lr.review.createdAt")
     Slice<Review> findReviewByUserId(@Param("userId") Long userId, Pageable pageable);
 }

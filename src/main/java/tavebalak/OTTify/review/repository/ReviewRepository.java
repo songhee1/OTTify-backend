@@ -14,6 +14,7 @@ import tavebalak.OTTify.user.entity.User;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    @Query("select r from Review r join fetch r.program where r.user.id =:userId")
     Slice<Review> findByUserIdOrderByCreatedAt(Long userId, Pageable pageable);
 
     boolean existsByProgramAndUser(Program program, User user);
