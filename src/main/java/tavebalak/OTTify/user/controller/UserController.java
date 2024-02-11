@@ -1,25 +1,37 @@
 package tavebalak.OTTify.user.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.user.service.UserService;
-import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
-import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
-import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
-import tavebalak.OTTify.user.dto.Request.UserProfileUpdateDTO;
-import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import tavebalak.OTTify.common.BaseResponse;
 import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
+import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
-
-import java.util.List;
+import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
+import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
+import tavebalak.OTTify.user.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,12 +56,15 @@ public class UserController {
         return BaseResponse.success(userService.getUserOTT());
     }
 
-    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다.")
+    @ApiOperation(value = "프로필 수정 api", notes = "유저 프로필(닉네임, 프로필 사진)을 수정합니다. ⚠️ Content-Type를 multipart/form-data로 설정하고 파라미터 별로 MediaType을 설정해 주세요.")
+    @ApiImplicitParam(name = "userId", dataType = "long", value = "유저 id", required = true, paramType = "path")
     @ApiResponse(code = 200, message = "성공적으로 프로필이 업데이트 되었습니다.")
-    @PatchMapping("/profile")
+    @PatchMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse updateUserProfile(@Validated @RequestBody UserProfileUpdateDTO updateRequestDTO) {
-        userService.updateUserProfile(updateRequestDTO);
+    public BaseResponse updateUserProfile(@PathVariable("userId") Long userId,
+        @RequestParam(required = false) final String nickName,
+        @RequestPart(required = false) final MultipartFile profilePhoto) {
+        userService.updateUserProfile(userId, nickName, profilePhoto);
         return BaseResponse.success("성공적으로 프로필이 업데이트 되었습니다.");
     }
 
@@ -57,7 +72,7 @@ public class UserController {
     @ApiResponse(code = 200, message = "성공적으로 구독 중인 OTT가 업데이트 되었습니다.")
     @PatchMapping("/otts")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse updateUserOTT(@RequestBody List<UserOttUpdateDTO> updateRequestDTO) {
+    public BaseResponse updateUserOTT(@RequestBody UserOttUpdateDTO updateRequestDTO) {
         userService.updateUserOTT(updateRequestDTO);
         return BaseResponse.success("성공적으로 구독 중인 OTT가 업데이트 되었습니다.");
     }
@@ -82,10 +97,10 @@ public class UserController {
 
     @ApiOperation(value = "작성 리뷰 조회 api", notes = "유저가 작성한 리뷰를 조회합니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/reviews")
     @ResponseStatus(HttpStatus.OK)
@@ -99,8 +114,8 @@ public class UserController {
 
     @ApiOperation(value = "좋아요한 리뷰 조회 api", notes = "유저가 좋아요한 리뷰를 조회합니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/likedReviews")
     @ResponseStatus(HttpStatus.OK)
@@ -112,10 +127,10 @@ public class UserController {
 
     @ApiOperation(value = "주최한 토론 조회 api", notes = "유저가 주최한 토론을 조회합니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "direction", dataType = "String", value = "내림차순과 오름차순", paramType = "query"),
+        @ApiImplicitParam(name = "sort", dataType = "String", value = "정렬기준(createdAt, updatedAt)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/discussion/hosting")
     @ResponseStatus(HttpStatus.OK)
@@ -129,8 +144,8 @@ public class UserController {
 
     @ApiOperation(value = "참여한 토론 조회 api", notes = "유저가 참여한 토론을 조회합니다.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", required = false, paramType = "path"),
-            @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", required = false, paramType = "path")
+        @ApiImplicitParam(name = "page", dataType = "int", value = "페이지 번호(0부터 시작)", paramType = "query"),
+        @ApiImplicitParam(name = "size", dataType = "int", value = "페이지당 아이템 갯수", paramType = "query")
     })
     @GetMapping("/discussion/participating")
     @ResponseStatus(HttpStatus.OK)

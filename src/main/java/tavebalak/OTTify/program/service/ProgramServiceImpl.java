@@ -54,7 +54,7 @@ public class ProgramServiceImpl implements ProgramService {
             //Genre 추출
             Genre userFirstGenre = genreRepository.findById(byGenreIdAndIsFirst.get().getId())
                 .orElseThrow(
-                    () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
+                    () -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND)
                 );
 
             List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
@@ -69,21 +69,25 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         //2순위 장르 리스트 조회
-        Optional<UserGenre> byUserIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(
+        List<UserGenre> byUserIdAndIsFirst = userGenreRepository.findAllByUserIdAndIsFirst(
             savedUser.getId(), false);
-        if (byUserIdAndIsFirst.isPresent()) {
-            Genre userSecondGenre = genreRepository.findById(byUserIdAndIsFirst.get().getId())
-                .orElseThrow(
-                    () -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)
-                );
 
-            List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
-                userSecondGenre.getId());
+        if (!byUserIdAndIsFirst.isEmpty()) {
+            byUserIdAndIsFirst.forEach(userGenre -> {
 
-            int idx = new Random().nextInt(programGenreList.size());
-            Optional<Program> program = programRepository.findById(
-                programGenreList.get(idx).getId());
-            program.ifPresent(recommendPrograms::add);
+                Genre userSecondGenre = genreRepository.findById(userGenre.getGenre().getId())
+                    .orElseThrow(
+                        () -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND)
+                    );
+
+                List<ProgramGenre> programGenreList = programGenreRepository.findByGenreId(
+                    userSecondGenre.getId());
+
+                int idx = new Random().nextInt(programGenreList.size());
+                Optional<Program> program = programRepository.findById(
+                    programGenreList.get(idx).getProgram().getId());
+                program.ifPresent(recommendPrograms::add);
+            });
         }
 
         //찜 리스트 조회
@@ -113,7 +117,9 @@ public class ProgramServiceImpl implements ProgramService {
 
         int size = recommendPrograms.size();
         for (; size < 6; size++) {
-            Long index = 1L + ((long) (new Random().nextDouble() * (50L - 1L)));
+            Long index =
+                1L + ((long) (new Random().nextDouble() * (programRepository.findAll().size()
+                    - 1L)));
             Optional<Program> findProgram = programRepository.findById(index);
             findProgram.ifPresent(recommendPrograms::add);
         }
@@ -126,10 +132,19 @@ public class ProgramServiceImpl implements ProgramService {
                         .programId(pg.getId())
                         .title(pg.getTitle())
                         .posterPath(pg.getPosterPath())
-                        .averageRating(pg.getAverageRating())
                         .createdYear(pg.getCreatedYear())
+                        .genreNameList(findGenreList(pg))
                         .build()).collect(Collectors.toList())
             ).build();
+    }
+
+    private List<String> findGenreList(Program pg) {
+        return programGenreRepository.findByProgram(pg.getId())
+            .stream()
+            .map(programGenre -> genreRepository.findById(programGenre.getGenre().getId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND))
+                .getName())
+            .collect(Collectors.toList());
     }
 
     private User getUser() {

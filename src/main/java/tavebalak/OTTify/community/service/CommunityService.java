@@ -1,29 +1,29 @@
 package tavebalak.OTTify.community.service;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
-import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
+import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
-import tavebalak.OTTify.error.exception.NotFoundException;
 
 public interface CommunityService {
 
-    Community saveSubject(CommunitySubjectCreateDTO c);
+    Community saveSubject(CommunitySubjectCreateDTO c, MultipartFile image);
 
-    void modifySubject(CommunitySubjectEditDTO c) throws NotFoundException;
+    void modifySubject(CommunitySubjectEditDTO c, MultipartFile image);
 
-    void deleteSubject(Long subjectId) throws NotFoundException;
+    void deleteSubject(Long subjectId);
 
-    CommunitySubjectsDTO findAllSubjects(Pageable pageable);
+    CommunitySubjectsListDTO findAllSubjects(Pageable pageable);
 
-    CommunityAriclesDTO getArticleOfASubject(Long subjectId) throws NotFoundException;
+    CommunityAriclesDTO getArticleOfASubject(Long subjectId);
 
     CommunitySubjectDTO getSubject(Long subjectId);
 
-    CommunitySubjectsDTO findSingleProgramSubjects(Pageable pageable, Long programId);
+    CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId);
 
     boolean likeSubject(Long subjectId);
 

@@ -10,7 +10,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +24,7 @@ import tavebalak.OTTify.review.entity.Review;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {@Index(name = "IDX_tm_db_program_id_type", columnList = "tmDbProgramId,type")})
 public class Program {
 
     @Id
@@ -33,7 +36,7 @@ public class Program {
     private double averageRating;
     private int reviewCount;
     private Long tmDbProgramId;
-    
+
     @Enumerated(EnumType.STRING)
     private ProgramType type;
 

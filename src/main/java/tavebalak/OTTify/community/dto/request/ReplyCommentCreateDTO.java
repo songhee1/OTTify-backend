@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class ReplyCommentCreateDTO {
 
     @NotNull
-    @ApiModelProperty(value = "토론 주제 id")
+    @ApiModelProperty(value = "토론 주제 id", required = true)
     private Long subjectId;
     @NotBlank(message = "댓글 내용은 비어있어서는 안됩니다.")
-    @ApiModelProperty(value = "댓글 내용")
+    @ApiModelProperty(value = "댓글 내용", required = true)
     private String comment;
 
     @Builder

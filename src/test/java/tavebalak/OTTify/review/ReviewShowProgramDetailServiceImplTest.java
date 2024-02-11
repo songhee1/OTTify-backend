@@ -10,12 +10,12 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
+import tavebalak.OTTify.program.dto.response.UserSpecificRatingResponseDto;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.entity.ProgramType;
 import tavebalak.OTTify.program.repository.ProgramRepository;
+import tavebalak.OTTify.program.service.ProgramDetailsShowService;
 import tavebalak.OTTify.review.dto.reviewrequest.ReviewSaveDto;
-import tavebalak.OTTify.review.dto.reviewrequest.ReviewTagIdDto;
-import tavebalak.OTTify.review.dto.reviewtagRequest.ReviewSaveTagDto;
 import tavebalak.OTTify.review.entity.Review;
 import tavebalak.OTTify.review.repository.ReviewRepository;
 import tavebalak.OTTify.review.repository.ReviewTagRepository;
@@ -56,24 +56,28 @@ class ReviewShowProgramDetailServiceImplTest {
     @Autowired
     ReviewShowProgramDetailService reviewShowProgramDetailService;
 
+    @Autowired
+    ProgramDetailsShowService programDetailsShowService;
+
     //프로그램 별 장르 별점의 변화와 전체 장르 별점의 변화를 테스트하고
     //user 의 평균 별점 변화를 테스트 합니다.
 
     @Test
-    @Rollback(value = false)
+    @Rollback(value = true)
     @Transactional
     void saveReview() {
         User user = makeUser();
         Program program = makeProgram();
 
-        List<ReviewTagIdDto> reviewTagIdDtoList = makeReviewTag();
+        List<Long> reviewTagIdDtoList = makeReviewTag();
 
         ReviewSaveDto reviewSaveDto1 = new ReviewSaveDto("아 진짜 꿀잼이였어요ㅠ", program.getId(), 3.5,
             reviewTagIdDtoList);
 
         reviewCUDService.saveReview(user, reviewSaveDto1);
 
-        Review findReview = reviewRepository.findByProgramAndUser(program, user).get();
+        Review findReview = reviewRepository.findByProgramIdAndUserId(program.getId(), user.getId())
+            .get();
 
         Assertions.assertThat(findReview.getContent()).isEqualTo("아 진짜 꿀잼이였어요ㅠ");
 
@@ -87,7 +91,8 @@ class ReviewShowProgramDetailServiceImplTest {
 
         reviewCUDService.saveReview(user2, reviewSaveDto2);
 
-        Review findReview2 = reviewRepository.findByProgramAndUser(program, user2).get();
+        Review findReview2 = reviewRepository.findByProgramIdAndUserId(program.getId(),
+            user2.getId()).get();
 
         Assertions.assertThat(program.getReviewCount()).isEqualTo(2);
         Assertions.assertThat(program.getAverageRating()).isEqualTo(4);
@@ -103,7 +108,8 @@ class ReviewShowProgramDetailServiceImplTest {
         Assertions.assertThat(program.getReviewCount()).isEqualTo(3);
         Assertions.assertThat(program.getAverageRating()).isEqualTo(4);
 
-        Review findReview3 = reviewRepository.findByProgramAndUser(program, user3).get();
+        Review findReview3 = reviewRepository.findByProgramIdAndUserId(program.getId(),
+            user3.getId()).get();
 
         User user4 = makeUser4();
         ReviewSaveDto reviewSaveDto4 = new ReviewSaveDto("범죄물이 아니였어? 좀 노잼", program.getId(), 1.5,
@@ -136,8 +142,10 @@ class ReviewShowProgramDetailServiceImplTest {
 
         Assertions.assertThat(findReview3.getLikeCounts()).isEqualTo(1);
 
-        String avg = reviewShowProgramDetailService.showUserSpecificRating(user, program.getId());
-        Assertions.assertThat(avg).isEqualTo("4.00");
+        UserSpecificRatingResponseDto userSpecificRatingResponseDto = programDetailsShowService.showUserSpecificRating(
+            user, program.getId());
+        Assertions.assertThat(userSpecificRatingResponseDto.getUsersFirstGenreProgramRating())
+            .isEqualTo("4.0");
 
 
     }
@@ -251,25 +259,12 @@ class ReviewShowProgramDetailServiceImplTest {
     }
 
     @Transactional
-    List<ReviewTagIdDto> makeReviewTag() {
-        ReviewSaveTagDto reviewSaveTagDto1 = new ReviewSaveTagDto("잠이와요");
+    List<Long> makeReviewTag() {
 
-        ReviewSaveTagDto reviewSaveTagDto2 = new ReviewSaveTagDto("재밌어요");
-
-        ReviewSaveTagDto reviewSaveTagDto3 = new ReviewSaveTagDto("팝콘먹고 싶다");
-
-        ReviewSaveTagDto reviewSaveTagDto4 = new ReviewSaveTagDto("보다가 쿵쿵쿵");
-
-        reviewTagService.saveReviewTag(reviewSaveTagDto1);
-        reviewTagService.saveReviewTag(reviewSaveTagDto2);
-        reviewTagService.saveReviewTag(reviewSaveTagDto3);
-        reviewTagService.saveReviewTag(reviewSaveTagDto4);
-
-        List<ReviewTagIdDto> reviewTagIdDtoList = new ArrayList<>();
+        List<Long> reviewTagIdDtoList = new ArrayList<>();
 
         reviewTagRepository.findAll().forEach(rt -> {
-            ReviewTagIdDto reviewTagIdDto = new ReviewTagIdDto(rt.getId());
-            reviewTagIdDtoList.add(reviewTagIdDto);
+            reviewTagIdDtoList.add(rt.getId());
         });
 
         return reviewTagIdDtoList;

@@ -118,7 +118,6 @@ public class User extends BaseEntity {
     }
 
     //좋아요 하는 리뷰 프로그램 연관관계 세팅 및 양방향 관계
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikedReview> likedReviews = new ArrayList<>();
 
@@ -133,7 +132,6 @@ public class User extends BaseEntity {
     }
 
     //좋아요 하는 프로그램 연관관계 편의메서드 생성 및 양방향 관계 세팅
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikedProgram> likedPrograms = new ArrayList<>();
 
