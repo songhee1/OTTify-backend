@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -24,10 +23,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.common.BaseResponse;
-import tavebalak.OTTify.community.dto.response.MyDiscussionDto;
 import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
-import tavebalak.OTTify.review.dto.response.MyReviewDto;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.CommunityListWithSliceInfoDTO;
+import tavebalak.OTTify.user.dto.Response.ReviewListWithSliceInfoDTO;
 import tavebalak.OTTify.user.dto.Response.UserOttListDTO;
 import tavebalak.OTTify.user.dto.Response.UserProfileDTO;
 import tavebalak.OTTify.user.service.UserService;
@@ -100,8 +99,8 @@ public class UserController {
     })
     @GetMapping("/reviews")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyReviewDto>> getMyReview(@PageableDefault(
-        size = 5,
+    public BaseResponse<ReviewListWithSliceInfoDTO> getMyReview(@PageableDefault(
+        size = 10,
         sort = "createdAt",
         direction = Sort.Direction.DESC,
         page = 0) Pageable pageable) {
@@ -115,8 +114,8 @@ public class UserController {
     })
     @GetMapping("/likedReviews")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyReviewDto>> getLikedReview(@PageableDefault(
-        size = 5,
+    public BaseResponse<ReviewListWithSliceInfoDTO> getLikedReview(@PageableDefault(
+        size = 10,
         page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getLikedReview(pageable));
     }
@@ -130,8 +129,8 @@ public class UserController {
     })
     @GetMapping("/discussion/hosting")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyDiscussionDto>> getHostedDiscussion(@PageableDefault(
-        size = 5,
+    public BaseResponse<CommunityListWithSliceInfoDTO> getHostedDiscussion(@PageableDefault(
+        size = 10,
         sort = "createdAt",
         direction = Sort.Direction.DESC,
         page = 0) Pageable pageable) {
@@ -145,8 +144,8 @@ public class UserController {
     })
     @GetMapping("/discussion/participating")
     @ResponseStatus(HttpStatus.OK)
-    public BaseResponse<List<MyDiscussionDto>> getParticipatedDiscussion(@PageableDefault(
-        size = 5,
+    public BaseResponse<CommunityListWithSliceInfoDTO> getParticipatedDiscussion(@PageableDefault(
+        size = 10,
         page = 0) Pageable pageable) {
         return BaseResponse.success(userService.getParticipatedDiscussion(pageable));
     }
