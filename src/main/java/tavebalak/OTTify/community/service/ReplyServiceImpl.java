@@ -148,7 +148,6 @@ public class ReplyServiceImpl implements ReplyService {
         parent.cancelChildReply(savedReply);
 
         likedReplyRepository.deleteAllByReply(savedReply);
-        replyRepository.delete(savedReply);
     }
 
     @Override
