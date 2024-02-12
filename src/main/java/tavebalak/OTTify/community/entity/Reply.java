@@ -79,4 +79,10 @@ public class Reply extends BaseEntity {
     public void edit(ReplyCommentEditorDTO c) {
         this.content = c.getComment();
     }
+
+    public void cancelChildReply(Reply reply) {
+        if (child.contains(reply)) {
+            child.remove(reply);
+        }
+    }
 }
