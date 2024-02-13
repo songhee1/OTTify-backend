@@ -155,6 +155,7 @@ public class ReplyServiceImpl implements ReplyService {
         if (savedReply.getLikeCount() > 0) {
             likedReplyRepository.deleteAllByReply(savedReply);
         }
+        savedReply.getCommunity().decreaseCommentCount();
         Reply parent = savedReply.getParent();
         parent.cancelChildReply(savedReply);
 
