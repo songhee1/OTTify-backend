@@ -134,9 +134,11 @@ public class ReplyServiceImpl implements ReplyService {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
 
-        likedReplyRepository.deleteAllByReply(savedReply);
-        replyRepository.delete(savedReply);
+        if (savedReply.getLikeCount() > 0) {
+            likedReplyRepository.deleteAllByReply(savedReply);
+        }
         community.decreaseCommentCount();
+        replyRepository.delete(savedReply);
     }
 
     @Override
@@ -150,10 +152,12 @@ public class ReplyServiceImpl implements ReplyService {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
 
+        if (savedReply.getLikeCount() > 0) {
+            likedReplyRepository.deleteAllByReply(savedReply);
+        }
         Reply parent = savedReply.getParent();
         parent.cancelChildReply(savedReply);
 
-        likedReplyRepository.deleteAllByReply(savedReply);
     }
 
     @Override
