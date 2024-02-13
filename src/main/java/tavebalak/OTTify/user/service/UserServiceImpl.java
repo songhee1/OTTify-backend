@@ -22,22 +22,24 @@ import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.DuplicateException;
 import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
 import tavebalak.OTTify.genre.dto.GenreDTO;
 import tavebalak.OTTify.genre.dto.request.GenreUpdateDTO;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.entity.UserGenre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
 import tavebalak.OTTify.genre.repository.UserGenreRepository;
+import tavebalak.OTTify.oauth.jwt.SecurityUtil;
 import tavebalak.OTTify.program.repository.OttRepository;
 import tavebalak.OTTify.review.dto.UserReviewRatingListDTO;
 import tavebalak.OTTify.review.dto.response.MyReviewDto;
 import tavebalak.OTTify.review.entity.Review;
-import tavebalak.OTTify.review.entity.ReviewTag;
 import tavebalak.OTTify.review.repository.ReviewRepository;
-import tavebalak.OTTify.review.repository.ReviewReviewTagRepository;
 import tavebalak.OTTify.user.dto.Request.UserOttUpdateDTO;
+import tavebalak.OTTify.user.dto.Response.CommunityListWithSliceInfoDTO;
 import tavebalak.OTTify.user.dto.Response.LikedProgramDTO;
 import tavebalak.OTTify.user.dto.Response.LikedProgramListDTO;
+import tavebalak.OTTify.user.dto.Response.ReviewListWithSliceInfoDTO;
 import tavebalak.OTTify.user.dto.Response.UninterestedProgramDTO;
 import tavebalak.OTTify.user.dto.Response.UninterestedProgramListDTO;
 import tavebalak.OTTify.user.dto.Response.UserOttDTO;
@@ -64,7 +66,6 @@ public class UserServiceImpl implements UserService {
     private final UserSubscribingOttRepository userSubscribingOttRepository;
     private final OttRepository ottRepository;
     private final ReviewRepository reviewRepository;
-    private final ReviewReviewTagRepository reviewReviewTagRepository;
     private final LikedProgramRepository likedProgramRepository;
     private final LikedReviewRepository likedReviewRepository;
     private final LikedCommunityRepository likedCommunityRepository;
@@ -75,14 +76,26 @@ public class UserServiceImpl implements UserService {
     private final ReplyRepository replyRepository;
     private final AWSS3Service awss3Service;
 
+    private static final double RATING_ZERO_DOT_FIVE = 0.5;
+    private static final double RATING_ONE = 1.0;
+    private static final double RATING_ONE_DOT_FIVE = 1.5;
+    private static final double RATING_TWO = 2.0;
+    private static final double RATING_TWO_DOT_FIVE = 2.5;
+    private static final double RATING_THREE = 3.0;
+    private static final double RATING_THREE_DOT_FIVE = 3.5;
+    private static final double RATING_FOUR = 4.0;
+    private static final double RATING_FOUR_DOT_FIVE = 4.5;
+    private static final double RATING_FIVE = 5.0;
+
     @Override
-    public UserProfileDTO getUserProfile(Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+    public UserProfileDTO getUserProfile() {
+        User user = getUser();
+        Long userId = user.getId();
 
         // 1순위 & 2순위 장르 가져오기
         UserGenre firstUserGenre = userGenreRepository.find1stGenreByUserIdFetchJoin(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
+
         GenreDTO firstGenre = new GenreDTO(firstUserGenre);
 
         List<GenreDTO> secondGenre = userGenreRepository.find2ndGenreByUserIdFetchJoin(userId)
@@ -93,7 +106,7 @@ public class UserServiceImpl implements UserService {
         // 별점 리스트 가져오기
         HashMap<Double, Integer> ratingList = new HashMap<Double, Integer>();
         ArrayList<Double> ratingSet = new ArrayList<>(
-            Arrays.asList(0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0));
+            Arrays.asList(RATING_ZERO_DOT_FIVE, RATING_ONE, RATING_ONE_DOT_FIVE, RATING_TWO, RATING_TWO_DOT_FIVE, RATING_THREE, RATING_THREE_DOT_FIVE, RATING_FOUR, RATING_FOUR_DOT_FIVE, RATING_FIVE));
 
         List<Double> reviewRatingList = new ArrayList<>();
         reviewRepository.findByUserId(userId).stream()
@@ -110,16 +123,16 @@ public class UserServiceImpl implements UserService {
 
         UserReviewRatingListDTO userReviewRatingListDTO = UserReviewRatingListDTO.builder()
             .totalCnt(reviewRatingList.size())
-            .pointFiveCnt(ratingList.get(0.5))
-            .oneCnt(ratingList.get(1.0))
-            .oneDotFiveCnt(ratingList.get(1.5))
-            .twoCnt(ratingList.get(2.0))
-            .twoDotFiveCnt(ratingList.get(2.5))
-            .threeCnt(ratingList.get(3.0))
-            .threeDotFiveCnt(ratingList.get(3.5))
-            .fourCnt(ratingList.get(4.0))
-            .fourDotFiveCnt(ratingList.get(4.5))
-            .fiveCnt(ratingList.get(5.0))
+            .pointFiveCnt(ratingList.get(RATING_ZERO_DOT_FIVE))
+            .oneCnt(ratingList.get(RATING_ONE))
+            .oneDotFiveCnt(ratingList.get(RATING_ONE_DOT_FIVE))
+            .twoCnt(ratingList.get(RATING_TWO))
+            .twoDotFiveCnt(ratingList.get(RATING_TWO_DOT_FIVE))
+            .threeCnt(ratingList.get(RATING_THREE))
+            .threeDotFiveCnt(ratingList.get(RATING_THREE_DOT_FIVE))
+            .fourCnt(ratingList.get(RATING_FOUR))
+            .fourDotFiveCnt(ratingList.get(RATING_FOUR_DOT_FIVE))
+            .fiveCnt(ratingList.get(RATING_FIVE))
             .build();
 
         // OTT 리스트 가져오기
@@ -168,9 +181,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserOttListDTO getUserOTT(Long userId) {
-        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId)
-            .stream()
+    public UserOttListDTO getUserOTT() {
+        User user = getUser();
+        Long userId = user.getId();
+
+        List<UserOttDTO> userOttDTOList = userSubscribingOttRepository.findByUserIdFetchJoin(userId).stream()
             .map((UserSubscribingOTT uso) -> new UserOttDTO(uso))
             .collect(Collectors.toList());
         return UserOttListDTO.builder()
@@ -181,9 +196,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update1stGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+    public void update1stGenre(GenreUpdateDTO updateRequestDTO) {
+        User user = getUser();
+        Long userId = user.getId();
+
         UserGenre userGenre = userGenreRepository.findByUserIdAndIsFirst(userId, true)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(ErrorCode.USER_FIRST_GENRE_NOT_FOUND));
+
         Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
 
@@ -192,7 +211,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update2ndGenre(Long userId, GenreUpdateDTO updateRequestDTO) {
+    public void update2ndGenre(GenreUpdateDTO updateRequestDTO) {
+        User user = getUser();
+        Long userId = user.getId();
+
         // req로 들어온 id 값이 유효한 장르 id인지 확인
         Genre genre = genreRepository.findById(updateRequestDTO.getGenreId())
             .orElseThrow(() -> new NotFoundException(ErrorCode.GENRE_NOT_FOUND));
@@ -204,17 +226,16 @@ public class UserServiceImpl implements UserService {
                 () -> userGenreRepository.save(
                     UserGenre.builder()
                         .genre(genre)
-                        .user(userRepository.findById(userId)
-                            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND)))
+                        .user(user)
                         .build())
             );
     }
 
     @Override
     @Transactional
-    public Long updateUserProfile(Long userId, String nickName, MultipartFile profilePhoto) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+
+    public void updateUserProfile(String nickName, MultipartFile profilePhoto) {
+        User user = getUser();
 
         if (nickName != null) {
             checkNicknameDuplication(user, nickName);
@@ -230,7 +251,7 @@ public class UserServiceImpl implements UserService {
             user.changeProfilePhoto(newPhotoUrl);
         }
 
-        return userRepository.save(user).getId();
+        userRepository.save(user);
     }
 
     public void checkNicknameDuplication(User user, String nickName) {
@@ -241,9 +262,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Long updateUserOTT(Long userId, UserOttUpdateDTO updateRequestDTO) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.ENTITY_NOT_FOUND));
+    public void updateUserOTT(UserOttUpdateDTO updateRequestDTO) {
+        User user = getUser();
+        Long userId = user.getId();
 
         // 이전에 구독 중이던 ott 리스트
         List<Long> preSubscribingOttList = userSubscribingOttRepository.findByUserIdFetchJoin(
@@ -287,120 +308,89 @@ public class UserServiceImpl implements UserService {
                     userSubscribingOttRepository.save(subscribingOTT);
                 });
         }
-
-        return userId;
     }
 
     @Override
-    public List<MyReviewDto> getMyReview(Long userId, Pageable pageable) {
-        Slice<Review> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable);
+    public ReviewListWithSliceInfoDTO getMyReview(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
 
-        List<MyReviewDto> reviewDtoList = new ArrayList<>();
-        reviewList.stream()
-            .forEach(r -> {
-                // 리뷰에 달린 reviewTags 가져오기
-                List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(
-                    r.getId());
+        Slice<MyReviewDto> reviewList = reviewRepository.findByUserIdOrderByCreatedAt(userId, pageable)
+            .map(r -> createReviewDto(r));
 
-                reviewDtoList.add(
-                    MyReviewDto.builder()
-                        .reviewId(r.getId())
-                        .createdDate(r.getCreatedAt())
-                        .userProfilePhoto(r.getUser().getProfilePhoto())
-                        .userNickName(r.getUser().getNickName())
-                        .programTitle(r.getProgram().getTitle())
-                        .reviewRating(r.getRating())
-                        .reviewTags(reviewTags)
-                        .content(r.getContent())
-                        .likeCnt(r.getLikeCounts())
-                        .build()
-                );
-            });
-
-        return reviewDtoList;
+        return new ReviewListWithSliceInfoDTO(reviewList.getContent(), reviewList.isLast());
     }
 
     @Override
-    public List<MyReviewDto> getLikedReview(Long userId, Pageable pageable) {
-        Slice<Review> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable);
+    public ReviewListWithSliceInfoDTO getLikedReview(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
 
-        List<MyReviewDto> reviewDtoList = new ArrayList<>();
-        reviewList.stream()
-            .forEach(r -> {
-                // 리뷰에 달린 reviewTags 가져오기
-                List<ReviewTag> reviewTags = reviewReviewTagRepository.findReviewTagNameByReviewId(
-                    r.getId());
+        Slice<MyReviewDto> reviewList = likedReviewRepository.findReviewByUserId(userId, pageable)
+            .map(r -> createReviewDto(r));
 
-                reviewDtoList.add(
-                    MyReviewDto.builder()
-                        .reviewId(r.getId())
-                        .createdDate(r.getCreatedAt())
-                        .userProfilePhoto(r.getUser().getProfilePhoto())
-                        .userNickName(r.getUser().getNickName())
-                        .programTitle(r.getProgram().getTitle())
-                        .reviewRating(r.getRating())
-                        .reviewTags(reviewTags)
-                        .content(r.getContent())
-                        .likeCnt(r.getLikeCounts())
-                        .build()
-                );
-            });
-
-        return reviewDtoList;
+        return new ReviewListWithSliceInfoDTO(reviewList.getContent(), reviewList.isLast());
     }
 
     @Override
-    public List<MyDiscussionDto> getHostedDiscussion(Long userId, Pageable pageable) {
-        Slice<Community> discussionList = communityRepository.findByUserId(userId, pageable);
+    public CommunityListWithSliceInfoDTO getHostedDiscussion(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
 
-        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
-        discussionList.stream()
-            .forEach(d -> {
-                int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
-                int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+        Slice<MyDiscussionDto> discussionList = communityRepository.findByUserId(userId, pageable)
+            .map(d -> createDiscussionDto(d));
 
-                discussionDtoList.add(
-                    MyDiscussionDto.builder()
-                        .discussionId(d.getId())
-                        .createdDate(d.getCreatedAt())
-                        .programTitle(d.getProgram().getTitle())
-                        .discussionTitle(d.getTitle())
-                        .content(d.getContent())
-                        .imgUrl(d.getImageUrl())
-                        .likeCnt(likeCnt)
-                        .replyCnt(replyCnt)
-                        .build()
-                );
-            });
-
-        return discussionDtoList;
+        return new CommunityListWithSliceInfoDTO(discussionList.getContent(), discussionList.isLast());
     }
 
     @Override
-    public List<MyDiscussionDto> getParticipatedDiscussion(Long userId, Pageable pageable) {
-        Slice<Community> discussionList = replyRepository.findAllCommunityByUserId(userId,
-            pageable);
+    public CommunityListWithSliceInfoDTO getParticipatedDiscussion(Pageable pageable) {
+        User user = getUser();
+        Long userId = user.getId();
 
-        List<MyDiscussionDto> discussionDtoList = new ArrayList<>();
-        discussionList.stream()
-            .forEach(d -> {
-                int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
-                int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+        Slice<MyDiscussionDto> discussionList = replyRepository.findAllCommunityByUserId(userId, pageable)
+            .map(d -> createDiscussionDto(d));
 
-                discussionDtoList.add(
-                    MyDiscussionDto.builder()
-                        .discussionId(d.getId())
-                        .createdDate(d.getCreatedAt())
-                        .programTitle(d.getProgram().getTitle())
-                        .discussionTitle(d.getTitle())
-                        .content(d.getContent())
-                        .imgUrl(d.getImageUrl())
-                        .likeCnt(likeCnt)
-                        .replyCnt(replyCnt)
-                        .build()
-                );
-            });
+        return new CommunityListWithSliceInfoDTO(discussionList.getContent(), discussionList.isLast());
+    }
 
-        return discussionDtoList;
+    private MyDiscussionDto createDiscussionDto(Community d) {
+        int likeCnt = likedCommunityRepository.countByCommunityId(d.getId());
+        int replyCnt = likedReplyRepository.countByCommunityId(d.getId());
+
+        return MyDiscussionDto.builder()
+            .discussionId(d.getId())
+            .createdDate(d.getCreatedAt())
+            .programTitle(d.getProgram().getTitle())
+            .discussionTitle(d.getTitle())
+            .content(d.getContent())
+            .imgUrl(d.getImageUrl())
+            .likeCnt(likeCnt)
+            .replyCnt(replyCnt)
+            .build();
+    }
+
+    private MyReviewDto createReviewDto(Review r) {
+        // 리뷰에 달린 reviewTags 가져오기
+        List<String> reviewTagNames = r.getReviewReviewTags().stream()
+            .map(reviewReviewTag -> reviewReviewTag.getReviewTag().getName())
+            .collect(Collectors.toList());
+
+        return MyReviewDto.builder()
+            .reviewId(r.getId())
+            .createdDate(r.getCreatedAt())
+            .userProfilePhoto(r.getUser().getProfilePhoto())
+            .userNickName(r.getUser().getNickName())
+            .programTitle(r.getProgram().getTitle())
+            .reviewRating(r.getRating())
+            .reviewTagNames(reviewTagNames)
+            .content(r.getContent())
+            .likeCnt(r.getLikeCounts())
+            .build();
+    }
+
+    private User getUser() {
+        return userRepository.findByEmail(SecurityUtil.getCurrentEmail().get())
+            .orElseThrow(() -> new UnauthorizedException(ErrorCode.UNAUTHORIZED));
     }
 }

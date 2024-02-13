@@ -94,4 +94,9 @@ public class Reply extends BaseEntity {
             this.likeCount--;
         }
     }
+    public void cancelChildReply(Reply reply) {
+        if (child.contains(reply)) {
+            child.remove(reply);
+        }
+    }
 }

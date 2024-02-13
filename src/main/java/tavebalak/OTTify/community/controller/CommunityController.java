@@ -199,16 +199,12 @@ public class CommunityController {
     @ApiOperation(value = "토론 대댓글 삭제", notes = "회원이 작성한 토론 주제의 대댓글을 삭제한다.")
     @ApiResponse(code = 200, message = "성공적으로 토론 대댓글을 삭제하였습니다.")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "path"),
-        @ApiImplicitParam(name = "commentId", value = "토론 댓글의 id", required = true, paramType = "path"),
         @ApiImplicitParam(name = "recommentId", value = "토론 대댓글의 id", required = true, paramType = "path")
     })
-    @DeleteMapping("/recomment/{subjectId}/{commentId}/{recommentId}")
+    @DeleteMapping("/recomment/{recommentId}")
     public BaseResponse<String> deleteRecomment(
-        @PathVariable Long subjectId,
-        @PathVariable Long commentId,
         @PathVariable Long recommentId) throws NotFoundException {
-        replyService.deleteRecomment(subjectId, commentId, recommentId);
+        replyService.deleteRecomment(recommentId);
         return BaseResponse.success("성공적으로 토론대댓글을 삭제하였습니다.");
     }
 

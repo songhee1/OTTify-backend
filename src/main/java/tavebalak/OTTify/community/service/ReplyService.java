@@ -20,7 +20,7 @@ public interface ReplyService {
 
     void deleteComment(Long subjectId, Long commentId);
 
-    void deleteRecomment(Long subjectId, Long commentId, Long recommentId);
+    void deleteRecomment(Long recommentId);
 
     List<CommentDTO> getComment(Long commentId);
 }

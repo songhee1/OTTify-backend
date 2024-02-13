@@ -18,5 +18,6 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 
     Slice<Community> findCommunitiesByProgramId(Pageable pageable, Long programId);
 
+    @Query("select c from Community c join fetch c.program where c.user.id =:userId")
     Slice<Community> findByUserId(Long userId, Pageable pageable);
 }

@@ -76,7 +76,8 @@ class ReviewShowProgramDetailServiceImplTest {
 
         reviewCUDService.saveReview(user, reviewSaveDto1);
 
-        Review findReview = reviewRepository.findByProgramAndUser(program, user).get();
+        Review findReview = reviewRepository.findByProgramIdAndUserId(program.getId(), user.getId())
+            .get();
 
         Assertions.assertThat(findReview.getContent()).isEqualTo("아 진짜 꿀잼이였어요ㅠ");
 
@@ -90,7 +91,8 @@ class ReviewShowProgramDetailServiceImplTest {
 
         reviewCUDService.saveReview(user2, reviewSaveDto2);
 
-        Review findReview2 = reviewRepository.findByProgramAndUser(program, user2).get();
+        Review findReview2 = reviewRepository.findByProgramIdAndUserId(program.getId(),
+            user2.getId()).get();
 
         Assertions.assertThat(program.getReviewCount()).isEqualTo(2);
         Assertions.assertThat(program.getAverageRating()).isEqualTo(4);
@@ -106,7 +108,8 @@ class ReviewShowProgramDetailServiceImplTest {
         Assertions.assertThat(program.getReviewCount()).isEqualTo(3);
         Assertions.assertThat(program.getAverageRating()).isEqualTo(4);
 
-        Review findReview3 = reviewRepository.findByProgramAndUser(program, user3).get();
+        Review findReview3 = reviewRepository.findByProgramIdAndUserId(program.getId(),
+            user3.getId()).get();
 
         User user4 = makeUser4();
         ReviewSaveDto reviewSaveDto4 = new ReviewSaveDto("범죄물이 아니였어? 좀 노잼", program.getId(), 1.5,

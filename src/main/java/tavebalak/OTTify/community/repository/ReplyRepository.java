@@ -22,7 +22,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     Optional<Reply> findByCommunityIdAndIdAndParentIdIsNull(Long communityId, Long id);
 
-    @Query("select distinct r.community from Reply r where r.user.id =:userId order by r.community.createdAt")
+    @Query("select distinct r.community from Reply r join fetch r.community.program where r.user.id =:userId order by r.community.createdAt")
     Slice<Community> findAllCommunityByUserId(@Param("userId") Long userId, Pageable pageable);
 
     List<Reply> findByCommunityId(Long communityId);

@@ -353,7 +353,7 @@ class CommunityControllerTest {
     @DisplayName("DELETE 토론 대댓글 삭제 컨트롤러 성공")
     public void 대댓글_삭제_성공() throws NotFoundException, Exception {
         //given
-        doNothing().when(replyService).deleteRecomment(anyLong(), anyLong(), anyLong());
+        doNothing().when(replyService).deleteRecomment(anyLong());
 
         //when
         ResultActions resultActions = mockMvc.perform(

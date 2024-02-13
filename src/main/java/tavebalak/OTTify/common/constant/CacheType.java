@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum CacheType {
 
-    PROGRAM_TRENDING("programTrending", 60 * 60, 100);
+    PROGRAM_TRENDING("programTrending", 60 * 60, 100),
+    DISCUSSION_SUBJECT("discussionSubject", 60 * 60 * 24 * 7, 100);
 
     CacheType(String cacheName, int expiredAfterWrite, int maximumSize) {
         this.cacheName = cacheName;

@@ -26,10 +26,10 @@ public class UserProfileDTO {
     @ApiModelProperty(value = "이메일")
     private String email;
 
-    @ApiModelProperty(value = "내 리뷰 평균 평점")
+    @ApiModelProperty(value = "내 리뷰 평균 별점")
     private double averageRating;
 
-    @ApiModelProperty(value = "작성한 리뷰 리스트")
+    @ApiModelProperty(value = "작성한 리뷰의 별점 리스트")
     private UserReviewRatingListDTO ratingList;
 
     @ApiModelProperty(value = "1순위 취향 장르")
