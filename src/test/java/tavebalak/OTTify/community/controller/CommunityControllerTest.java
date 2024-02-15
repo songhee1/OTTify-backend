@@ -8,7 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,11 +46,14 @@ class CommunityControllerTest {
     private CommunityServiceImpl communityService;
     @Mock
     private ReplyService replyService;
-    private MockMvc mockMvc; //HTTP호출
+    private MockMvc mockMvc;
 
-    Long programId;
-    Long subjectId;
-    Long commentId;
+    @InjectMocks
+    private ObjectMapper objectMapper;
+
+    Long programId = 1L;
+    Long subjectId = 1L;
+    Long commentId = 1L;
 
     private static final String testComment = "test content";
 
@@ -68,10 +73,20 @@ class CommunityControllerTest {
         Community response = communityService.save(request);
 
         //when
-        MockMultipartFile generateDto = new MockMultipartFile("dto", )
-        ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.multipart(HttpMethod.POST, "/api/v1/discussion/subject")
-                .file(generateDto))
+        MockMultipartFile file = new MockMultipartFile("file", "song.png", "multipart/form-data",
+            "uploadFile".getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile json = new MockMultipartFile("dto", null, "application/json",
+            objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8));
+
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                    .multipart("/api/v1/discussion/subject")
+                    .file(json)
+                    .file(file)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .characterEncoding("UTF-8")
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data", "성공적으로 토론주제를 생성하였습니다.").exists());
 
@@ -79,7 +94,7 @@ class CommunityControllerTest {
 
     private CommunitySubjectCreateDTO registerSubjectRequest() {
         return CommunitySubjectCreateDTO.builder()
-            .programId(programId)
+            .programId(1L)
             .subjectName("사랑과 우정의 따뜻한 이야기 '응답하라 1988'")
             .content("'응답하라 1988'은 사랑과 우정의 따뜻한 이야기를 그려냈습니다. 이 드라마가 많은 사랑을 받은 이유에 대해 토론해보세요!")
             .build();
@@ -239,6 +254,7 @@ class CommunityControllerTest {
     public void 토론_주제_내용_수정_성공() throws Exception, NotFoundException {
         //given
         Community response = Community.builder().title("test-title")
+            .id(1L)
             .content("test-content")
             .program(
                 Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
@@ -256,15 +272,20 @@ class CommunityControllerTest {
             .build();
 
         //when
-        ResultActions perform = mockMvc.perform(
-                MockMvcRequestBuilders.put("/api/v1/discussion/subject")
-                    .content(new Gson().toJson(editDTO))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .characterEncoding("utf-8"))
-            .andExpect(status().isOk());
+        MockMultipartFile file = new MockMultipartFile("file", "song.png", "multipart/form-data",
+            "uploadFile".getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile json = new MockMultipartFile("dto", null, "application/json",
+            objectMapper.writeValueAsString(editDTO).getBytes(StandardCharsets.UTF_8));
 
-        //then
-        perform
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders
+                    .multipart(HttpMethod.PUT, "/api/v1/discussion/subject")
+                    .file(file)
+                    .file(json)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                    .characterEncoding("utf-8"))
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").exists())
             .andExpect(jsonPath("$.data").value("성공적으로 토론주제를 수정하였습니다."))
             .andExpect(status().isOk())
