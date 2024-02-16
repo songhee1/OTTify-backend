@@ -21,12 +21,12 @@ public class ReplyRecommentCreateDTO {
     private Long commentId;
     @NotBlank(message = "대댓글 내용이 비워져 있어서는 안됩니다.")
     @ApiModelProperty(name = "토론 대댓글 내용", required = true)
-    private String content;
+    private String comment;
 
     @Builder
-    public ReplyRecommentCreateDTO(Long subjectId, Long commentId, String content) {
+    public ReplyRecommentCreateDTO(Long subjectId, Long commentId, String comment) {
         this.subjectId = subjectId;
         this.commentId = commentId;
-        this.content = content;
+        this.comment = comment;
     }
 }

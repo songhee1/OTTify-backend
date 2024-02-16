@@ -50,6 +50,7 @@ public enum ErrorCode {
     COMMUNITY_NOT_FOUND("토론주제를 찾을 수 없습니다."),
     REPLY_NOT_FOUND("댓글을 찾을 수 없습니다."),
     FILE_NOT_FOUND("이미지 파일을 찾을 수 없습니다."),
+    REREPLY_NOT_FOUND("대댓글을 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed

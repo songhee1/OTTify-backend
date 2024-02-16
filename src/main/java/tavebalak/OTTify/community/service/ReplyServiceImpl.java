@@ -65,7 +65,7 @@ public class ReplyServiceImpl implements ReplyService {
 
         Reply reply = replyRepository.save(Reply.builder()
             .community(community)
-            .content(c.getContent())
+            .content(c.getComment())
             .user(getUser())
             .build());
 
@@ -115,7 +115,7 @@ public class ReplyServiceImpl implements ReplyService {
         }
 
         ReplyCommentEditorDTO reReplyCommentEditorDTOBuilder = savedReply.toEditor();
-        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.changeComment(c.getContent());
+        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.changeComment(c.getComment());
 
         savedReply.edit(build);
     }
@@ -157,6 +157,9 @@ public class ReplyServiceImpl implements ReplyService {
         }
         savedReply.getCommunity().decreaseCommentCount();
         Reply parent = savedReply.getParent();
+        if (parent == null) {
+            throw new BadRequestException(ErrorCode.REREPLY_NOT_FOUND);
+        }
         parent.cancelChildReply(savedReply);
 
     }
