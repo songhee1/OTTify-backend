@@ -26,7 +26,6 @@ import tavebalak.OTTify.community.dto.response.CommunitySubjectsDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 import tavebalak.OTTify.community.repository.CommunityRepository;
-import tavebalak.OTTify.community.repository.ReplyRepository;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.program.entity.Program;
 import tavebalak.OTTify.program.repository.ProgramRepository;
@@ -41,8 +40,6 @@ public class CommunityServiceTest {
     private CommunityRepository communityRepository;
     @Mock
     private LikedCommunityRepository likedCommunityRepository;
-    @Mock
-    private ReplyRepository replyRepository;
     @Mock
     private ProgramRepository programRepository;
 
@@ -59,7 +56,10 @@ public class CommunityServiceTest {
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
 
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
+        Program program = Program.testBuilder().id(1L).build();
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
+        when(communityRepository.save(any())).thenReturn(
+            toEntity(requestDto, user, program));
 
         //when
         communityService.save(requestDto);
@@ -77,13 +77,13 @@ public class CommunityServiceTest {
             .build();
     }
 
-    private Community toEntity(CommunitySubjectCreateDTO dto, User user) {
+    private Community toEntity(CommunitySubjectCreateDTO dto, User user,
+        Program program) {
         return Community.builder()
             .user(user)
             .id(1L)
             .title(dto.getSubjectName())
-            .program(Program.testBuilder().id(dto.getProgramId())
-                .build())
+            .program(program)
             .content(dto.getContent())
             .build();
     }
@@ -95,10 +95,13 @@ public class CommunityServiceTest {
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
 
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
+        Program program = Program.testBuilder().id(1L).title("test-program-title").build();
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
+        when(communityRepository.save(any())).thenReturn(
+            toEntity(requestDto, user, program));
         communityService.save(requestDto);
         when(communityRepository.findById(anyLong())).thenReturn(
-            Optional.of(toEntity(requestDto, user)));
+            Optional.of(toEntity(requestDto, user, program)));
 
         //when
         Community findCommunity = communityService.modify(makeCommunitySubjectEditDTO(), user);
@@ -125,10 +128,13 @@ public class CommunityServiceTest {
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
 
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
+        Program program = Program.testBuilder().id(1L).title("test-program-title").build();
+        when(communityRepository.save(any())).thenReturn(
+            toEntity(requestDto, user, program));
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
         communityService.save(requestDto);
         when(communityRepository.findById(anyLong())).thenReturn(
-            Optional.of(toEntity(requestDto, user)));
+            Optional.of(toEntity(requestDto, user, program)));
         doNothing().when(communityRepository).delete(any());
 
         //when
@@ -144,8 +150,10 @@ public class CommunityServiceTest {
         //given
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
-        communityService.save(requestDto);
+        Program program = Program.testBuilder().id(1L).title("test-program-title").build();
+        when(communityRepository.save(any())).thenReturn(
+            toEntity(requestDto, user, program));
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
         communityService.save(requestDto);
 
         CommunitySubjectCreateDTO other = CommunitySubjectCreateDTO.builder()
@@ -175,8 +183,9 @@ public class CommunityServiceTest {
 
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
         Page<Community> page = new PageImpl<>(
-            List.of(toEntity(requestDto, user), toEntity(requestDto, user), toEntity(other, user),
-                toEntity(other, user)),
+            List.of(toEntity(requestDto, user, program), toEntity(requestDto, user, program),
+                toEntity(other, user, program),
+                toEntity(other, user, program)),
             pageRequest, 4);
         when(communityRepository.findCommunitiesBy(pageRequest)).thenReturn(page);
 
@@ -195,8 +204,10 @@ public class CommunityServiceTest {
         //given
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
-        communityService.save(requestDto);
+        Program program = Program.testBuilder().id(1L).title("test-program-title").build();
+        when(communityRepository.save(any())).thenReturn(
+            toEntity(requestDto, user, program));
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
         communityService.save(requestDto);
 
         CommunitySubjectCreateDTO other = CommunitySubjectCreateDTO.builder()
@@ -217,7 +228,7 @@ public class CommunityServiceTest {
 
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.DESC, "createdAt");
         Page<Community> page = new PageImpl<>(
-            List.of(toEntity(requestDto, user), toEntity(requestDto, user)),
+            List.of(toEntity(requestDto, user, program), toEntity(requestDto, user, program)),
             pageRequest, 2);
         //when
         when(communityRepository.findCommunitiesByProgramId(pageRequest, 5L)).thenReturn(page);
@@ -236,10 +247,12 @@ public class CommunityServiceTest {
         //given
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
+        Program program = Program.testBuilder().id(1L).title("test-program-title").build();
+        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user, program));
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
         communityService.save(requestDto);
 
-        Community entity = toEntity(requestDto, user);
+        Community entity = toEntity(requestDto, user, program);
 
         when(likedCommunityRepository.findByCommunityIdAndUserId(anyLong(), anyLong())).thenReturn(
             Optional.of(toLikedCommunity(entity, user)));
@@ -269,10 +282,10 @@ public class CommunityServiceTest {
         //given
         User user = testUserBuilder.create(1L, "test-nickName", "test-url", 5.55);
         CommunitySubjectCreateDTO requestDto = registerSubjectRequest();
-        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user));
-        communityService.save(requestDto);
-
-        Community entity = toEntity(requestDto, user);
+        Program program = Program.testBuilder().id(1L).title("test-program-title").build();
+        when(communityRepository.save(any())).thenReturn(toEntity(requestDto, user, program));
+        when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
+        Community entity = communityService.save(requestDto);
 
         when(likedCommunityRepository.findByCommunityIdAndUserId(anyLong(), anyLong())).thenReturn(
             Optional.of(toLikedCommunity(entity, user)));
