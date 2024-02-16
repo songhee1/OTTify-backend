@@ -2,7 +2,6 @@ package tavebalak.OTTify.community.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,7 +43,7 @@ public class Community extends BaseEntity {
     @JoinColumn(name = "program_id")
     private Program program;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "community", orphanRemoval = true)
     @BatchSize(size = 100)
     private List<Reply> replyList = new ArrayList<>();
 
