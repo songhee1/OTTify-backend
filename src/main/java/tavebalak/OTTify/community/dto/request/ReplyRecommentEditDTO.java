@@ -27,13 +27,13 @@ public class ReplyRecommentEditDTO {
 
     @NotBlank(message = "대댓글 수정시 내용이 비워져있으면 안됩니다.")
     @ApiModelProperty(value = "토론 대댓글 내용", required = true)
-    private String content;
+    private String comment;
 
     @Builder
-    public ReplyRecommentEditDTO(Long subjectId, Long commentId, Long recommentId, String content) {
+    public ReplyRecommentEditDTO(Long subjectId, Long commentId, Long recommentId, String comment) {
         this.subjectId = subjectId;
         this.commentId = commentId;
         this.recommentId = recommentId;
-        this.content = content;
+        this.comment = comment;
     }
 }
