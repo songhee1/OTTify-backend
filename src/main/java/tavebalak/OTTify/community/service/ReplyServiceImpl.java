@@ -43,6 +43,8 @@ public class ReplyServiceImpl implements ReplyService {
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
+        community.increaseCommentCount();
+
         return replyRepository.save(Reply.builder()
             .community(community)
             .content(c.getComment())
@@ -58,15 +60,19 @@ public class ReplyServiceImpl implements ReplyService {
             throw new NotFoundException(ErrorCode.REPLY_NOT_FOUND);
         }
 
+        Community community = communityRepository.findById(c.getSubjectId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+
         Reply reply = replyRepository.save(Reply.builder()
-            .community(communityRepository.findById(c.getSubjectId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)))
-            .content(c.getContent())
+            .community(community)
+            .content(c.getComment())
             .user(getUser())
             .build());
 
         Reply parentReply = replyRepository.findById(c.getCommentId()).get();
         parentReply.addReply(reply);
+
+        community.increaseCommentCount();
     }
 
     @Override
@@ -109,14 +115,14 @@ public class ReplyServiceImpl implements ReplyService {
         }
 
         ReplyCommentEditorDTO reReplyCommentEditorDTOBuilder = savedReply.toEditor();
-        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.changeComment(c.getContent());
+        ReplyCommentEditorDTO build = reReplyCommentEditorDTOBuilder.changeComment(c.getComment());
 
         savedReply.edit(build);
     }
 
     @Override
     public void deleteComment(Long subjectId, Long commentId) {
-        communityRepository.findById(subjectId).orElseThrow(
+        Community community = communityRepository.findById(subjectId).orElseThrow(
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
@@ -128,9 +134,11 @@ public class ReplyServiceImpl implements ReplyService {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
 
-        likedReplyRepository.deleteAllByReply(savedReply);
+        if (savedReply.getLikeCount() > 0) {
+            likedReplyRepository.deleteAllByReply(savedReply);
+        }
+        community.decreaseCommentCount();
         replyRepository.delete(savedReply);
-
     }
 
     @Override
@@ -144,10 +152,16 @@ public class ReplyServiceImpl implements ReplyService {
             throw new BadRequestException(ErrorCode.CAN_NOT_OTHER_COMMENT_DELETE_REQUEST);
         }
 
+        if (savedReply.getLikeCount() > 0) {
+            likedReplyRepository.deleteAllByReply(savedReply);
+        }
+        savedReply.getCommunity().decreaseCommentCount();
         Reply parent = savedReply.getParent();
+        if (parent == null) {
+            throw new BadRequestException(ErrorCode.REREPLY_NOT_FOUND);
+        }
         parent.cancelChildReply(savedReply);
 
-        likedReplyRepository.deleteAllByReply(savedReply);
     }
 
     @Override

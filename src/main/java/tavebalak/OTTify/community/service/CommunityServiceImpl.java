@@ -2,6 +2,7 @@ package tavebalak.OTTify.community.service;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -159,6 +160,11 @@ public class CommunityServiceImpl implements CommunityService {
         if (!Objects.equals(community.getUser().getId(), getUser().getId())) {
             throw new ForbiddenException(ErrorCode.CAN_NOT_DELETE_OTHER_SUBJECT_REQUEST);
         }
+        List<Reply> replyList = community.getReplyList();
+        for (Reply item : replyList) {
+            likedReplyRepository.deleteAllByReply(item);
+        }
+
         communityRepository.delete(community);
         if (community.getImageUrl() != null) {
             awss3Service.delete(community.getImageUrl());
@@ -186,19 +192,15 @@ public class CommunityServiceImpl implements CommunityService {
                 .nickName(community.getUser().getNickName())
                 .programId(community.getProgram().getId())
                 .subjectId(community.getId())
-                .likeCount(getLikeSum(community.getId()))
+                .likeCount(community.getLikeCount())
                 .imageUrl(community.getImageUrl())
                 .programName(community.getProgram().getTitle())
                 .content(community.getContent())
-                .commentCount(findCountOfComments(community.getId()))
+                .commentCount(community.getCommentCount())
                 .build()
         ).collect(Collectors.toList());
         return CommunitySubjectsListDTO.builder().subjectAmount(communities.getNumberOfElements())
             .list(listDTO).hasNext(communities.hasNext()).build();
-    }
-
-    private int findCountOfComments(Long communityId) {
-        return replyRepository.findByCommunityId(communityId).size();
     }
 
     @Override
@@ -213,11 +215,12 @@ public class CommunityServiceImpl implements CommunityService {
                 .title(community.getTitle())
                 .nickName(community.getUser().getNickName())
                 .subjectId(community.getId())
+                .likeCount(community.getLikeCount())
                 .programId(programId)
                 .imageUrl(community.getImageUrl())
                 .programName(community.getProgram().getTitle())
                 .content(community.getContent())
-                .commentCount(findCountOfComments(community.getId()))
+                .commentCount(community.getCommentCount())
                 .build()
         ).collect(Collectors.toList());
 
@@ -245,6 +248,12 @@ public class CommunityServiceImpl implements CommunityService {
                 flag.set(true);
             }
         );
+
+        if (flag.get()) {
+            findCommunity.increaseLikeCount();
+        } else {
+            findCommunity.decreaseLikeCount();
+        }
 
         return flag.get();
     }
@@ -293,43 +302,54 @@ public class CommunityServiceImpl implements CommunityService {
                 flag.set(true);
             }
         );
+
+        if (flag.get()) {
+            findReply.increaseLikeCount();
+        } else {
+            findReply.decreaseLikeCount();
+        }
+
         return flag.get();
     }
 
     @Override
     public CommunityAriclesDTO getArticleOfASubject(Long subjectId) {
-        Community community = communityRepository.findById(subjectId).orElseThrow(
+        Community community = communityRepository.findCommunityBySubjectId(subjectId).orElseThrow(
             () -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND)
         );
 
-        List<Reply> replyList = replyRepository.findByCommunityIdAndParentId(community.getId(),
-            null);
-        int totalReplyCount = replyList.size();
+        List<Reply> parentList = community.getReplyList().stream()
+            .filter(reply -> reply.getParent() == null)
+            .sorted(Comparator.comparing(Reply::getCreatedAt))
+            .collect(Collectors.toList());
+
         List<CommentListsDTO> commentListsDTOList = new ArrayList<>();
-        for (Reply comment : replyList) {
-            List<Reply> byCommunityIdAndParentId = replyRepository.findByCommunityIdAndParentId(
-                community.getId(), comment.getId());
-            totalReplyCount += byCommunityIdAndParentId.size();
-            List<ReplyListsDTO> collect = byCommunityIdAndParentId.stream().map(listone ->
+        for (Reply parent : parentList) {
+            List<Reply> childList = community.getReplyList().stream()
+                .filter(reply -> reply.getParent() == parent)
+                .sorted(Comparator.comparing(Reply::getCreatedAt))
+                .collect(Collectors.toList());
+
+            List<ReplyListsDTO> collect = childList.stream().map(listone ->
                 ReplyListsDTO.builder()
                     .recommentId(listone.getId())
                     .content(listone.getContent())
                     .nickName(listone.getUser().getNickName())
                     .userId(listone.getUser().getId())
                     .createdAt(listone.getCreatedAt())
-                    .likeCount(getLikeSumOfReply(community.getId(), listone.getId()))
+                    .likeCount(listone.getLikeCount())
                     .build()
             ).collect(Collectors.toList());
 
             CommentListsDTO build = CommentListsDTO.builder()
-                .content(comment.getContent())
-                .nickName(comment.getUser().getNickName())
-                .profileUrl(comment.getUser().getProfilePhoto())
-                .createdAt(comment.getCreatedAt())
-                .userId(comment.getUser().getId())
+                .content(parent.getContent())
+                .nickName(parent.getUser().getNickName())
+                .profileUrl(parent.getUser().getProfilePhoto())
+                .createdAt(parent.getCreatedAt())
+                .userId(parent.getUser().getId())
                 .replyListsDTOList(collect)
-                .likeCount(getLikeSumOfReply(community.getId(), comment.getId()))
-                .commentId(comment.getId())
+                .likeCount(parent.getLikeCount())
+                .commentId(parent.getId())
                 .build();
             commentListsDTOList.add(build);
         }
@@ -340,22 +360,14 @@ public class CommunityServiceImpl implements CommunityService {
             .content(community.getContent())
             .createdAt(community.getCreatedAt())
             .updatedAt(community.getUpdatedAt())
-            .commentAmount(totalReplyCount)
+            .commentAmount(community.getCommentCount())
             .commentListsDTOList(commentListsDTOList)
             .userId(getUser().getId())
-            .likeCount(getLikeSum(community.getId()))
+            .likeCount(community.getLikeCount())
             .subjectId(community.getId())
             .programTitle(community.getProgram().getTitle())
             .imageUrl(community.getImageUrl())
             .build();
-    }
-
-    private int getLikeSum(Long communityId) {
-        return likedCommunityRepository.findByCommunityId(communityId).size();
-    }
-
-    private Integer getLikeSumOfReply(Long communityId, Long replyId) {
-        return likedReplyRepository.findByCommunityIdAndReplyId(communityId, replyId).size();
     }
 
     @Override

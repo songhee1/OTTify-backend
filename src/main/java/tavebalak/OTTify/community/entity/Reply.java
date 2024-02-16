@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import tavebalak.OTTify.common.entity.BaseEntity;
@@ -44,12 +45,15 @@ public class Reply extends BaseEntity {
     private Reply parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<Reply> child = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    private int likeCount;
 
     public void addReply(Reply reply) {
         this.child.add(reply);
@@ -70,6 +74,7 @@ public class Reply extends BaseEntity {
         this.content = content;
         this.user = user;
         addCommunity(community);
+        this.likeCount = 0;
     }
 
     public ReplyCommentEditorDTO toEditor() {
@@ -80,6 +85,15 @@ public class Reply extends BaseEntity {
         this.content = c.getComment();
     }
 
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
     public void cancelChildReply(Reply reply) {
         if (child.contains(reply)) {
             child.remove(reply);

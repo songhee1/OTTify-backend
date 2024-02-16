@@ -2,7 +2,6 @@ package tavebalak.OTTify.community.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import tavebalak.OTTify.common.entity.BaseEntity;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectEditorDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectImageEditorDTO;
@@ -43,10 +43,15 @@ public class Community extends BaseEntity {
     @JoinColumn(name = "program_id")
     private Program program;
 
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "community", orphanRemoval = true)
+    @BatchSize(size = 100)
     private List<Reply> replyList = new ArrayList<>();
 
     private String imageUrl;
+
+    private int likeCount;
+
+    private int commentCount;
 
     @Builder
     public Community(Long id, String title, String content, Program program, User user,
@@ -57,6 +62,8 @@ public class Community extends BaseEntity {
         this.program = program;
         this.user = user;
         this.imageUrl = imageUrl;
+        this.likeCount = 0;
+        this.commentCount = 0;
     }
 
     public CommunitySubjectEditorDTO toEditor() {
@@ -82,5 +89,23 @@ public class Community extends BaseEntity {
         this.user = user;
     }
 
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
 
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        if (this.commentCount > 0) {
+            this.commentCount--;
+        }
+    }
 }
