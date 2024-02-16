@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestHeadersUriSpec;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+import reactor.util.function.Tuple3;
 import tavebalak.OTTify.error.ErrorCode;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.entity.Genre;
@@ -55,21 +58,33 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
             .orElseThrow(() -> new NotFoundException(ErrorCode.PROGRAM_NOT_FOUND));
 
         //API 요청 첫번째: 프로그램 상세 정보
-        OAProgramDetailsDto OAProgramDetailsDto = getProgramDetails(program.getTmDbProgramId(),
-            program.getType());
-        ProgramDetailResponse programDetailResponse = createProgramDetailResponse(
-            OAProgramDetailsDto);
+        Mono<?> OAProgramDetailsDtoMono = getProgramDetails(program.getTmDbProgramId(),
+            program.getType()).subscribeOn(Schedulers.boundedElastic());
 
         //API 요청 두번째: 사람 상세 정보
-        OAProgramCreditsDto oaProgramCreditsDto = getCreditsDto(program.getTmDbProgramId(),
-            program.getType());
-        changeActorAndDirectorToKorea(oaProgramCreditsDto);
+        Mono<OAProgramCreditsDto> oaProgramCreditsDtoMono = getCreditsDtoMono(
+            program.getTmDbProgramId(),
+            program.getType()).subscribeOn(Schedulers.boundedElastic());
 
         //API 요청 세번째: Provider 상세 정보
-        OAProgramProviderDto oaProgramProviderDto = getProviderDto(program.getTmDbProgramId(),
-            program.getType());
+        Mono<OAProgramProviderDto> oaProgramProviderDtoMono = getProviderDtoMono(
+            program.getTmDbProgramId(),
+            program.getType()).subscribeOn(Schedulers.boundedElastic());
+
+        //비동기식으로 api 요청
+        Tuple3<?, OAProgramCreditsDto, OAProgramProviderDto> tuple3 = Mono.zip(
+            OAProgramDetailsDtoMono, oaProgramCreditsDtoMono, oaProgramProviderDtoMono).block();
+
+        //programDetailResponse 생성
+        ProgramDetailResponse programDetailResponse = createProgramDetailResponse(
+            (OAProgramDetailsDto) tuple3.getT1());
+
+        //배우, 감독 한글로 변환 및 감독을 앞으로
+        changeActorAndDirectorToKorea(tuple3.getT2());
+
+        //한국 ott 추출
         Optional<OACountryDetailsDto> kr = Optional.ofNullable(
-            oaProgramProviderDto.getResults().get("KR"));
+            tuple3.getT3().getResults().get("KR"));
 
         //사용자에게 보낼 DTO 를 만들고 OTT 의 이름을 한글로 변환시키는 작업을 수행합니다.
         Optional<ProgramProviderListResponseDto> programProviderListResponseDto = kr.map(
@@ -78,30 +93,29 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
         // 사용자에게 보내줄 DTO
         ProgramResponseDto programResponseDto = new ProgramResponseDto(programDetailResponse,
-            oaProgramCreditsDto, programProviderListResponseDto.orElse(null),
+            tuple3.getT2(), programProviderListResponseDto.orElse(null),
             program.getAverageRating());
+
         return programResponseDto;
 
     }
 
     //프로그램 상세 정보를 open api 를 통해서 요청
-    private OAProgramDetailsDto getProgramDetails(Long tmDbId, ProgramType programType) {
+    private Mono<?> getProgramDetails(Long tmDbId, ProgramType programType) {
         if (programType == ProgramType.Movie) {
-            OAMovieDetailsDto oaMovieDetailsDto = webClient.get()
+            Mono<OAMovieDetailsDto> oaMovieDetailsDtoMono = webClient.get()
                 .uri("/movie/" + tmDbId + "?language=ko")
                 .retrieve()
-                .bodyToMono(OAMovieDetailsDto.class)
-                .block();
+                .bodyToMono(OAMovieDetailsDto.class);
 
-            return oaMovieDetailsDto;
+            return oaMovieDetailsDtoMono;
         } else {
-            OATvDetailsDto oaTvDetailsDto = webClient.get()
+            Mono<OATvDetailsDto> oaTvDetailsDtoMono = webClient.get()
                 .uri("/tv/" + tmDbId + "?language=ko")
                 .retrieve()
-                .bodyToMono(OATvDetailsDto.class)
-                .block();
+                .bodyToMono(OATvDetailsDto.class);
 
-            return oaTvDetailsDto;
+            return oaTvDetailsDtoMono;
         }
     }
 
@@ -176,7 +190,8 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
 
     //프로그램의 배우 가져오기
-    private OAProgramCreditsDto getCreditsDto(Long tmDbProgramId, ProgramType programType) {
+    private Mono<OAProgramCreditsDto> getCreditsDtoMono(Long tmDbProgramId,
+        ProgramType programType) {
         RequestHeadersUriSpec<?> requestHeadersUriSpec = webClient.get();
 
         if (programType == ProgramType.Movie) {
@@ -187,8 +202,7 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
         return requestHeadersUriSpec
             .retrieve()
-            .bodyToMono(OAProgramCreditsDto.class)
-            .block();
+            .bodyToMono(OAProgramCreditsDto.class);
 
     }
 
@@ -247,7 +261,8 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
 
     //프로그램의 Provider 가지고 오기
 
-    private OAProgramProviderDto getProviderDto(Long tmDbProgramId, ProgramType programType) {
+    private Mono<OAProgramProviderDto> getProviderDtoMono(Long tmDbProgramId,
+        ProgramType programType) {
 
         RequestHeadersUriSpec<?> requestHeadersUriSpec = webClient.get();
         if (programType == ProgramType.Movie) {
@@ -257,8 +272,7 @@ public class ProgramDetailsShowServiceImpl implements ProgramDetailsShowService 
         }
         return requestHeadersUriSpec
             .retrieve()
-            .bodyToMono(OAProgramProviderDto.class)
-            .block();
+            .bodyToMono(OAProgramProviderDto.class);
 
     }
 
