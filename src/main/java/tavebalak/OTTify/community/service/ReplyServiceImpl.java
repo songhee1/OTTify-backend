@@ -157,6 +157,9 @@ public class ReplyServiceImpl implements ReplyService {
         }
         savedReply.getCommunity().decreaseCommentCount();
         Reply parent = savedReply.getParent();
+        if (parent == null) {
+            throw new BadRequestException(ErrorCode.REREPLY_NOT_FOUND);
+        }
         parent.cancelChildReply(savedReply);
 
     }
