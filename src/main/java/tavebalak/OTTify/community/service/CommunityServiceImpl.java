@@ -15,6 +15,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import tavebalak.OTTify.common.lock.DistributeLock;
 import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
@@ -231,14 +232,11 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-//    @DistributeLock(key = "T(java.lang.String).format('LikeSubject%d', #subjectId)")
+    @DistributeLock(key = "T(java.lang.String).format('LikeSubject%d', #subjectId)")
     public void likeSubject(Long subjectId) {
         User savedUser = getUser();
         Community findCommunity = communityRepository.findById(subjectId).orElseThrow(() ->
             new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
-
-        log.info(
-            "====================좋아요 수 : " + findCommunity.getLikeCount() + "=================");
 
         likedCommunityRepository.findByCommunityIdAndUserId(findCommunity.getId(),
             savedUser.getId()).ifPresentOrElse(
@@ -258,8 +256,7 @@ public class CommunityServiceImpl implements CommunityService {
             }
         );
     }
-
-    //@DistributeLock(key = "T(java.lang.String).format('LikeSub%d', #id)")
+    
     public void likeSub(User user, Community community, Long id) {
         likedCommunityRepository.findByCommunityIdAndUserId(community.getId(),
             user.getId()).ifPresentOrElse(

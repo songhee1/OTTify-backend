@@ -34,7 +34,7 @@ public class RedissonLockTest {
     private static final long ID_NUMBER = 1L;
 
     @Test
-    @DisplayName("likeCount에서 Redisson 적용후 동시성 문제 없는 경우")
+    @DisplayName("likeCount에서 Redisson 적용후 동시성 문제 있는 경우")
     @Rollback(false)
     public void likedCommunity() throws Exception {
 

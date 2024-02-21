@@ -31,8 +31,6 @@ public class DistributeLockAop {
         String key = REDISSON_KEY_PREFIX + CustomSpringELParser.getDynamicValue(
             signature.getParameterNames(), joinPoint.getArgs(), distributeLock.key());    // (2)
 
-        log.info("==============lock 함수 안으로 들어왔음============" + key);
-
         RLock rLock = redissonClient.getLock(key);    // (3)
 
         try {
