@@ -4,12 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,8 +44,6 @@ public class CommunityServiceTest {
     private LikedCommunityRepository likedCommunityRepository;
     @Mock
     private ProgramRepository programRepository;
-
-
     @InjectMocks
     private CommunityServiceImpl communityService;
     User.TestUserBuilder testUserBuilder = User.testUserBuilder();
@@ -287,14 +287,15 @@ public class CommunityServiceTest {
         when(programRepository.findById(anyLong())).thenReturn(Optional.of(program));
         Community entity = communityService.save(requestDto);
 
-        when(likedCommunityRepository.findByCommunityIdAndUserId(anyLong(), anyLong())).thenReturn(
+        when(likedCommunityRepository.findByCommunityIdAndUserId(eq(1L),
+            eq(user.getId()))).thenReturn(
             Optional.of(toLikedCommunity(entity, user)));
 
         //when
         communityService.likeSub(user, entity, 1L);
-        boolean flag = communityService.likeSub(user, entity, 1L);
+        communityService.likeSub(user, entity, 1L);
 
         //then
-        assertThat(flag).isFalse();
+        Assertions.assertThat(entity.getLikeCount()).isEqualTo(0);
     }
 }

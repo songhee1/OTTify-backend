@@ -182,7 +182,7 @@ class CommunityControllerTest {
         return ReplyRecommentCreateDTO.builder()
             .subjectId(1L)
             .commentId(1L)
-            .content(testComment)
+            .comment(testComment)
             .build();
     }
 
@@ -238,7 +238,7 @@ class CommunityControllerTest {
         ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
             .subjectId(subjectId)
             .commentId(commentId)
-            .content(" ")
+            .comment(" ")
             .build();
 
         //when, then

@@ -81,11 +81,8 @@ public class CommunityController {
     @ApiImplicitParam(name = "subjectId", value = "토론글의 id", required = true, paramType = "query")
     @PostMapping("/like")
     public BaseResponse<String> likeSubject(@RequestParam("subjectId") Long subjectId) {
-        boolean hasLiked = communityService.likeSubject(subjectId);
-        if (hasLiked) {
-            return BaseResponse.success("성공적으로 토론 게시글 공감이 적용이 되었습니다.");
-        }
-        return BaseResponse.success("성공적으로 토론 게시글 공감 해제가 적용되었습니다.");
+        communityService.likeSubject(subjectId);
+        return BaseResponse.success("성공적으로 토론 게시글 공감이 적용되었습니다.");
     }
 
     @ApiOperation(value = "토론댓글 공감 및 해제", notes = "회원이 작성한 토론 주제의 댓글에 대해 공감하고 해제합니다.")

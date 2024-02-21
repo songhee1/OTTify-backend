@@ -25,7 +25,7 @@ public interface CommunityService {
 
     CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId);
 
-    boolean likeSubject(Long subjectId);
+    void likeSubject(Long subjectId);
 
     boolean likeComment(Long subjectId, Long commentId);
 }
