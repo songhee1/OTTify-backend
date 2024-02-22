@@ -68,7 +68,8 @@ public enum ErrorCode {
      */
     INTERNAL_SERVER_ERROR("서버 내부 오류입니다."),
     UPLOAD_FAILED("업로드에 실패하였습니다."),
-    FILE_DELETE_FAILED("파일 삭제에 실패하였습니다.");
+    FILE_DELETE_FAILED("파일 삭제에 실패하였습니다."),
+    LOCK_INTERRUPT("락을 얻으려고 시도하는 도중에 인터럽트가 발생했습니다");
 
     private final String message;
 }

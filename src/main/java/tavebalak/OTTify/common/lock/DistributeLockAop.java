@@ -10,6 +10,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
+import tavebalak.OTTify.error.ErrorCode;
+import tavebalak.OTTify.error.exception.InterruptedException;
 
 @Aspect
 @Component
@@ -26,27 +28,30 @@ public class DistributeLockAop {
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        DistributeLock distributeLock = method.getAnnotation(DistributeLock.class);     // (1)
+        DistributeLock distributeLock = method.getAnnotation(DistributeLock.class);
 
         String key = REDISSON_KEY_PREFIX + CustomSpringELParser.getDynamicValue(
-            signature.getParameterNames(), joinPoint.getArgs(), distributeLock.key());    // (2)
+            signature.getParameterNames(), joinPoint.getArgs(), distributeLock.key());
 
-        RLock rLock = redissonClient.getLock(key);    // (3)
+        RLock rLock = redissonClient.getLock(key);
 
         try {
             boolean available = rLock.tryLock(distributeLock.waitTime(), distributeLock.leaseTime(),
-                distributeLock.timeUnit());    // (4)
+                distributeLock.timeUnit());
             if (!available) {
                 return false;
             }
 
             log.info("get lock success {}", key);
-            return aopForTransaction.proceed(joinPoint);    // (5)
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-            throw new InterruptedException();
+            return aopForTransaction.proceed(joinPoint);
+        } catch (InterruptedException e) {
+            throw new InterruptedException(ErrorCode.LOCK_INTERRUPT);
         } finally {
-            rLock.unlock();    // (6)
+            try {
+                rLock.unlock();
+            } catch (IllegalMonitorStateException e) {
+                log.info("Redisson Lock Already Unlocked");
+            }
         }
     }
 }
