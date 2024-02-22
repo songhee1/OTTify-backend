@@ -256,13 +256,16 @@ public class CommunityServiceImpl implements CommunityService {
             }
         );
     }
-    
+
+    @DistributeLock(key = "T(java.lang.String).format('LikeSub%d', #id)")
     public void likeSub(User user, Community community, Long id) {
+        Community findCommunity = communityRepository.findById(id).orElseThrow(() ->
+            new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
         likedCommunityRepository.findByCommunityIdAndUserId(community.getId(),
             user.getId()).ifPresentOrElse(
             (entity) -> {
                 likedCommunityRepository.delete(entity);
-                community.decreaseLikeCount();
+                findCommunity.decreaseLikeCount();
             },
             () -> {
                 likedCommunityRepository.save(
@@ -271,7 +274,7 @@ public class CommunityServiceImpl implements CommunityService {
                         .community(community)
                         .build()
                 );
-                community.increaseLikeCount();
+                findCommunity.increaseLikeCount();
             }
         );
     }
