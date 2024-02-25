@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import tavebalak.OTTify.error.ErrorCode;
+import tavebalak.OTTify.error.exception.InternalServerErrorException;
 import tavebalak.OTTify.error.exception.NotFoundException;
 import tavebalak.OTTify.genre.entity.Genre;
 import tavebalak.OTTify.genre.repository.GenreRepository;
@@ -114,13 +116,22 @@ public class ProgramShowAndSaveServiceImpl implements ProgramShowAndSaveService 
     private Program saveProgramAndGetProgram(
         SearchTrendingOpenApiProgramInfo searchTrendingOpenApiProgramInfo,
         ProgramType programType) {
-        Program program = programRepository.findByTmDbProgramIdAndType(
-            searchTrendingOpenApiProgramInfo.getId(), programType).orElseGet(() -> {
-            Program newProgram = apiProgramToProgram(searchTrendingOpenApiProgramInfo, programType);
-            programRepository.save(newProgram);
-            return newProgram;
-        });
+        Program program;
+
+        try {
+            program = programRepository.findByTmDbProgramIdAndType(
+                searchTrendingOpenApiProgramInfo.getId(), programType).orElseGet(() -> {
+                Program newProgram = apiProgramToProgram(searchTrendingOpenApiProgramInfo,
+                    programType);
+                programRepository.save(newProgram);
+                return newProgram;
+            });
+        } catch (DataIntegrityViolationException e) {
+            throw new InternalServerErrorException(ErrorCode.DATA_SAVING_ERROR);
+        }
+
         return program;
+
     }
 
     //받아온 api 정보를 이용해 우리가 만든 Program 에 필요한 값을 넣어줍니다.
