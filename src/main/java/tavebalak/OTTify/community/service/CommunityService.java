@@ -27,5 +27,5 @@ public interface CommunityService {
 
     void likeSubject(Long subjectId);
 
-    boolean likeComment(Long subjectId, Long commentId);
+    void likeComment(Long subjectId, Long commentId);
 }

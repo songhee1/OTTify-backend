@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,10 +135,9 @@ public class CommunityServiceImpl implements CommunityService {
     private String changeImgUrl(MultipartFile image, Community community, String communityImgUrl) {
         if (image != null && !image.isEmpty()) {
             deleteCommunityS3Image(community);
-            communityImgUrl = awss3Service.upload(image, AWS_S3_DISCUSSION_DIR_NAME);
-        } else {
-            deleteCommunityS3Image(community);
+            return awss3Service.upload(image, AWS_S3_DISCUSSION_DIR_NAME);
         }
+        deleteCommunityS3Image(community);
         return communityImgUrl;
     }
 
@@ -298,8 +296,7 @@ public class CommunityServiceImpl implements CommunityService {
 
 
     @Override
-    public boolean likeComment(Long subjectId, Long commentId) {
-        AtomicBoolean flag = new AtomicBoolean(false);
+    public void likeComment(Long subjectId, Long commentId) {
         User savedUser = getUser();
         Community community = communityRepository.findById(subjectId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
@@ -308,23 +305,21 @@ public class CommunityServiceImpl implements CommunityService {
 
         likedReplyRepository.findByUserIdAndReplyIdAndCommunityId(savedUser.getId(),
             findReply.getId(), community.getId()).ifPresentOrElse(
-            likedReplyRepository::delete,
-            () -> likeReplySave(savedUser, community, findReply, flag)
+            entity -> likeReplyDeleteAndDecreaseLikeCountForReply(entity, findReply),
+            () -> likeReplySaveAndIncreaseLikeCountForReply(savedUser, community, findReply)
         );
 
-        if (flag.get()) {
-            findReply.increaseLikeCount();
-        } else {
-            findReply.decreaseLikeCount();
-        }
-
-        return flag.get();
     }
 
-    private void likeReplySave(User savedUser, Community community, Reply findReply,
-        AtomicBoolean flag) {
+    private void likeReplySaveAndIncreaseLikeCountForReply(User savedUser, Community community,
+        Reply findReply) {
         likedReplyRepository.save(builderLikedReply(savedUser, community, findReply));
-        flag.set(true);
+        findReply.increaseLikeCount();
+    }
+
+    private void likeReplyDeleteAndDecreaseLikeCountForReply(LikedReply entity, Reply findReply) {
+        likedReplyRepository.delete(entity);
+        findReply.decreaseLikeCount();
     }
 
     private static LikedReply builderLikedReply(User savedUser, Community community,

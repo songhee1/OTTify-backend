@@ -85,26 +85,31 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public boolean likeReview(Long id) {
-        AtomicBoolean flag = new AtomicBoolean(false);
+    public void likeReview(Long id) {
         String userEmail = SecurityUtil.getCurrentEmail().get();
-
         User savedUser = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
         Review review = findReviewById(id);
 
         likedReviewRepository.findByUserIdAndReviewId(savedUser.getId(), review.getId())
-            .ifPresentOrElse(likedReviewRepository::delete,
-                () -> likeReviewSaveAndSetTrueOfFlag(id, savedUser, flag));
+            .ifPresentOrElse(
+                entity -> likeReviewDeleteAndDecreaseLikeCountForReview(entity, review),
+                () -> likeReviewSaveAndIncreaseLikeCountForReview(id, savedUser, review)
+            );
+    }
 
-        if (flag.get()) {
-            review.addLikeNumber();
-        } else {
-            review.cancelLikeNumber();
-        }
+    private void likeReviewSaveAndIncreaseLikeCountForReview(Long id, User savedUser,
+        Review review) {
+        likedReviewRepository.save(
+            builderLikedReview(id, savedUser)
+        );
+        review.addLikeNumber();
+    }
 
-        return flag.get();
+    private void likeReviewDeleteAndDecreaseLikeCountForReview(LikedReview entity, Review review) {
+        likedReviewRepository.delete(entity);
+        review.cancelLikeNumber();
     }
 
     private void likeReviewSaveAndSetTrueOfFlag(Long id, User savedUser, AtomicBoolean flag) {
