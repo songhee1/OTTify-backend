@@ -5,7 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
 import tavebalak.OTTify.community.dto.response.CommunityAriclesDTO;
-import tavebalak.OTTify.community.dto.response.CommunitySubjectDTO;
 import tavebalak.OTTify.community.dto.response.CommunitySubjectsListDTO;
 import tavebalak.OTTify.community.entity.Community;
 
@@ -20,8 +19,6 @@ public interface CommunityService {
     CommunitySubjectsListDTO findAllSubjects(Pageable pageable);
 
     CommunityAriclesDTO getArticleOfASubject(Long subjectId);
-
-    CommunitySubjectDTO getSubject(Long subjectId);
 
     CommunitySubjectsListDTO findSingleProgramSubjects(Pageable pageable, Long programId);
 

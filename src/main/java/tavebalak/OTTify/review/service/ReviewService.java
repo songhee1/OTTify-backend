@@ -8,7 +8,7 @@ public interface ReviewService {
 
     List<LatestReviewsDTO> getLatestReviews();
 
-    void save(Review review);
+    void saveReview(Review review);
 
     void likeReview(Long id);
 }

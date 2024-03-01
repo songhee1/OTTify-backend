@@ -47,17 +47,13 @@ public class ProgramServiceImpl implements ProgramService {
         User savedUser = getUser();
         Set<Program> recommendPrograms = new HashSet<>();
 
-        //1순위 장르 리스트 조회
-        //1) 사용자의 1순위 UserGenre 추출
         Optional<UserGenre> byGenreIdAndIsFirst = userGenreRepository.findByUserIdAndIsFirst(
             savedUser.getId(), true);
 
         if (byGenreIdAndIsFirst.isPresent()) {
-            //Genre 추출
             addFirstGenreProgram(byGenreIdAndIsFirst, recommendPrograms);
         }
 
-        //2순위 장르 리스트 조회
         List<UserGenre> byUserIdAndIsFirst = userGenreRepository.findAllByUserIdAndIsFirst(
             savedUser.getId(), false);
 
@@ -65,13 +61,11 @@ public class ProgramServiceImpl implements ProgramService {
             byUserIdAndIsFirst.forEach(addItemToRecommendProgramsBySecondGenre(recommendPrograms));
         }
 
-        //찜 리스트 조회
         AtomicInteger likedProgramsSize = new AtomicInteger(1);
         likedProgramRepository.findByUserId(savedUser.getId()).forEach(
             likedProgram -> addLikeListProgram(likedProgram, likedProgramsSize, recommendPrograms)
         );
-
-        //별점 높은 순으로 리스트 조회
+        
         List<Program> programList = programRepository.findTop10ByOrderByAverageRatingDesc();
         if (programList.isEmpty()) {
             return builderRecommendProgramsDTO();

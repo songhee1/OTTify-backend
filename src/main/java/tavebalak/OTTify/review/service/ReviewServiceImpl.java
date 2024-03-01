@@ -3,7 +3,6 @@ package tavebalak.OTTify.review.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -31,8 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final int TOP8_SIZE = 8;
 
     public List<LatestReviewsDTO> getLatestReviews() {
-        List<Review> reviewList = reviewRepository.findAll(
-            Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Review> reviewList = findReviewList();
         List<Review> top8ReviewList = new ArrayList<>();
         if (reviewList.size() < TOP8_SIZE) {
             top8ReviewList.addAll(reviewList);
@@ -43,6 +41,11 @@ public class ReviewServiceImpl implements ReviewService {
             listOne -> builderLatestReviewsDTO(listOne, getLikeSum(listOne.getId()))
         ).collect(Collectors.toList());
 
+    }
+
+    private List<Review> findReviewList() {
+        return reviewRepository.findAll(
+            Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
     private LatestReviewsDTO builderLatestReviewsDTO(Review listOne, Integer listOne1) {
@@ -65,8 +68,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public List<LatestReviewsDTO> getLatestReviewsTest() {
-        List<Review> reviewList = reviewRepository.findAll(
-            Sort.by(Sort.Direction.DESC, "createdAt"));
+        List<Review> reviewList = findReviewList();
         List<Review> top8ReviewList = new ArrayList<>();
         if (reviewList.size() < TOP8_SIZE) {
             top8ReviewList.addAll(reviewList);
@@ -80,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
 
-    public void save(Review review) {
+    public void saveReview(Review review) {
         reviewRepository.save(review);
     }
 
@@ -94,29 +96,38 @@ public class ReviewServiceImpl implements ReviewService {
 
         likedReviewRepository.findByUserIdAndReviewId(savedUser.getId(), review.getId())
             .ifPresentOrElse(
-                entity -> likeReviewDeleteAndDecreaseLikeCountForReview(entity, review),
-                () -> likeReviewSaveAndIncreaseLikeCountForReview(id, savedUser, review)
+                entity -> cancelLikeReview(entity, review),
+                () -> postLikeReview(id, savedUser, review)
             );
     }
 
-    private void likeReviewSaveAndIncreaseLikeCountForReview(Long id, User savedUser,
+    private void postLikeReview(Long id, User savedUser,
         Review review) {
-        likedReviewRepository.save(
-            builderLikedReview(id, savedUser)
-        );
+        saveLikeReview(id, savedUser);
+        increaseLikeCountForReview(review);
+    }
+
+    private static void increaseLikeCountForReview(Review review) {
         review.addLikeNumber();
     }
 
-    private void likeReviewDeleteAndDecreaseLikeCountForReview(LikedReview entity, Review review) {
-        likedReviewRepository.delete(entity);
-        review.cancelLikeNumber();
-    }
-
-    private void likeReviewSaveAndSetTrueOfFlag(Long id, User savedUser, AtomicBoolean flag) {
+    private void saveLikeReview(Long id, User savedUser) {
         likedReviewRepository.save(
             builderLikedReview(id, savedUser)
         );
-        flag.set(true);
+    }
+
+    private void cancelLikeReview(LikedReview entity, Review review) {
+        deleteLikeReview(entity);
+        decreaseLikeCountForReview(review);
+    }
+
+    private static void decreaseLikeCountForReview(Review review) {
+        review.cancelLikeNumber();
+    }
+
+    private void deleteLikeReview(LikedReview entity) {
+        likedReviewRepository.delete(entity);
     }
 
     private LikedReview builderLikedReview(Long id, User savedUser) {
