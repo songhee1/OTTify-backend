@@ -8,7 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -42,12 +46,14 @@ class CommunityControllerTest {
     private CommunityServiceImpl communityService;
     @Mock
     private ReplyService replyService;
-    private MockMvc mockMvc; //HTTP호출
+    private MockMvc mockMvc;
 
-    Program program;
-    Long programId;
-    Long subjectId;
-    Long commentId;
+    @InjectMocks
+    private ObjectMapper objectMapper;
+
+    Long programId = 1L;
+    Long subjectId = 1L;
+    Long commentId = 1L;
 
     private static final String testComment = "test content";
 
@@ -67,21 +73,28 @@ class CommunityControllerTest {
         Community response = communityService.save(request);
 
         //when
-        ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/v1/discussion/subject")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new Gson().toJson(request))
-        );
+        MockMultipartFile file = new MockMultipartFile("file", "song.png", "multipart/form-data",
+            "uploadFile".getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile json = new MockMultipartFile("dto", null, "application/json",
+            objectMapper.writeValueAsString(request).getBytes(StandardCharsets.UTF_8));
 
-        //then
-        resultActions.andExpect(status().isOk())
+        mockMvc.perform(
+                MockMvcRequestBuilders
+                    .multipart("/api/v1/discussion/subject")
+                    .file(json)
+                    .file(file)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .characterEncoding("UTF-8")
+            )
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.data", "성공적으로 토론주제를 생성하였습니다.").exists());
 
     }
 
     private CommunitySubjectCreateDTO registerSubjectRequest() {
         return CommunitySubjectCreateDTO.builder()
-            .programId(programId)
+            .programId(1L)
             .subjectName("사랑과 우정의 따뜻한 이야기 '응답하라 1988'")
             .content("'응답하라 1988'은 사랑과 우정의 따뜻한 이야기를 그려냈습니다. 이 드라마가 많은 사랑을 받은 이유에 대해 토론해보세요!")
             .build();
@@ -92,6 +105,7 @@ class CommunityControllerTest {
     void registerComment() throws Exception, NotFoundException {
         //given
         Community response = Community.builder().title("test-title")
+            .id(1L)
             .content("test-content")
             .program(
                 Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
@@ -168,7 +182,7 @@ class CommunityControllerTest {
         return ReplyRecommentCreateDTO.builder()
             .subjectId(1L)
             .commentId(1L)
-            .content(testComment)
+            .comment(testComment)
             .build();
     }
 
@@ -224,7 +238,7 @@ class CommunityControllerTest {
         ReplyRecommentCreateDTO testContent = ReplyRecommentCreateDTO.builder()
             .subjectId(subjectId)
             .commentId(commentId)
-            .content(" ")
+            .comment(" ")
             .build();
 
         //when, then
@@ -240,6 +254,7 @@ class CommunityControllerTest {
     public void 토론_주제_내용_수정_성공() throws Exception, NotFoundException {
         //given
         Community response = Community.builder().title("test-title")
+            .id(1L)
             .content("test-content")
             .program(
                 Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
@@ -257,15 +272,20 @@ class CommunityControllerTest {
             .build();
 
         //when
-        ResultActions perform = mockMvc.perform(
-                MockMvcRequestBuilders.put("/api/v1/discussion/subject")
-                    .content(new Gson().toJson(editDTO))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .characterEncoding("utf-8"))
-            .andExpect(status().isOk());
+        MockMultipartFile file = new MockMultipartFile("file", "song.png", "multipart/form-data",
+            "uploadFile".getBytes(StandardCharsets.UTF_8));
+        MockMultipartFile json = new MockMultipartFile("dto", null, "application/json",
+            objectMapper.writeValueAsString(editDTO).getBytes(StandardCharsets.UTF_8));
 
-        //then
-        perform
+        ResultActions perform = mockMvc.perform(
+                MockMvcRequestBuilders
+                    .multipart(HttpMethod.PUT, "/api/v1/discussion/subject")
+                    .file(file)
+                    .file(json)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                    .characterEncoding("utf-8"))
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").exists())
             .andExpect(jsonPath("$.data").value("성공적으로 토론주제를 수정하였습니다."))
             .andExpect(status().isOk())
@@ -278,6 +298,7 @@ class CommunityControllerTest {
     public void 댓글_수정_성공() throws Exception, NotFoundException {
         //given
         Community response = Community.builder().title("test-title")
+            .id(1L)
             .content("test-content")
             .program(
                 Program.testBuilder().title("test-title").id(1L).posterPath("test-path").build())
@@ -297,7 +318,7 @@ class CommunityControllerTest {
         replyService.saveComment(registerCommentRequest());
         replyService.saveRecomment(registerRecommentRequest());
 
-        ReplyCommentEditDTO replyCommentEditDTOs = new ReplyCommentEditDTO(savedCommunity.getId(),
+        ReplyCommentEditDTO replyCommentEditDTOs = new ReplyCommentEditDTO(1L,
             1L, "test-content");
 
         doNothing().when(replyService).modifyComment(any());
@@ -307,8 +328,8 @@ class CommunityControllerTest {
                 .content(new Gson().toJson(replyCommentEditDTOs))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
-            .andExpect(jsonPath("$.data").exists())
             .andExpect(jsonPath("$.data").value("성공적으로 토론댓글을 수정하였습니다."))
+            .andDo(print())
             .andExpect(status().isOk())
             .andDo(print());
 
@@ -357,7 +378,7 @@ class CommunityControllerTest {
 
         //when
         ResultActions resultActions = mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/v1/discussion/recomment/1/50/27")
+            MockMvcRequestBuilders.delete("/api/v1/discussion/recomment/27")
                 .contentType(MediaType.APPLICATION_JSON)
         );
 

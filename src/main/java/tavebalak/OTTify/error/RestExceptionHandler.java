@@ -1,5 +1,8 @@
 package tavebalak.OTTify.error;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -8,19 +11,24 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import tavebalak.OTTify.error.exception.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import tavebalak.OTTify.error.exception.BadRequestException;
+import tavebalak.OTTify.error.exception.DuplicateException;
+import tavebalak.OTTify.error.exception.ForbiddenException;
+import tavebalak.OTTify.error.exception.InternalServerErrorException;
+import tavebalak.OTTify.error.exception.InterruptedException;
+import tavebalak.OTTify.error.exception.NoSuchElementException;
+import tavebalak.OTTify.error.exception.NotFoundException;
+import tavebalak.OTTify.error.exception.UnauthorizedException;
 
 @Slf4j
 @RestControllerAdvice
 public class RestExceptionHandler {
+
     // Custom Bad Request Error
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BadRequestException.class)
-    protected ErrorResponse<String> handleBadRequestException(BadRequestException exception, HttpServletRequest request) {
+    protected ErrorResponse<String> handleBadRequestException(BadRequestException exception,
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
@@ -29,7 +37,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
     protected ErrorResponse<String> handleUnauthorizedException(UnauthorizedException exception,
-                                                                HttpServletRequest request) {
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
@@ -37,8 +45,9 @@ public class RestExceptionHandler {
     // Custom Internal Server Error
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(InternalServerErrorException.class)
-    protected ErrorResponse<String> handleInternalServerErrorException(InternalServerErrorException exception,
-                                                                       HttpServletRequest request) {
+    protected ErrorResponse<String> handleInternalServerErrorException(
+        InternalServerErrorException exception,
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
@@ -46,8 +55,9 @@ public class RestExceptionHandler {
     // @RequestBody valid 에러
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ErrorResponse<String> handleMethodArgNotValidException(MethodArgumentNotValidException exception,
-                                                                     HttpServletRequest request) {
+    protected ErrorResponse<String> handleMethodArgNotValidException(
+        MethodArgumentNotValidException exception,
+        HttpServletRequest request) {
         String message = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         logInfo(request, message);
         return ErrorResponse.error(exception.getMessage());
@@ -57,7 +67,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     protected ErrorResponse<String> handleMethodArgNotValidException(BindException exception,
-                                                                     HttpServletRequest request) {
+        HttpServletRequest request) {
         String message = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
         logInfo(request, message);
         return ErrorResponse.error(exception.getMessage());
@@ -65,35 +75,47 @@ public class RestExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public ErrorResponse<String> handleNotFoundException(NotFoundException exception, HttpServletRequest request) {
+    public ErrorResponse<String> handleNotFoundException(NotFoundException exception,
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DuplicateException.class)
-    public ErrorResponse<String> handleDuplicationException(DuplicateException exception, HttpServletRequest request) {
+    public ErrorResponse<String> handleDuplicationException(DuplicateException exception,
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(ForbiddenException.class)
-    public ErrorResponse<String> handlerForbiddenException(ForbiddenException exception, HttpServletRequest request) {
+    public ErrorResponse<String> handlerForbiddenException(ForbiddenException exception,
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NoSuchElementException.class)
-    public ErrorResponse<String> handlerNoSuchElementException(ForbiddenException exception, HttpServletRequest request) {
+    public ErrorResponse<String> handlerNoSuchElementException(ForbiddenException exception,
+        HttpServletRequest request) {
+        logInfo(request, exception.getMessage());
+        return ErrorResponse.error(exception.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(InterruptedException.class)
+    public ErrorResponse<String> handlerNoSuchElementException(InterruptedException exception,
+        HttpServletRequest request) {
         logInfo(request, exception.getMessage());
         return ErrorResponse.error(exception.getMessage());
     }
 
     private void logInfo(HttpServletRequest request, String message) {
         log.info("{} {} : {} (traceId: {})",
-                request.getMethod(), request.getRequestURI(), message, getTraceId());
+            request.getMethod(), request.getRequestURI(), message, getTraceId());
     }
 
     private void logWarn(HttpServletRequest request, Exception exception) {
@@ -103,7 +125,8 @@ public class RestExceptionHandler {
         exception.printStackTrace(printWriter);
         String stackTrace = stringWriter.toString();
 
-        log.warn("{} {} (traceId: {})\n{}", request.getMethod(), request.getRequestURI(), getTraceId(), stackTrace);
+        log.warn("{} {} (traceId: {})\n{}", request.getMethod(), request.getRequestURI(),
+            getTraceId(), stackTrace);
     }
 
     private String getTraceId() {

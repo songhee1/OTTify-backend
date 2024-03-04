@@ -9,11 +9,13 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import tavebalak.OTTify.common.lock.DistributeLock;
 import tavebalak.OTTify.common.s3.AWSS3Service;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectCreateDTO;
 import tavebalak.OTTify.community.dto.request.CommunitySubjectEditDTO;
@@ -47,6 +49,7 @@ import tavebalak.OTTify.user.repository.UserRepository;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class CommunityServiceImpl implements CommunityService {
 
     private final CommunityRepository communityRepository;
@@ -229,15 +232,18 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public boolean likeSubject(Long subjectId) {
-        AtomicBoolean flag = new AtomicBoolean(false);
+    @DistributeLock(key = "T(java.lang.String).format('LikeSubject%d', #subjectId)")
+    public void likeSubject(Long subjectId) {
         User savedUser = getUser();
         Community findCommunity = communityRepository.findById(subjectId).orElseThrow(() ->
             new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
 
         likedCommunityRepository.findByCommunityIdAndUserId(findCommunity.getId(),
             savedUser.getId()).ifPresentOrElse(
-            likedCommunityRepository::delete,
+            (entity) -> {
+                likedCommunityRepository.delete(entity);
+                findCommunity.decreaseLikeCount();
+            },
             () -> {
                 likedCommunityRepository.save(
                     LikedCommunity.builder()
@@ -245,24 +251,22 @@ public class CommunityServiceImpl implements CommunityService {
                         .community(findCommunity)
                         .build()
                 );
-                flag.set(true);
+
+                findCommunity.increaseLikeCount();
             }
         );
-
-        if (flag.get()) {
-            findCommunity.increaseLikeCount();
-        } else {
-            findCommunity.decreaseLikeCount();
-        }
-
-        return flag.get();
     }
 
-    public boolean likeSub(User user, Community community, Long id) {
-        AtomicBoolean flag = new AtomicBoolean(false);
-
-        likedCommunityRepository.findByCommunityIdAndUserId(community.getId(), id).ifPresentOrElse(
-            likedCommunityRepository::delete,
+    @DistributeLock(key = "T(java.lang.String).format('LikeSub%d', #id)")
+    public void likeSub(User user, Community community, Long id) {
+        Community findCommunity = communityRepository.findById(id).orElseThrow(() ->
+            new NotFoundException(ErrorCode.COMMUNITY_NOT_FOUND));
+        likedCommunityRepository.findByCommunityIdAndUserId(community.getId(),
+            user.getId()).ifPresentOrElse(
+            (entity) -> {
+                likedCommunityRepository.delete(entity);
+                findCommunity.decreaseLikeCount();
+            },
             () -> {
                 likedCommunityRepository.save(
                     LikedCommunity.builder()
@@ -270,11 +274,9 @@ public class CommunityServiceImpl implements CommunityService {
                         .community(community)
                         .build()
                 );
-                flag.set(true);
+                findCommunity.increaseLikeCount();
             }
         );
-
-        return flag.get();
     }
 
 
